@@ -1,5 +1,5 @@
 import React from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Text, TouchableOpacity, View } from "react-native";
 import { useColors } from "../../theme/colors";
 
 const SPENDING_TAGS = [
@@ -14,9 +14,10 @@ const SPENDING_TAGS = [
 export function SpendingTagsCard() {
   const C = useColors();
   return (
-    <View style={[s.card, { backgroundColor: C.surfaceLow }]}>
-      <Text style={[s.title, { color: C.onSurface }]}>Spending Tags</Text>
-      <View style={s.wrap}>
+    <View className="rounded-2xl p-5 gap-3.5 bg-surface-low">
+      <Text className="text-base font-bold tracking-[-0.2px] text-on-surface">Spending Tags</Text>
+
+      <View className="flex-row flex-wrap gap-2">
         {SPENDING_TAGS.map((tag) => {
           let bg: string, fg: string, border: string;
           if (tag.style === "primary") {
@@ -30,9 +31,15 @@ export function SpendingTagsCard() {
             <TouchableOpacity
               key={tag.id}
               activeOpacity={0.75}
-              style={[s.tag, { backgroundColor: bg, borderColor: border }]}
+              className="px-3.5 py-2 rounded-full border"
+              style={{ backgroundColor: bg, borderColor: border }}
             >
-              <Text style={[s.tagText, { color: fg }]}>{tag.label}</Text>
+              <Text
+                className="text-[10px] font-bold tracking-[0.8px] uppercase"
+                style={{ color: fg }}
+              >
+                {tag.label}
+              </Text>
             </TouchableOpacity>
           );
         })}
@@ -40,11 +47,3 @@ export function SpendingTagsCard() {
     </View>
   );
 }
-
-const s = StyleSheet.create({
-  card: { borderRadius: 16, padding: 20, gap: 14 },
-  title: { fontSize: 16, fontWeight: "700", letterSpacing: -0.2 },
-  wrap: { flexDirection: "row", flexWrap: "wrap", gap: 8 },
-  tag: { paddingHorizontal: 14, paddingVertical: 8, borderRadius: 100, borderWidth: 1 },
-  tagText: { fontSize: 10, fontWeight: "700", letterSpacing: 0.8, textTransform: "uppercase" },
-});

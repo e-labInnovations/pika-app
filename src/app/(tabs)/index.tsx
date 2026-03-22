@@ -1,5 +1,5 @@
 import { StatusBar } from "expo-status-bar";
-import React from "react";
+import React, { useState } from "react";
 import { Platform, ScrollView, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { AccountsRow } from "../../components/home/AccountsRow";
@@ -17,6 +17,8 @@ export default function HomeScreen() {
   const insets = useSafeAreaInsets();
   const topPad = insets.top || (Platform.OS === "ios" ? 44 : 24);
 
+  const [showBalance, setShowBalance] = useState(false);
+
   return (
     <View style={[s.root, { backgroundColor: C.surface }]}>
       <StatusBar style="auto" />
@@ -25,9 +27,12 @@ export default function HomeScreen() {
         contentContainerStyle={s.scroll}
         showsVerticalScrollIndicator={false}
       >
-        <BalanceCard />
-        <MonthlyPulseCard />
-        <AccountsRow />
+        <BalanceCard
+          showBalance={showBalance}
+          onToggle={() => setShowBalance((v) => !v)}
+        />
+        <MonthlyPulseCard showBalance={showBalance} />
+        <AccountsRow showBalance={showBalance} />
         <WeeklyActivityCard />
         <TopCategoriesCard />
         <SplitsDebtsCard />

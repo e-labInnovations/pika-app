@@ -1,45 +1,59 @@
 import Ionicons from "@expo/vector-icons/Ionicons";
 import React from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Text, TouchableOpacity, View } from "react-native";
+import { useAuth } from "../../context/AuthContext";
 import { useColors } from "../../theme/colors";
+
+function getGreeting(): string {
+  const hour = new Date().getHours();
+  if (hour < 12) return "Good Morning";
+  if (hour < 17) return "Good Afternoon";
+  if (hour < 21) return "Good Evening";
+  return "Good Night";
+}
 
 type Props = { topPad: number };
 
 export function HomeHeader({ topPad }: Props) {
   const C = useColors();
+  const { user } = useAuth();
+
+  const initial = (
+    user?.name?.charAt(0) ||
+    user?.email?.charAt(0) ||
+    "?"
+  ).toUpperCase();
+
   return (
-    <View style={[s.header, { backgroundColor: C.surfaceLow, paddingTop: topPad }]}>
-      <View style={s.left}>
-        <View style={[s.avatar, { backgroundColor: C.surfaceHighest }]}>
-          <Text style={s.avatarLetter}>A</Text>
+    <View
+      className="flex-row items-center justify-between px-5 pb-3.5 bg-surface-low"
+      style={{ paddingTop: topPad }}
+    >
+      <View className="flex-row items-center gap-3">
+        <View className="w-10 h-10 rounded-full items-center justify-center bg-surface-highest">
+          <Text className="text-base font-bold text-white">{initial}</Text>
         </View>
         <View>
-          <Text style={[s.greeting, { color: C.onSurfaceVariant }]}>Good Morning</Text>
-          <Text style={[s.userName, { color: C.primaryBright }]}>Alex Rivers</Text>
+          <Text className="text-[10px] font-semibold tracking-[1.5px] uppercase text-on-surface-variant">
+            {getGreeting()}
+          </Text>
+          <Text className="text-lg font-extrabold tracking-[-0.5px] mt-[1px] text-primary-bright">
+            {user?.name || user?.email}
+          </Text>
         </View>
       </View>
+
       <TouchableOpacity
-        style={[s.iconBtn, { backgroundColor: C.surfaceMid }]}
+        className="w-10 h-10 rounded-full items-center justify-center bg-surface-mid"
         activeOpacity={0.75}
+        onPress={() => console.log("Notifications button pressed")}
       >
-        <Ionicons name="notifications-outline" size={20} color={C.primaryBright} />
+        <Ionicons
+          name="notifications-outline"
+          size={20}
+          color={C.primaryBright}
+        />
       </TouchableOpacity>
     </View>
   );
 }
-
-const s = StyleSheet.create({
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: 20,
-    paddingBottom: 14,
-  },
-  left: { flexDirection: "row", alignItems: "center", gap: 12 },
-  avatar: { width: 40, height: 40, borderRadius: 20, alignItems: "center", justifyContent: "center" },
-  avatarLetter: { fontSize: 16, fontWeight: "700", color: "#ffffff" },
-  greeting: { fontSize: 10, fontWeight: "600", letterSpacing: 1.5, textTransform: "uppercase" },
-  userName: { fontSize: 18, fontWeight: "800", letterSpacing: -0.5, marginTop: 1 },
-  iconBtn: { width: 40, height: 40, borderRadius: 20, alignItems: "center", justifyContent: "center" },
-});

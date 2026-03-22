@@ -1,6 +1,5 @@
 import React from "react";
-import { StyleSheet, Text, View } from "react-native";
-import { useColors } from "../../theme/colors";
+import { Text, View } from "react-native";
 
 const PEOPLE = [
   { id: "1", name: "Chloe Miller", role: "OWES YOU", amount: "$42.00"  },
@@ -8,37 +7,28 @@ const PEOPLE = [
 ];
 
 export function SplitsDebtsCard() {
-  const C = useColors();
   return (
-    <View style={[s.card, { backgroundColor: C.surfaceLow }]}>
-      <Text style={[s.title, { color: C.onSurface }]}>Splits & Debts</Text>
-      <View style={s.list}>
+    <View className="rounded-2xl p-5 gap-3.5 bg-surface-low">
+      <Text className="text-base font-bold tracking-[-0.2px] text-on-surface">Splits & Debts</Text>
+
+      <View className="gap-2.5">
         {PEOPLE.map((person) => (
-          <View key={person.id} style={[s.row, { backgroundColor: C.surfaceMid }]}>
-            <View style={[s.avatar, { backgroundColor: C.surfaceHighest }]}>
-              <Text style={[s.initial, { color: C.primaryBright }]}>{person.name[0]}</Text>
+          <View key={person.id} className="flex-row items-center rounded-xl p-3 gap-3 bg-surface-mid">
+            <View className="w-10 h-10 rounded-full items-center justify-center bg-surface-highest">
+              <Text className="text-base font-bold text-primary-bright">{person.name[0]}</Text>
             </View>
-            <View style={s.info}>
-              <Text style={[s.name, { color: C.onSurface }]}>{person.name}</Text>
-              <Text style={[s.role, { color: C.onSurfaceVariant }]}>{person.role}</Text>
+            <View className="flex-1 gap-0.5">
+              <Text className="text-[13px] font-bold text-on-surface">{person.name}</Text>
+              <Text className="text-[9px] font-semibold tracking-[0.8px] uppercase text-on-surface-variant">
+                {person.role}
+              </Text>
             </View>
-            <Text style={[s.amount, { color: C.primaryBright }]}>{person.amount}</Text>
+            <Text className="text-[15px] font-extrabold tracking-[-0.3px] text-primary-bright">
+              {person.amount}
+            </Text>
           </View>
         ))}
       </View>
     </View>
   );
 }
-
-const s = StyleSheet.create({
-  card: { borderRadius: 16, padding: 20, gap: 14 },
-  title: { fontSize: 16, fontWeight: "700", letterSpacing: -0.2 },
-  list: { gap: 10 },
-  row: { flexDirection: "row", alignItems: "center", borderRadius: 12, padding: 12, gap: 12 },
-  avatar: { width: 40, height: 40, borderRadius: 20, alignItems: "center", justifyContent: "center" },
-  initial: { fontSize: 16, fontWeight: "700" },
-  info: { flex: 1, gap: 2 },
-  name: { fontSize: 13, fontWeight: "700" },
-  role: { fontSize: 9, fontWeight: "600", letterSpacing: 0.8, textTransform: "uppercase" },
-  amount: { fontSize: 15, fontWeight: "800", letterSpacing: -0.3 },
-});

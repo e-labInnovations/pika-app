@@ -1,6 +1,6 @@
 import Ionicons from "@expo/vector-icons/Ionicons";
 import React from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { Text, View } from "react-native";
 import { useColors } from "../../theme/colors";
 
 const CATEGORIES = [
@@ -12,27 +12,35 @@ const CATEGORIES = [
 export function TopCategoriesCard() {
   const C = useColors();
   return (
-    <View style={[s.card, { backgroundColor: C.surfaceLow }]}>
-      <Text style={[s.title, { color: C.onSurface }]}>Top Categories</Text>
-      <View style={s.list}>
+    <View className="rounded-2xl p-5 gap-3.5 bg-surface-low">
+      <Text className="text-base font-bold tracking-[-0.2px] text-on-surface">Top Categories</Text>
+
+      <View className="gap-4">
         {CATEGORIES.map((cat) => {
           const accent = cat.accent === "primary" ? C.primaryBright : C.tertiary;
           return (
             <View key={cat.id}>
-              <View style={[s.row, { marginBottom: 8 }]}>
-                <View style={s.left}>
-                  <View style={[s.iconWrap, { backgroundColor: `${accent}1a` }]}>
+              <View className="flex-row items-center justify-between mb-2">
+                <View className="flex-row items-center gap-2.5">
+                  <View
+                    className="w-8 h-8 rounded-full items-center justify-center"
+                    style={{ backgroundColor: `${accent}1a` }}
+                  >
                     {cat.icon === "utensils"     && <Ionicons name="restaurant-outline" size={15} color={accent} />}
                     {cat.icon === "shopping-bag" && <Ionicons name="bag-outline"        size={15} color={accent} />}
-                    {cat.icon === "car"          && <Ionicons name="car-outline"         size={15} color={accent} />}
+                    {cat.icon === "car"          && <Ionicons name="car-outline"        size={15} color={accent} />}
                   </View>
-                  <Text style={[s.name, { color: C.onSurface }]}>{cat.name}</Text>
+                  <Text className="text-[13px] font-medium text-on-surface">{cat.name}</Text>
                 </View>
-                <Text style={[s.budget, { color: C.onSurfaceVariant }]}>
+                <Text className="text-[11px] font-bold text-on-surface-variant">
                   ${cat.spent} / ${cat.budget}
                 </Text>
               </View>
-              <View style={[s.track, { backgroundColor: C.surfaceHighest }]}>
+
+              <View
+                className="h-1.5 rounded-full overflow-hidden flex-row"
+                style={{ backgroundColor: C.surfaceHighest }}
+              >
                 <View style={{ flex: cat.pct, backgroundColor: accent }} />
                 <View style={{ flex: 1 - cat.pct }} />
               </View>
@@ -43,15 +51,3 @@ export function TopCategoriesCard() {
     </View>
   );
 }
-
-const s = StyleSheet.create({
-  card: { borderRadius: 16, padding: 20, gap: 14 },
-  title: { fontSize: 16, fontWeight: "700", letterSpacing: -0.2 },
-  list: { gap: 16 },
-  row: { flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
-  left: { flexDirection: "row", alignItems: "center", gap: 10 },
-  iconWrap: { width: 32, height: 32, borderRadius: 16, alignItems: "center", justifyContent: "center" },
-  name: { fontSize: 13, fontWeight: "500" },
-  budget: { fontSize: 11, fontWeight: "700" },
-  track: { height: 6, borderRadius: 100, overflow: "hidden", flexDirection: "row" },
-});
