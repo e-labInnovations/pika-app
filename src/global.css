@@ -1,2 +1,73 @@
 @import "tailwindcss";
 @import "uniwind";
+
+@layer theme {
+  :root {
+
+    /* ─── DARK THEME (Obsidian Luminescence) ─────────────────────────── */
+    @variant dark {
+
+      /* Surface hierarchy — depth through tone, no borders */
+      --color-surface:          #0d1322;
+      --color-surface-low:      #151b2b;
+      --color-surface-mid:      #191f2f;
+      --color-surface-high:     #242a3a;
+      --color-surface-highest:  #2f3445;
+
+      /* Primary — focus, interaction, active states */
+      --color-primary:          #adc6ff;
+      --color-primary-bright:   #4d8eff;
+
+      /* Secondary — income, positive values */
+      --color-secondary:              #4edea3;
+      --color-secondary-container:    #00a572;
+      --color-on-secondary-container: #00311f;
+
+      /* Tertiary — expense, negative values */
+      --color-tertiary:              #ffb2b7;
+      --color-tertiary-container:    #ff516a;
+      --color-on-tertiary-container: #5b0017;
+
+      /* Typography */
+      --color-on-surface:         #dde2f7;
+      --color-on-surface-variant: #c2c6d6;
+
+      /* Structure */
+      --color-outline:         #8c909f;
+      --color-outline-variant: #424754;
+    }
+
+    /* ─── LIGHT THEME (Obsidian Luminescence — Light) ────────────────── */
+    @variant light {
+
+      /* Surface hierarchy */
+      --color-surface:          #f4f6ff;
+      --color-surface-low:      #ebeef9;
+      --color-surface-mid:      #ffffff;
+      --color-surface-high:     #e5e8f5;
+      --color-surface-highest:  #d9dcf0;
+
+      /* Primary */
+      --color-primary:          #4d8eff;
+      --color-primary-bright:   #1a52d4;
+
+      /* Secondary — income */
+      --color-secondary:              #00875a;
+      --color-secondary-container:    #d0f5e8;
+      --color-on-secondary-container: #003922;
+
+      /* Tertiary — expense */
+      --color-tertiary:              #c20030;
+      --color-tertiary-container:    #ffe0e4;
+      --color-on-tertiary-container: #3d0010;
+
+      /* Typography */
+      --color-on-surface:         #0d1322;
+      --color-on-surface-variant: #454b62;
+
+      /* Structure */
+      --color-outline:         #6b7082;
+      --color-outline-variant: #d0d4e4;
+    }
+  }
+}
