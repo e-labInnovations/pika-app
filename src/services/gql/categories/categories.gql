@@ -1,0 +1,55 @@
+fragment CategoryFields on Category {
+  id
+  name
+  type
+  icon
+  color
+  bgColor
+  description
+  isActive
+  createdAt
+  updatedAt
+  parent {
+    id
+    name
+    icon
+    color
+  }
+}
+
+query GetCategories($page: Int, $limit: Int, $sort: String, $where: Category_where) {
+  Categories(page: $page, limit: $limit, sort: $sort, where: $where) {
+    docs {
+      ...CategoryFields
+    }
+    totalDocs
+    page
+    totalPages
+    hasNextPage
+    hasPrevPage
+  }
+}
+
+query GetCategory($id: String!) {
+  Category(id: $id) {
+    ...CategoryFields
+  }
+}
+
+mutation CreateCategory($data: mutationCategoryInput!) {
+  createCategory(data: $data) {
+    ...CategoryFields
+  }
+}
+
+mutation UpdateCategory($id: String!, $data: mutationCategoryUpdateInput!) {
+  updateCategory(id: $id, data: $data) {
+    ...CategoryFields
+  }
+}
+
+mutation DeleteCategory($id: String!) {
+  deleteCategory(id: $id) {
+    id
+  }
+}

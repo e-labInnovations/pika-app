@@ -1,0 +1,25 @@
+mutation TextToTransaction($text: String!, $model: String) {
+  textToTransaction(text: $text, model: $model) {
+    data
+    model
+    latencyMs
+    usage {
+      promptTokenCount
+      candidatesTokenCount
+      totalTokenCount
+    }
+  }
+}
+
+mutation ImageToTransaction($image: String!, $mimeType: String, $model: String) {
+  imageToTransaction(image: $image, mimeType: $mimeType, model: $model) {
+    data
+    model
+    latencyMs
+    usage {
+      promptTokenCount
+      candidatesTokenCount
+      totalTokenCount
+    }
+  }
+}

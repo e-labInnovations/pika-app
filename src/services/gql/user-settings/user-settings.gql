@@ -1,0 +1,29 @@
+fragment UserSettingsFields on UserSetting {
+  id
+  currency
+  timezone
+  locale
+  theme
+  geminiApiKey
+  createdAt
+  updatedAt
+  defaultAccount {
+    id
+    name
+    icon
+  }
+}
+
+query GetUserSettings {
+  UserSettings(limit: 1) {
+    docs {
+      ...UserSettingsFields
+    }
+  }
+}
+
+mutation UpdateUserSettings($id: String!, $data: mutationUserSettingUpdateInput!) {
+  updateUserSetting(id: $id, data: $data) {
+    ...UserSettingsFields
+  }
+}

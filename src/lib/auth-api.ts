@@ -1,0 +1,94 @@
+/**
+ * Payload CMS auth endpoints — email/password only.
+ * All token operations use the Authorization: JWT <token> header (Payload standard).
+ */
+import { API_URL } from "./constants";
+import { storage } from "./storage";
+
+export type PayloadUser = {
+  id: string;
+  email: string;
+  name?: string | null;
+  role: "user" | "admin" | "system";
+  createdAt: string;
+  updatedAt: string;
+};
+
+type LoginResponse = {
+  exp: number;
+  token: string;
+  user: PayloadUser;
+};
+
+type RefreshResponse = {
+  exp: number;
+  token: string;
+  message: string;
+};
+
+async function payloadFetch(path: string, init: RequestInit = {}) {
+  const res = await fetch(`${API_URL}${path}`, {
+    ...init,
+    headers: {
+      "Content-Type": "application/json",
+      ...(init.headers ?? {}),
+    },
+  });
+  return res;
+}
+
+export const authApi = {
+  login: async (email: string, password: string): Promise<LoginResponse> => {
+    const res = await payloadFetch("/api/users/login", {
+      method: "POST",
+      body: JSON.stringify({ email, password }),
+    });
+
+    if (!res.ok) {
+      const body = await res.json().catch(() => ({}));
+      const msg =
+        body?.errors?.[0]?.message ??
+        body?.message ??
+        "Invalid email or password.";
+      throw new Error(msg);
+    }
+
+    return res.json() as Promise<LoginResponse>;
+  },
+
+  refreshToken: async (): Promise<RefreshResponse | null> => {
+    const token = await storage.getToken();
+    if (!token) return null;
+
+    const res = await payloadFetch("/api/users/refresh-token", {
+      method: "POST",
+      headers: { Authorization: `JWT ${token}` },
+    });
+
+    if (!res.ok) return null;
+    return res.json() as Promise<RefreshResponse>;
+  },
+
+  me: async (): Promise<PayloadUser | null> => {
+    const token = await storage.getToken();
+    if (!token) return null;
+
+    const res = await payloadFetch("/api/users/me", {
+      headers: { Authorization: `JWT ${token}` },
+    });
+
+    if (!res.ok) return null;
+    const data = await res.json();
+    return (data?.user ?? null) as PayloadUser | null;
+  },
+
+  logout: async (): Promise<void> => {
+    const token = await storage.getToken();
+    if (!token) return;
+    // Fire-and-forget — don't block on network failure
+    payloadFetch("/api/users/logout", {
+      method: "POST",
+      headers: { Authorization: `JWT ${token}` },
+    }).catch(() => {});
+  },
+};

@@ -1,0 +1,123 @@
+query GetDashboardSummary {
+  dashboardSummary {
+    totalBalance
+    balanceChangePercent
+    monthlyPulse {
+      income
+      expenses
+      surplus
+      month
+      year
+      monthName
+    }
+  }
+}
+
+query GetMonthlyCategories($month: Int, $year: Int) {
+  monthlyCategories(month: $month, year: $year) {
+    data {
+      id
+      name
+      amount
+      transactionCount
+      averagePerTransaction
+      icon
+      color
+      bgColor
+    }
+    meta {
+      month
+      year
+      monthName
+      totalExpenses
+    }
+  }
+}
+
+query GetMonthlyTags($month: Int, $year: Int) {
+  monthlyTags(month: $month, year: $year) {
+    data {
+      id
+      name
+      totalAmount
+      totalTransactionCount
+      expenseAmount
+      incomeAmount
+      icon
+      color
+      bgColor
+    }
+    meta {
+      month
+      year
+      monthName
+      totalExpenses
+      totalIncome
+      totalTransfers
+    }
+  }
+}
+
+query GetMonthlyPeople($month: Int, $year: Int) {
+  monthlyPeople(month: $month, year: $year) {
+    data {
+      id
+      name
+      balance
+      totalAmount
+      totalTransactionCount
+      expenseAmount
+      incomeAmount
+    }
+    meta {
+      month
+      year
+      monthName
+      totalExpenses
+      totalIncome
+    }
+  }
+}
+
+query GetWeeklyExpenses {
+  weeklyExpenses {
+    days {
+      sun
+      mon
+      tue
+      wed
+      thu
+      fri
+      sat
+    }
+    dailyData {
+      date
+      day
+      total
+    }
+    timezone
+  }
+}
+
+query GetMonthlyCalendar($month: Int, $year: Int) {
+  monthlyCalendar(month: $month, year: $year) {
+    data {
+      date
+      income
+      expenses
+      transfers
+      balance
+      transactionCount
+    }
+    meta {
+      month
+      year
+      monthName
+      timezone
+      totalIncome
+      totalExpenses
+      totalTransfers
+      balance
+    }
+  }
+}

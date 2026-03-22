@@ -1,0 +1,51 @@
+fragment AccountFields on Account {
+  id
+  name
+  icon
+  bgColor
+  color
+  description
+  isActive
+  balance
+  totalTransactions
+  lastTransactionAt
+  createdAt
+  updatedAt
+}
+
+query GetAccounts($page: Int, $limit: Int, $sort: String) {
+  Accounts(page: $page, limit: $limit, sort: $sort) {
+    docs {
+      ...AccountFields
+    }
+    totalDocs
+    page
+    totalPages
+    hasNextPage
+    hasPrevPage
+  }
+}
+
+query GetAccount($id: String!) {
+  Account(id: $id) {
+    ...AccountFields
+  }
+}
+
+mutation CreateAccount($data: mutationAccountInput!) {
+  createAccount(data: $data) {
+    ...AccountFields
+  }
+}
+
+mutation UpdateAccount($id: String!, $data: mutationAccountUpdateInput!) {
+  updateAccount(id: $id, data: $data) {
+    ...AccountFields
+  }
+}
+
+mutation DeleteAccount($id: String!) {
+  deleteAccount(id: $id) {
+    id
+  }
+}

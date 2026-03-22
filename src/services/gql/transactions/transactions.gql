@@ -1,0 +1,98 @@
+fragment TransactionCategoryFields on Category {
+  id
+  name
+  icon
+  color
+  bgColor
+  type
+}
+
+fragment TransactionAccountFields on Account {
+  id
+  name
+  icon
+  bgColor
+  color
+}
+
+fragment TransactionPersonFields on Person {
+  id
+  name
+}
+
+fragment TransactionTagFields on Tag {
+  id
+  name
+  icon
+  color
+  bgColor
+}
+
+fragment TransactionFields on Transaction {
+  id
+  title
+  amount
+  date
+  type
+  note
+  isActive
+  createdAt
+  updatedAt
+  category {
+    ...TransactionCategoryFields
+  }
+  account {
+    ...TransactionAccountFields
+  }
+  toAccount {
+    ...TransactionAccountFields
+  }
+  person {
+    ...TransactionPersonFields
+  }
+  tags {
+    ...TransactionTagFields
+  }
+}
+
+query GetTransactions(
+  $page: Int
+  $limit: Int
+  $sort: String
+  $where: Transaction_where
+) {
+  Transactions(page: $page, limit: $limit, sort: $sort, where: $where) {
+    docs {
+      ...TransactionFields
+    }
+    totalDocs
+    page
+    totalPages
+    hasNextPage
+    hasPrevPage
+  }
+}
+
+query GetTransaction($id: String!) {
+  Transaction(id: $id) {
+    ...TransactionFields
+  }
+}
+
+mutation CreateTransaction($data: mutationTransactionInput!) {
+  createTransaction(data: $data) {
+    ...TransactionFields
+  }
+}
+
+mutation UpdateTransaction($id: String!, $data: mutationTransactionUpdateInput!) {
+  updateTransaction(id: $id, data: $data) {
+    ...TransactionFields
+  }
+}
+
+mutation DeleteTransaction($id: String!) {
+  deleteTransaction(id: $id) {
+    id
+  }
+}

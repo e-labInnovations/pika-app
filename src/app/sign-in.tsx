@@ -3,9 +3,9 @@ import { router } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import React, { useState } from "react";
 import {
+  ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
-  Pressable,
   ScrollView,
   StyleSheet,
   Text,
@@ -14,8 +14,9 @@ import {
   View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { G, Path, Svg } from "react-native-svg";
+import { Path, Svg } from "react-native-svg";
 import { PikaLogo } from "../components/PikaLogo";
+import { useAuth } from "../context/AuthContext";
 import { useColors } from "../theme/colors";
 
 function GoogleLogo() {
@@ -44,11 +45,28 @@ function GoogleLogo() {
 export default function SignInScreen() {
   const C = useColors();
   const insets = useSafeAreaInsets();
+  const { login } = useAuth();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [emailFocused, setEmailFocused] = useState(false);
   const [passwordFocused, setPasswordFocused] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function handleSignIn() {
+    if (!email.trim() || !password) return;
+    setError(null);
+    setIsLoading(true);
+    try {
+      await login(email.trim(), password);
+      router.replace("/(tabs)");
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Sign in failed.");
+    } finally {
+      setIsLoading(false);
+    }
+  }
 
   return (
     <View style={[s.root, { backgroundColor: C.surface }]}>
@@ -153,18 +171,30 @@ export default function SignInScreen() {
               </View>
             </View>
 
+            {/* Error message */}
+            {error && (
+              <Text style={[s.errorText, { color: C.tertiaryContainer }]}>
+                {error}
+              </Text>
+            )}
+
             {/* Sign In button */}
             <TouchableOpacity
               activeOpacity={0.88}
-              onPress={() => router.replace("/(tabs)")}
+              disabled={isLoading}
+              onPress={handleSignIn}
             >
               <LinearGradient
                 colors={[C.primary, C.primaryBright]}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 0 }}
-                style={s.signInBtn}
+                style={[s.signInBtn, isLoading && { opacity: 0.7 }]}
               >
-                <Text style={s.signInText}>Sign In</Text>
+                {isLoading ? (
+                  <ActivityIndicator color="#ffffff" />
+                ) : (
+                  <Text style={s.signInText}>Sign In</Text>
+                )}
               </LinearGradient>
             </TouchableOpacity>
 
@@ -311,6 +341,11 @@ const s = StyleSheet.create({
     justifyContent: "center",
     gap: 20,
     marginTop: 24,
+  },
+  errorText: {
+    fontSize: 13,
+    fontWeight: "600",
+    textAlign: "center",
   },
   footerLink: {
     fontSize: 12,

@@ -1,0 +1,50 @@
+fragment PersonFields on Person {
+  id
+  name
+  email
+  phone
+  description
+  isActive
+  balance
+  totalTransactions
+  lastTransactionAt
+  createdAt
+  updatedAt
+}
+
+query GetPeople($page: Int, $limit: Int, $sort: String) {
+  People(page: $page, limit: $limit, sort: $sort) {
+    docs {
+      ...PersonFields
+    }
+    totalDocs
+    page
+    totalPages
+    hasNextPage
+    hasPrevPage
+  }
+}
+
+query GetPerson($id: String!) {
+  Person(id: $id) {
+    ...PersonFields
+  }
+}
+
+mutation CreatePerson($data: mutationPersonInput!) {
+  createPerson(data: $data) {
+    ...PersonFields
+  }
+}
+
+mutation UpdatePerson($id: String!, $data: mutationPersonUpdateInput!) {
+  updatePerson(id: $id, data: $data) {
+    ...PersonFields
+  }
+}
+
+mutation DeletePerson($id: String!) {
+  deletePerson(id: $id) {
+    id
+  }
+}

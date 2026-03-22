@@ -1,0 +1,76 @@
+fragment ReminderFields on Reminder {
+  id
+  title
+  amount
+  type
+  date
+  isRecurring
+  recurrencePeriod
+  recurrenceType
+  lastTriggeredAt
+  nextDueDate
+  archived
+  createdAt
+  updatedAt
+  category {
+    id
+    name
+    icon
+    color
+  }
+  account {
+    id
+    name
+    icon
+  }
+  member {
+    id
+    name
+  }
+  tags {
+    id
+    name
+    icon
+    color
+  }
+  completedDates {
+    date
+  }
+}
+
+query GetReminders($page: Int, $limit: Int, $sort: String, $where: Reminder_where) {
+  Reminders(page: $page, limit: $limit, sort: $sort, where: $where) {
+    docs {
+      ...ReminderFields
+    }
+    totalDocs
+    page
+    totalPages
+    hasNextPage
+    hasPrevPage
+  }
+}
+
+query GetReminder($id: String!) {
+  Reminder(id: $id) {
+    ...ReminderFields
+  }
+}
+
+mutation CreateReminder($data: mutationReminderInput!) {
+  createReminder(data: $data) {
+    ...ReminderFields
+  }
+}
+
+mutation UpdateReminder($id: String!, $data: mutationReminderUpdateInput!) {
+  updateReminder(id: $id, data: $data) {
+    ...ReminderFields
+  }
+}
+
+mutation DeleteReminder($id: String!) {
+  deleteReminder(id: $id) {
+    id
+  }
+}

@@ -1,0 +1,48 @@
+fragment TagFields on Tag {
+  id
+  name
+  icon
+  color
+  bgColor
+  description
+  isActive
+  createdAt
+  updatedAt
+}
+
+query GetTags($page: Int, $limit: Int, $sort: String) {
+  Tags(page: $page, limit: $limit, sort: $sort) {
+    docs {
+      ...TagFields
+    }
+    totalDocs
+    page
+    totalPages
+    hasNextPage
+    hasPrevPage
+  }
+}
+
+query GetTag($id: String!) {
+  Tag(id: $id) {
+    ...TagFields
+  }
+}
+
+mutation CreateTag($data: mutationTagInput!) {
+  createTag(data: $data) {
+    ...TagFields
+  }
+}
+
+mutation UpdateTag($id: String!, $data: mutationTagUpdateInput!) {
+  updateTag(id: $id, data: $data) {
+    ...TagFields
+  }
+}
+
+mutation DeleteTag($id: String!) {
+  deleteTag(id: $id) {
+    id
+  }
+}
