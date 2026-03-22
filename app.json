@@ -1,15 +1,87 @@
 {
   "expo": {
-    "scheme": "acme",
-    "userInterfaceStyle": "automatic",
-    "orientation": "default",
-    "web": {
-      "output": "static"
+    "name": "Pika",
+    "slug": "pika",
+    "scheme": "pika",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "dark",
+    "icon": "./assets/icon.png",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#0d1322"
     },
-    "name": "pika-app",
-    "slug": "pika-app",
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.elabins.pika",
+      "infoPlist": {
+        "NSCameraUsageDescription": "Pika uses the camera to scan receipts and bills.",
+        "NSPhotoLibraryUsageDescription": "Pika accesses your photos to attach receipts to transactions."
+      },
+      "entitlements": {
+        "aps-environment": "development"
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#0d1322"
+      },
+      "package": "com.elabins.pika",
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.READ_MEDIA_IMAGES",
+        "android.permission.RECEIVE_SMS",
+        "android.permission.READ_SMS"
+      ]
+    },
+    "web": {
+      "output": "static",
+      "favicon": "./assets/favicon.png"
+    },
     "plugins": [
-      "expo-secure-store"
-    ]
+      "expo-router",
+      "expo-secure-store",
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#0d1322",
+          "image": "./assets/splash.png",
+          "imageWidth": 180,
+          "resizeMode": "contain"
+        }
+      ],
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/notification-icon.png",
+          "color": "#4d8eff",
+          "defaultChannel": "default",
+          "sounds": []
+        }
+      ],
+      [
+        "expo-share-intent",
+        {
+          "iosActivationRules": {
+            "NSExtensionActivationSupportsText": true,
+            "NSExtensionActivationSupportsImageWithMaxCount": 5,
+            "NSExtensionActivationSupportsWebURLWithMaxCount": 1
+          },
+          "androidIntentFilters": [
+            "text/*",
+            "image/*"
+          ]
+        }
+      ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "22e0e671-4565-4627-b55c-c682985bce0d"
+      },
+      "router": {}
+    },
+    "owner": "elabinnovations"
   }
 }
