@@ -14,7 +14,7 @@
         "simulator": false
       },
       "env": {
-        "EXPO_PUBLIC_API_URL": "http://YOUR_LOCAL_IP:3333"
+        "EXPO_PUBLIC_API_URL": "http://10.15.27.176:3333"
       }
     },
     "development-simulator": {

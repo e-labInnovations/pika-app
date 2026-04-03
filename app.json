@@ -6,15 +6,15 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "userInterfaceStyle": "dark",
-    "icon": "./assets/icon.png",
-    "splash": {
-      "image": "./assets/splash.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#0d1322"
-    },
+    "icon": "./assets/icons/ios-light.png",
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.elabins.pika",
+      "icon": {
+        "light": "./assets/icons/ios-light.png",
+        "dark": "./assets/icons/ios-dark.png",
+        "tinted": "./assets/icons/ios-tinted.png"
+      },
       "infoPlist": {
         "NSCameraUsageDescription": "Pika uses the camera to scan receipts and bills.",
         "NSPhotoLibraryUsageDescription": "Pika accesses your photos to attach receipts to transactions."
@@ -25,15 +25,13 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/icons/adaptive-icon.png",
         "backgroundColor": "#0d1322"
       },
       "package": "com.elabins.pika",
       "permissions": [
         "android.permission.CAMERA",
-        "android.permission.READ_MEDIA_IMAGES",
-        "android.permission.RECEIVE_SMS",
-        "android.permission.READ_SMS"
+        "android.permission.READ_MEDIA_IMAGES"
       ]
     },
     "web": {
@@ -47,15 +45,23 @@
         "expo-splash-screen",
         {
           "backgroundColor": "#0d1322",
-          "image": "./assets/splash.png",
+          "image": "./assets/icons/splash-icon-dark.png",
           "imageWidth": 180,
-          "resizeMode": "contain"
+          "resizeMode": "contain",
+          "dark": {
+            "image": "./assets/icons/splash-icon-dark.png",
+            "backgroundColor": "#0d1322"
+          },
+          "light": {
+            "image": "./assets/icons/splash-icon-light.png",
+            "backgroundColor": "#f4f6ff"
+          }
         }
       ],
       [
         "expo-notifications",
         {
-          "icon": "./assets/notification-icon.png",
+          "icon": "./assets/icons/adaptive-icon.png",
           "color": "#4d8eff",
           "defaultChannel": "default",
           "sounds": []
@@ -74,7 +80,8 @@
             "image/*"
           ]
         }
-      ]
+      ],
+      "expo-web-browser"
     ],
     "extra": {
       "eas": {

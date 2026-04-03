@@ -1,4 +1,6 @@
 import { router } from "expo-router";
+import * as Linking from "expo-linking";
+import * as WebBrowser from "expo-web-browser";
 import React, {
   createContext,
   useCallback,
@@ -7,6 +9,7 @@ import React, {
   useState,
 } from "react";
 import { authApi, type PayloadUser } from "../lib/auth-api";
+import { API_URL } from "../lib/constants";
 import { apolloClient, setUnauthenticatedHandler } from "../services/gql/client";
 import { storage } from "../lib/storage";
 import { tokenManager } from "../lib/token-manager";
@@ -20,6 +23,7 @@ type AuthContextType = {
   isLoading: boolean;
   isAuthenticated: boolean;
   login: (email: string, password: string) => Promise<void>;
+  loginWithGoogle: () => Promise<void>;
   logout: () => Promise<void>;
 };
 
@@ -87,6 +91,35 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Navigation is handled by the sign-in screen after this resolves
   }, []);
 
+  // ── Google OAuth ───────────────────────────────────────────────────────────
+  const loginWithGoogle = useCallback(async () => {
+    const result = await WebBrowser.openAuthSessionAsync(
+      `${API_URL}/api/auth/mobile-init`,
+      "pika://auth",
+    );
+
+    if (result.type !== "success") return; // user cancelled — stay on sign-in
+
+    const parsed = Linking.parse(result.url);
+    const token = parsed.queryParams?.token as string | undefined;
+    const expStr = parsed.queryParams?.exp as string | undefined;
+
+    if (!token) throw new Error("Google sign-in failed: no token received.");
+
+    await storage.setToken(token);
+    if (expStr) await storage.setExp(parseInt(expStr, 10));
+
+    const user = await authApi.me();
+    if (!user) {
+      await storage.clear();
+      throw new Error("Google sign-in failed: could not load profile.");
+    }
+
+    await storage.setUser(user);
+    setUser(user);
+    // Navigation is handled by the sign-in screen after this resolves
+  }, []);
+
   return (
     <AuthContext.Provider
       value={{
@@ -94,6 +127,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         isLoading,
         isAuthenticated: !!user,
         login,
+        loginWithGoogle,
         logout,
       }}
     >
