@@ -6,8 +6,10 @@ import {
   type UpdateUserSettingsMutationVariables,
 } from '../types/graphql';
 
-export const useGetUserSettings = () => {
+export const useGetUserSettings = (userId?: string | null) => {
   const { data, loading, error, refetch } = useQuery(GetUserSettingsDocument, {
+    variables: userId ? { userId } : undefined,
+    skip: !userId,
     fetchPolicy: 'cache-and-network',
   });
 

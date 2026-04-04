@@ -45,27 +45,20 @@ const SECTIONS: SettingSection[] = [
     onPress: () => router.push("/settings/accounts"),
   },
   {
-    id: "currency",
-    title: "Currency",
-    icon: "dollar-sign",
-    description: "Set your default currency",
-    color: "#22c55e",
-    onPress: () => router.push("/settings/currency"),
-  },
-  {
     id: "general",
     title: "General",
     icon: "settings",
     description: "App preferences and behavior",
     color: "#6b7280",
+    onPress: () => router.push("/settings/general"),
   },
-  {
-    id: "notifications",
-    title: "Notifications",
-    icon: "bell",
-    description: "Manage notification preferences",
-    color: "#8b5cf6",
-  },
+  // {
+  //   id: "notifications",
+  //   title: "Notifications",
+  //   icon: "bell",
+  //   description: "Manage notification preferences",
+  //   color: "#8b5cf6",
+  // },
 ];
 
 function chunk<T>(arr: T[], size: number): T[][] {

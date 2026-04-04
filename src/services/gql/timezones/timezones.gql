@@ -1,0 +1,12 @@
+query GetTimezones {
+  timezones {
+    docs {
+      id
+      region
+      city
+      offset
+      label
+    }
+    totalDocs
+  }
+}

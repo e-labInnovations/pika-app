@@ -14,8 +14,8 @@ fragment UserSettingsFields on UserSetting {
   }
 }
 
-query GetUserSettings {
-  UserSettings(limit: 1) {
+query GetUserSettings($userId: JSON) {
+  UserSettings(limit: 1, where: { user: { equals: $userId } }) {
     docs {
       ...UserSettingsFields
     }

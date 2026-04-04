@@ -45,10 +45,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
 
   // ── Fetch settings imperatively (no hook needed) ────────────────────────────
-  async function fetchSettings(): Promise<UserSettingsFieldsFragment | null> {
+  async function fetchSettings(userId: string): Promise<UserSettingsFieldsFragment | null> {
     try {
       const result = await apolloClient.query({
         query: GetUserSettingsDocument,
+        variables: { userId },
         fetchPolicy: "network-only",
       });
       return (result.data?.UserSettings?.docs?.[0] as UserSettingsFieldsFragment) ?? null;
@@ -89,7 +90,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
 
         // Fetch user + settings in parallel; splash stays up until both resolve
-        const userSettings = await fetchSettings();
+        const userSettings = await fetchSettings(savedUser.id);
 
         if (!cancelled) {
           setUser(savedUser);
@@ -114,7 +115,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     await storage.setExp(data.exp);
     await storage.setUser(data.user);
 
-    const userSettings = await fetchSettings();
+    const userSettings = await fetchSettings(data.user.id);
     setSettings(userSettings);
     setUser(data.user);
     // Navigation is handled by the sign-in screen after this resolves
@@ -138,10 +139,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     await storage.setToken(token);
     if (expStr) await storage.setExp(parseInt(expStr, 10));
 
-    const [fetchedUser, userSettings] = await Promise.all([
-      authApi.me(),
-      fetchSettings(),
-    ]);
+    const fetchedUser = await authApi.me();
+    const userSettings = fetchedUser ? await fetchSettings(fetchedUser.id) : null;
     if (!fetchedUser) {
       await storage.clear();
       throw new Error("Google sign-in failed: could not load profile.");
