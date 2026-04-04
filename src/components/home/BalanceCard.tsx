@@ -7,10 +7,19 @@ import { useColors } from "../../theme/colors";
 type Props = {
   showBalance: boolean;
   onToggle: () => void;
+  totalBalance?: number | null;
+  balanceChangePercent?: number | null;
 };
 
-export function BalanceCard({ showBalance, onToggle }: Props) {
+export function BalanceCard({ showBalance, onToggle, totalBalance, balanceChangePercent }: Props) {
   const C = useColors();
+  const formattedBalance = totalBalance != null
+    ? `$${totalBalance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+    : '—';
+  const changePositive = (balanceChangePercent ?? 0) >= 0;
+  const changeText = balanceChangePercent != null
+    ? `${changePositive ? '+' : ''}${balanceChangePercent.toFixed(1)}% from last month`
+    : null;
   return (
     <LinearGradient
       colors={["#1e293b", "#0f172a"]}
@@ -31,7 +40,7 @@ export function BalanceCard({ showBalance, onToggle }: Props) {
           <Text className="text-[13px] font-medium text-on-surface-variant">Total Balance</Text>
           {showBalance ? (
             <Text className="text-[36px] font-black tracking-[-1px] mt-1 text-on-surface">
-              $12,450.00
+              {formattedBalance}
             </Text>
           ) : (
             <Text className="text-[28px] font-black tracking-[4px] mt-1 opacity-50 text-on-surface">
@@ -53,10 +62,12 @@ export function BalanceCard({ showBalance, onToggle }: Props) {
         </TouchableOpacity>
       </View>
 
-      <View className="flex-row items-center gap-1.5 mt-3.5">
-        <Ionicons name="trending-up-outline" size={14} color={C.secondary} />
-        <Text className="text-[13px] font-semibold text-secondary">+12.5% from last month</Text>
-      </View>
+      {changeText && (
+        <View className="flex-row items-center gap-1.5 mt-3.5">
+          <Ionicons name={changePositive ? "trending-up-outline" : "trending-down-outline"} size={14} color={changePositive ? C.secondary : C.tertiary} />
+          <Text className={`text-[13px] font-semibold ${changePositive ? "text-secondary" : "text-tertiary"}`}>{changeText}</Text>
+        </View>
+      )}
     </LinearGradient>
   );
 }

@@ -20,10 +20,11 @@ query GetMonthlyCategories($month: Int, $year: Int) {
       name
       amount
       transactionCount
-      averagePerTransaction
       icon
       color
       bgColor
+      isParent
+      parentId
     }
     meta {
       month

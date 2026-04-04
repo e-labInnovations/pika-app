@@ -10,6 +10,9 @@ const config: CodegenConfig = {
     './src/services/gql/types/': {
       preset: 'client',
       plugins: [],
+      config: {
+        namingConvention: 'keep',
+      },
     },
   },
 };

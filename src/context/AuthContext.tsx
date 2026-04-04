@@ -13,13 +13,19 @@ import { API_URL } from "../lib/constants";
 import { apolloClient, setUnauthenticatedHandler } from "../services/gql/client";
 import { storage } from "../lib/storage";
 import { tokenManager } from "../lib/token-manager";
+import {
+  GetUserSettingsDocument,
+  type UserSettingsFieldsFragment,
+} from "../services/gql/types/graphql";
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
 type AuthContextType = {
   /** Currently authenticated user, or null. */
   user: PayloadUser | null;
-  /** True while the initial session rehydration is in progress. */
+  /** User settings loaded after authentication. */
+  settings: UserSettingsFieldsFragment | null;
+  /** True while the initial session rehydration (+ settings fetch) is in progress. */
   isLoading: boolean;
   isAuthenticated: boolean;
   login: (email: string, password: string) => Promise<void>;
@@ -35,7 +41,21 @@ const AuthContext = createContext<AuthContextType | null>(null);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<PayloadUser | null>(null);
+  const [settings, setSettings] = useState<UserSettingsFieldsFragment | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+
+  // ── Fetch settings imperatively (no hook needed) ────────────────────────────
+  async function fetchSettings(): Promise<UserSettingsFieldsFragment | null> {
+    try {
+      const result = await apolloClient.query({
+        query: GetUserSettingsDocument,
+        fetchPolicy: "network-only",
+      });
+      return (result.data?.UserSettings?.docs?.[0] as UserSettingsFieldsFragment) ?? null;
+    } catch {
+      return null;
+    }
+  }
 
   // ── Logout ─────────────────────────────────────────────────────────────────
   const logout = useCallback(async () => {
@@ -43,6 +63,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     await storage.clear();
     apolloClient.clearStore();
     setUser(null);
+    setSettings(null);
     router.replace("/sign-in");
   }, []);
 
@@ -67,7 +88,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           return;
         }
 
-        if (!cancelled) setUser(savedUser);
+        // Fetch user + settings in parallel; splash stays up until both resolve
+        const userSettings = await fetchSettings();
+
+        if (!cancelled) {
+          setUser(savedUser);
+          setSettings(userSettings);
+        }
       } catch {
         await storage.clear();
       } finally {
@@ -87,6 +114,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     await storage.setExp(data.exp);
     await storage.setUser(data.user);
 
+    const userSettings = await fetchSettings();
+    setSettings(userSettings);
     setUser(data.user);
     // Navigation is handled by the sign-in screen after this resolves
   }, []);
@@ -109,14 +138,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     await storage.setToken(token);
     if (expStr) await storage.setExp(parseInt(expStr, 10));
 
-    const user = await authApi.me();
-    if (!user) {
+    const [fetchedUser, userSettings] = await Promise.all([
+      authApi.me(),
+      fetchSettings(),
+    ]);
+    if (!fetchedUser) {
       await storage.clear();
       throw new Error("Google sign-in failed: could not load profile.");
     }
 
-    await storage.setUser(user);
-    setUser(user);
+    await storage.setUser(fetchedUser);
+    setSettings(userSettings);
+    setUser(fetchedUser);
     // Navigation is handled by the sign-in screen after this resolves
   }, []);
 
@@ -124,6 +157,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     <AuthContext.Provider
       value={{
         user,
+        settings,
         isLoading,
         isAuthenticated: !!user,
         login,

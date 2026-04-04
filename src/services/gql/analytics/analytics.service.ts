@@ -18,6 +18,7 @@ import {
   type GetMonthlyCalendarQueryVariables,
 } from '../types/graphql';
 
+
 export const useGetDashboardSummary = () => {
   const { data, loading, error, refetch } = useQuery(
     GetDashboardSummaryDocument,

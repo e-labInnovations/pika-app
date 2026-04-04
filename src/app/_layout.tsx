@@ -7,6 +7,7 @@ import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 import { AuthProvider, useAuth } from "../context/AuthContext";
 import { apolloClient } from "../services/gql/client";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -24,12 +25,14 @@ function RootSlot() {
 
 export default function Layout() {
   return (
-    <ShareIntentProvider>
-      <ApolloProvider client={apolloClient}>
-        <AuthProvider>
-          <RootSlot />
-        </AuthProvider>
-      </ApolloProvider>
-    </ShareIntentProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <ShareIntentProvider>
+        <ApolloProvider client={apolloClient}>
+          <AuthProvider>
+            <RootSlot />
+          </AuthProvider>
+        </ApolloProvider>
+      </ShareIntentProvider>
+    </GestureHandlerRootView>
   );
 }

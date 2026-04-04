@@ -22,7 +22,7 @@ type LoginResponse = {
 
 type RefreshResponse = {
   exp: number;
-  token: string;
+  refreshedToken: string;
   message: string;
 };
 

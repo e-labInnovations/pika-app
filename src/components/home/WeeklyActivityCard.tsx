@@ -2,18 +2,47 @@ import React from "react";
 import { Text, View } from "react-native";
 import { useColors } from "../../theme/colors";
 
-const WEEKLY_DATA = [
-  { day: "SUN", pct: 0.40, active: false },
-  { day: "MON", pct: 0.75, active: false },
-  { day: "TUE", pct: 0.55, active: false },
-  { day: "WED", pct: 0.90, active: true  },
-  { day: "THU", pct: 0.45, active: false },
-  { day: "FRI", pct: 0.60, active: false },
-  { day: "SAT", pct: 0.30, active: false },
+type WeeklyDays = {
+  sun?: number | null;
+  mon?: number | null;
+  tue?: number | null;
+  wed?: number | null;
+  thu?: number | null;
+  fri?: number | null;
+  sat?: number | null;
+};
+
+type Props = { days?: WeeklyDays | null };
+
+const DAY_KEYS: { key: keyof WeeklyDays; label: string }[] = [
+  { key: "sun", label: "SUN" },
+  { key: "mon", label: "MON" },
+  { key: "tue", label: "TUE" },
+  { key: "wed", label: "WED" },
+  { key: "thu", label: "THU" },
+  { key: "fri", label: "FRI" },
+  { key: "sat", label: "SAT" },
 ];
 
-export function WeeklyActivityCard() {
+const todayIndex = new Date().getDay(); // 0=Sun … 6=Sat
+
+function fmtAmount(n: number): string {
+  if (n === 0) return "";
+  if (n >= 1000) return `${(n / 1000).toFixed(1).replace(/\.0$/, "")}k`;
+  return Math.round(n).toString();
+}
+
+export function WeeklyActivityCard({ days }: Props) {
   const C = useColors();
+
+  const values = DAY_KEYS.map(({ key }) => days?.[key] ?? 0);
+  const max = Math.max(...values, 1);
+  const bars = DAY_KEYS.map(({ label }, i) => ({
+    label,
+    pct: values[i] / max,
+    active: i === todayIndex,
+  }));
+
   return (
     <View className="rounded-2xl p-5 gap-3.5 bg-surface-low">
       <View className="flex-row items-center justify-between">
@@ -25,9 +54,20 @@ export function WeeklyActivityCard() {
         </View>
       </View>
 
-      <View className="flex-row items-end gap-[5px] mt-1" style={{ height: 100 }}>
-        {WEEKLY_DATA.map((bar) => (
-          <View key={bar.day} className="flex-1 items-center gap-1.5">
+      <View className="flex-row items-end gap-[5px] mt-1" style={{ height: 120 }}>
+        {bars.map((bar, i) => (
+          <View key={bar.label} className="flex-1 items-center gap-1.5">
+            <Text
+              className="text-[8px] text-center"
+              numberOfLines={1}
+              style={{
+                color: bar.active ? C.primaryBright : C.onSurfaceVariant,
+                fontWeight: bar.active ? "800" : "500",
+                opacity: values[i] === 0 ? 0 : 1,
+              }}
+            >
+              {fmtAmount(values[i])}
+            </Text>
             <View
               className="flex-1 self-stretch rounded-t-md overflow-hidden"
               style={{ backgroundColor: C.surfaceHighest }}
@@ -35,7 +75,7 @@ export function WeeklyActivityCard() {
               <View style={{ flex: 1 - bar.pct }} />
               <View
                 style={{
-                  flex: bar.pct,
+                  flex: bar.pct || 0.02,
                   borderTopLeftRadius: 4,
                   borderTopRightRadius: 4,
                   backgroundColor: bar.active ? C.primaryBright : `${C.primaryBright}40`,
@@ -49,7 +89,7 @@ export function WeeklyActivityCard() {
                 fontWeight: bar.active ? "800" : "600",
               }}
             >
-              {bar.day}
+              {bar.label}
             </Text>
           </View>
         ))}

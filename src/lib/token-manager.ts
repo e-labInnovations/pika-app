@@ -14,10 +14,10 @@ let refreshPromise: Promise<string | null> | null = null;
 
 async function doRefresh(): Promise<string | null> {
   const data = await authApi.refreshToken();
-  if (!data) return null;
-  await storage.setToken(data.token);
+  if (!data?.refreshedToken) return null;
+  await storage.setToken(data.refreshedToken);
   await storage.setExp(data.exp);
-  return data.token;
+  return data.refreshedToken;
 }
 
 export const tokenManager = {

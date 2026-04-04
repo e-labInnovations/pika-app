@@ -1,19 +1,31 @@
-import Ionicons from "@expo/vector-icons/Ionicons";
 import React from "react";
 import { ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { DynamicIcon } from "../Icon";
 import { useColors } from "../../theme/colors";
 
-type Props = { showBalance: boolean };
+type Account = {
+  id: string;
+  name: string;
+  icon: string;
+  bgColor?: string | null;
+  color?: string | null;
+  balance?: number | null;
+  isActive?: boolean | null;
+};
 
-const ACCOUNTS = [
-  { id: "1", type: "DEBIT",  last4: "4291", label: "Primary Savings", kind: "bank",  balance: "$5,240.00" },
-  { id: "2", type: "CREDIT", last4: "8802", label: "Platinum Travel",  kind: "card", balance: "$7,210.00" },
-];
+type Props = {
+  showBalance: boolean;
+  accounts?: Account[] | null;
+};
 
 const HIDDEN = "••••••••";
+const fmt = (n: number) => `$${n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
-export function AccountsRow({ showBalance }: Props) {
+export function AccountsRow({ showBalance, accounts }: Props) {
   const C = useColors();
+
+  if (!accounts?.length) return null;
+
   return (
     <>
       <View className="flex-row items-center justify-between">
@@ -29,9 +41,9 @@ export function AccountsRow({ showBalance }: Props) {
         contentContainerStyle={{ paddingHorizontal: 16, gap: 12 }}
         style={{ marginHorizontal: -16 }}
       >
-        {ACCOUNTS.map((acc) => {
-          const isBank = acc.kind === "bank";
-          const iconColor = isBank ? C.primaryBright : C.tertiary;
+        {accounts.map((acc) => {
+          const iconColor = acc.color ?? C.primaryBright;
+          const bgColor = acc.bgColor ? `${acc.bgColor}33` : `${iconColor}1a`;
           return (
             <View
               key={acc.id}
@@ -41,23 +53,16 @@ export function AccountsRow({ showBalance }: Props) {
               <View className="flex-row items-center justify-between">
                 <View
                   className="w-10 h-10 rounded-xl items-center justify-center"
-                  style={{ backgroundColor: `${iconColor}1a` }}
+                  style={{ backgroundColor: bgColor }}
                 >
-                  <Ionicons
-                    name={isBank ? "business-outline" : "card-outline"}
-                    size={18}
-                    color={iconColor}
-                  />
+                  <DynamicIcon name={acc.icon ?? "wallet"} size={18} color={iconColor} />
                 </View>
-                <Text className="text-[10px] font-bold tracking-[0.5px] uppercase text-on-surface-variant">
-                  {acc.type} •• {acc.last4}
-                </Text>
               </View>
 
               <View>
-                <Text className="text-[11px] mb-1 text-on-surface-variant">{acc.label}</Text>
+                <Text className="text-[11px] mb-1 text-on-surface-variant">{acc.name}</Text>
                 <Text className={`font-extrabold text-on-surface ${showBalance ? "text-xl tracking-[-0.5px]" : "text-base tracking-[4px] opacity-50"}`}>
-                  {showBalance ? acc.balance : HIDDEN}
+                  {showBalance ? (acc.balance != null ? fmt(acc.balance) : "—") : HIDDEN}
                 </Text>
               </View>
             </View>

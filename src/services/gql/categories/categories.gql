@@ -9,6 +9,9 @@ fragment CategoryFields on Category {
   isActive
   createdAt
   updatedAt
+  user {
+    id
+  }
   parent {
     id
     name
