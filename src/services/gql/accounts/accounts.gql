@@ -11,6 +11,11 @@ fragment AccountFields on Account {
   lastTransactionAt
   createdAt
   updatedAt
+  avatar {
+    id
+    url
+    thumbnailURL
+  }
 }
 
 query GetAccounts($page: Int, $limit: Int, $sort: String) {

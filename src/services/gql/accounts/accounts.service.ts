@@ -45,6 +45,7 @@ export const useGetAccount = (id: string) => {
 export const useCreateAccount = () => {
   const [createAccount, { data, loading, error }] = useMutation(
     CreateAccountDocument,
+    { refetchQueries: ['GetAccounts'] },
   );
 
   return {
@@ -59,6 +60,7 @@ export const useCreateAccount = () => {
 export const useUpdateAccount = () => {
   const [updateAccount, { data, loading, error }] = useMutation(
     UpdateAccountDocument,
+    { refetchQueries: ['GetAccounts'] },
   );
 
   return {
@@ -73,6 +75,7 @@ export const useUpdateAccount = () => {
 export const useDeleteAccount = () => {
   const [deleteAccount, { data, loading, error }] = useMutation(
     DeleteAccountDocument,
+    { refetchQueries: ['GetAccounts'] },
   );
 
   return {
