@@ -23,22 +23,11 @@ import {
   useGetAccount,
   useUpdateAccount,
 } from "../../../../services/gql/accounts/accounts.service";
-import { useAuth } from "../../../../context/AuthContext";
 import { uploadMedia } from "../../../../lib/media-upload";
+import { useFormatMoney } from "../../../../lib/format-currency";
 import { useColors } from "../../../../theme/colors";
 
 const ACCOUNT_COLOR = "#f59e0b";
-
-function formatBalance(balance: number | null | undefined, currency?: string | null): string {
-  const amount = balance ?? 0;
-  const symbol = currency ?? "USD";
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: symbol,
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(amount);
-}
 
 // ── Skeleton loader ────────────────────────────────────────────────────────────
 
@@ -71,7 +60,7 @@ export default function EditAccountScreen() {
   const topPad = insets.top || (Platform.OS === "ios" ? 44 : 24);
 
   const { id } = useLocalSearchParams<{ id: string }>();
-  const { settings } = useAuth();
+  const fmt = useFormatMoney();
 
   const { data: account, loading } = useGetAccount(id);
   const { updateAccount, loading: saving } = useUpdateAccount();
@@ -264,7 +253,7 @@ export default function EditAccountScreen() {
               <View className="flex-1">
                 <Text className="text-[13px] text-on-surface-variant">Current balance</Text>
                 <Text className="text-[22px] font-black tracking-tight" style={{ color: balanceColor }}>
-                  {formatBalance(account.balance, settings?.currency)}
+                  {fmt(account.balance)}
                 </Text>
                 {(account.totalTransactions ?? 0) > 0 && (
                   <Text className="text-[11px] text-on-surface-variant">

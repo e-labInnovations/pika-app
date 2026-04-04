@@ -27,33 +27,17 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { AccountAvatar } from "../../../components/AccountAvatar";
 import { DynamicIcon } from "../../../components/Icon";
 import { Skeleton } from "../../../components/ui/Skeleton";
-import { useAuth } from "../../../context/AuthContext";
 import {
   useDeleteAccount,
   useGetAccounts,
 } from "../../../services/gql/accounts/accounts.service";
 import type { AccountFieldsFragment } from "../../../services/gql/types/graphql";
 import { useColors } from "../../../theme/colors";
+import { useFormatMoney } from "../../../lib/format-currency";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
 type SwipeableRef = { current: SwipeableMethods | null };
-
-// ── Helpers ───────────────────────────────────────────────────────────────────
-
-function formatBalance(
-  balance: number | null | undefined,
-  currency?: string | null,
-): string {
-  const amount = balance ?? 0;
-  const symbol = currency ?? "USD";
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: symbol,
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(amount);
-}
 
 // ── Swipe actions ──────────────────────────────────────────────────────────────
 
@@ -122,20 +106,19 @@ function RightActions({
 
 function AccountRow({
   account,
-  currency,
   deleting,
   openRef,
   onEdit,
   onDelete,
 }: {
   account: AccountFieldsFragment;
-  currency?: string | null;
   deleting: boolean;
   openRef: SwipeableRef;
   onEdit: () => void;
   onDelete: () => void;
 }) {
   const C = useColors();
+  const fmt = useFormatMoney();
   const swipeRef = useRef<SwipeableMethods>(null);
   const balance = account.balance ?? 0;
   const balanceColor = balance >= 0 ? "#10b981" : "#ef4444";
@@ -219,7 +202,7 @@ function AccountRow({
             className="text-[11px] font-semibold mt-0.5"
             style={{ color: balanceColor }}
           >
-            {formatBalance(account.balance, currency)}
+            {fmt(account.balance)}
           </Text>
         </View>
 
@@ -274,7 +257,7 @@ export default function AccountsScreen() {
   const insets = useSafeAreaInsets();
   const topPad = insets.top || (Platform.OS === "ios" ? 44 : 24);
 
-  const { settings } = useAuth();
+  const fmt = useFormatMoney();
   const [refreshing, setRefreshing] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
@@ -380,7 +363,7 @@ export default function AccountsScreen() {
               className="text-[26px] font-black tracking-tight"
               style={{ color: totalBalance >= 0 ? "#10b981" : "#ef4444" }}
             >
-              {formatBalance(totalBalance, settings?.currency)}
+              {fmt(totalBalance)}
             </Text>
             <Text className="text-[12px] text-on-surface-variant mt-0.5">
               Across {sortedAccounts.length} account
@@ -422,7 +405,6 @@ export default function AccountsScreen() {
                 )}
                 <AccountRow
                   account={account}
-                  currency={settings?.currency}
                   deleting={deletingId === account.id}
                   openRef={openSwipeable}
                   onEdit={() =>

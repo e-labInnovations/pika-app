@@ -50,6 +50,7 @@ const SECTIONS: SettingSection[] = [
     icon: "dollar-sign",
     description: "Set your default currency",
     color: "#22c55e",
+    onPress: () => router.push("/settings/currency"),
   },
   {
     id: "general",

@@ -1,0 +1,12 @@
+query GetCurrencies {
+  currencies {
+    docs {
+      code
+      name
+      symbol
+      symbol_native
+      decimal_digits
+    }
+    totalDocs
+  }
+}
