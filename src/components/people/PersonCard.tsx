@@ -1,5 +1,6 @@
 import React from "react";
 import { Text, TouchableOpacity, View } from "react-native";
+import { UserAvatar } from "../UserAvatar";
 import { useColors } from "../../theme/colors";
 
 type Person = {
@@ -18,15 +19,6 @@ type Props = {
   onPress?: () => void;
 };
 
-function getInitials(name: string): string {
-  return name
-    .split(" ")
-    .map((w) => w[0]?.toUpperCase() ?? "")
-    .filter(Boolean)
-    .slice(0, 2)
-    .join("");
-}
-
 function fmtBalance(n: number): string {
   const sign = n >= 0 ? "+" : "-";
   return `${sign}$${Math.abs(n).toLocaleString("en-US", {
@@ -43,26 +35,8 @@ function fmtDate(iso: string): string {
   });
 }
 
-// Cycle through a few distinct hues for avatar backgrounds
-const AVATAR_COLORS = [
-  "#4d8eff", // blue  (primary-bright)
-  "#4edea3", // green (secondary dark)
-  "#9b7cf8", // purple
-  "#f59e0b", // amber
-  "#ef4444", // red
-  "#06b6d4", // cyan
-];
-
-function avatarColor(name: string): string {
-  let hash = 0;
-  for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
-  return AVATAR_COLORS[Math.abs(hash) % AVATAR_COLORS.length];
-}
-
 export function PersonCard({ person, onPress }: Props) {
   const C = useColors();
-  const initials = getInitials(person.name);
-  const accentColor = avatarColor(person.name);
   const balancePositive = (person.balance ?? 0) >= 0;
   const contact = person.email ?? person.phone;
 
@@ -73,14 +47,7 @@ export function PersonCard({ person, onPress }: Props) {
       className="flex-row items-center gap-3 p-4 rounded-2xl bg-surface-mid"
     >
       {/* Avatar */}
-      <View
-        className="w-11 h-11 rounded-full items-center justify-center shrink-0"
-        style={{ backgroundColor: `${accentColor}22` }}
-      >
-        <Text className="text-[15px] font-bold" style={{ color: accentColor }}>
-          {initials}
-        </Text>
-      </View>
+      <UserAvatar id={person.id} name={person.name} size={44} />
 
       {/* Name + contact */}
       <View className="flex-1 gap-0.5 min-w-0">

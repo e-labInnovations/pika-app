@@ -1,0 +1,13 @@
+mutation UpdateUser($id: String!, $data: mutationUserUpdateInput!) {
+  updateUser(id: $id, data: $data) {
+    id
+    name
+    email
+    avatar {
+      id
+      url
+      thumbnailURL
+    }
+    updatedAt
+  }
+}

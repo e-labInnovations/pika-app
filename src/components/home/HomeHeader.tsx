@@ -1,6 +1,7 @@
 import Ionicons from "@expo/vector-icons/Ionicons";
 import React from "react";
 import { Text, TouchableOpacity, View } from "react-native";
+import { UserAvatar } from "../UserAvatar";
 import { useAuth } from "../../context/AuthContext";
 import { useColors } from "../../theme/colors";
 
@@ -18,21 +19,18 @@ export function HomeHeader({ topPad }: Props) {
   const C = useColors();
   const { user } = useAuth();
 
-  const initial = (
-    user?.name?.charAt(0) ||
-    user?.email?.charAt(0) ||
-    "?"
-  ).toUpperCase();
-
   return (
     <View
       className="flex-row items-center justify-between px-5 pb-3.5 bg-surface-low"
       style={{ paddingTop: topPad }}
     >
       <View className="flex-row items-center gap-3">
-        <View className="w-10 h-10 rounded-full items-center justify-center bg-surface-highest">
-          <Text className="text-base font-bold text-white">{initial}</Text>
-        </View>
+        <UserAvatar
+          id={user?.id ?? ""}
+          name={user?.name ?? user?.email ?? "?"}
+          avatarUrl={user?.avatar?.url}
+          size={40}
+        />
         <View>
           <Text className="text-[10px] font-semibold tracking-[1.5px] uppercase text-on-surface-variant">
             {getGreeting()}

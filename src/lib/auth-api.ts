@@ -10,6 +10,7 @@ export type PayloadUser = {
   email: string;
   name?: string | null;
   role: "user" | "admin" | "system";
+  avatar?: { id: string; url: string; thumbnailURL?: string | null } | null;
   createdAt: string;
   updatedAt: string;
 };

@@ -2,7 +2,6 @@ import { router } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import React from "react";
 import {
-  Alert,
   Image,
   Platform,
   ScrollView,
@@ -16,6 +15,7 @@ import {
   SettingSectionItem,
   type SettingSection,
 } from "../../../components/settings/SettingSectionItem";
+import { UserAvatar } from "../../../components/UserAvatar";
 import { useAuth } from "../../../context/AuthContext";
 import { useColors } from "../../../theme/colors";
 
@@ -52,13 +52,6 @@ const SECTIONS: SettingSection[] = [
     color: "#6b7280",
     onPress: () => router.push("/settings/general"),
   },
-  // {
-  //   id: "notifications",
-  //   title: "Notifications",
-  //   icon: "bell",
-  //   description: "Manage notification preferences",
-  //   color: "#8b5cf6",
-  // },
 ];
 
 function chunk<T>(arr: T[], size: number): T[][] {
@@ -69,26 +62,11 @@ function chunk<T>(arr: T[], size: number): T[][] {
 
 export default function SettingsScreen() {
   const C = useColors();
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
   const insets = useSafeAreaInsets();
   const topPad = insets.top || (Platform.OS === "ios" ? 44 : 24);
 
   const rows = chunk(SECTIONS, 2);
-
-  const handleLogout = () => {
-    Alert.alert("Sign out", "Are you sure you want to sign out?", [
-      { text: "Cancel", style: "cancel" },
-      { text: "Sign out", style: "destructive", onPress: logout },
-    ]);
-  };
-
-  const initials = user?.name
-    ? user.name
-        .split(" ")
-        .map((w) => w[0]?.toUpperCase() ?? "")
-        .slice(0, 2)
-        .join("")
-    : "?";
 
   return (
     <View className="flex-1 bg-surface">
@@ -113,38 +91,34 @@ export default function SettingsScreen() {
         showsVerticalScrollIndicator={false}
       >
         {/* Profile card */}
-        <TouchableOpacity
-          activeOpacity={0.75}
-          className="flex-row items-center gap-4 p-4 rounded-2xl bg-surface-mid"
-        >
-          <View
-            className="w-14 h-14 rounded-full items-center justify-center"
-            style={{ backgroundColor: `${C.primaryBright}22` }}
+        {user && (
+          <TouchableOpacity
+            onPress={() => router.push("/settings/profile")}
+            activeOpacity={0.75}
+            className="flex-row items-center gap-4 p-4 rounded-2xl bg-surface-mid"
           >
-            <Text className="text-[20px] font-bold text-primary-bright">
-              {initials}
-            </Text>
-          </View>
-          <View className="flex-1">
-            <Text
-              className="text-[16px] font-bold text-on-surface"
-              numberOfLines={1}
-            >
-              {user?.name ?? "—"}
-            </Text>
-            <Text
-              className="text-[12px] text-on-surface-variant mt-0.5"
-              numberOfLines={1}
-            >
-              {user?.email ?? "—"}
-            </Text>
-          </View>
-          <DynamicIcon
-            name="chevron-right"
-            size={18}
-            color={C.outlineVariant}
-          />
-        </TouchableOpacity>
+            <UserAvatar id={user.id} name={user.name ?? user.email} avatarUrl={user.avatar?.url} size={52} />
+            <View className="flex-1 min-w-0">
+              <Text
+                className="text-[16px] font-bold text-on-surface"
+                numberOfLines={1}
+              >
+                {user.name ?? "—"}
+              </Text>
+              <Text
+                className="text-[12px] text-on-surface-variant mt-0.5"
+                numberOfLines={1}
+              >
+                {user.email}
+              </Text>
+            </View>
+            <DynamicIcon
+              name="chevron-right"
+              size={18}
+              color={C.outlineVariant}
+            />
+          </TouchableOpacity>
+        )}
 
         {/* Sections grid */}
         <View className="gap-3">
@@ -172,18 +146,6 @@ export default function SettingsScreen() {
             {"AI-Powered Personal Finance\n& Expense Tracking"}
           </Text>
         </View>
-
-        {/* Sign out */}
-        <TouchableOpacity
-          onPress={handleLogout}
-          activeOpacity={0.75}
-          className="flex-row items-center justify-center gap-2 p-4 rounded-2xl bg-surface-mid"
-        >
-          <DynamicIcon name="log-out" size={17} color={C.tertiary} />
-          <Text className="text-[14px] font-semibold text-tertiary">
-            Sign out
-          </Text>
-        </TouchableOpacity>
       </ScrollView>
     </View>
   );

@@ -31,6 +31,8 @@ type AuthContextType = {
   login: (email: string, password: string) => Promise<void>;
   loginWithGoogle: () => Promise<void>;
   logout: () => Promise<void>;
+  /** Re-fetch the current user from /api/users/me and update stored state. */
+  refreshUser: () => Promise<void>;
 };
 
 // ── Context ──────────────────────────────────────────────────────────────────
@@ -152,6 +154,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Navigation is handled by the sign-in screen after this resolves
   }, []);
 
+  // ── Refresh user ───────────────────────────────────────────────────────────
+  const refreshUser = useCallback(async () => {
+    const fetchedUser = await authApi.me();
+    if (!fetchedUser) return;
+    await storage.setUser(fetchedUser);
+    setUser(fetchedUser);
+  }, []);
+
   return (
     <AuthContext.Provider
       value={{
@@ -162,6 +172,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         login,
         loginWithGoogle,
         logout,
+        refreshUser,
       }}
     >
       {children}
