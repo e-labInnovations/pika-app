@@ -34,6 +34,7 @@ const SECTIONS: SettingSection[] = [
     icon: "tag",
     description: "Organize transactions with tags",
     color: "#3b82f6",
+    onPress: () => router.push("/settings/tags"),
   },
   {
     id: "accounts",
@@ -62,20 +63,6 @@ const SECTIONS: SettingSection[] = [
     icon: "bell",
     description: "Manage notification preferences",
     color: "#8b5cf6",
-  },
-  {
-    id: "security",
-    title: "Security",
-    icon: "shield",
-    description: "Security settings and data privacy",
-    color: "#ef4444",
-  },
-  {
-    id: "profile",
-    title: "Profile",
-    icon: "user",
-    description: "Personal information and preferences",
-    color: "#06b6d4",
   },
 ];
 
@@ -123,7 +110,11 @@ export default function SettingsScreen() {
       </View>
 
       <ScrollView
-        contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 40, gap: 12 }}
+        contentContainerStyle={{
+          paddingHorizontal: 16,
+          paddingBottom: 40,
+          gap: 12,
+        }}
         showsVerticalScrollIndicator={false}
       >
         {/* Profile card */}
@@ -135,17 +126,29 @@ export default function SettingsScreen() {
             className="w-14 h-14 rounded-full items-center justify-center"
             style={{ backgroundColor: `${C.primaryBright}22` }}
           >
-            <Text className="text-[20px] font-bold text-primary-bright">{initials}</Text>
+            <Text className="text-[20px] font-bold text-primary-bright">
+              {initials}
+            </Text>
           </View>
           <View className="flex-1">
-            <Text className="text-[16px] font-bold text-on-surface" numberOfLines={1}>
+            <Text
+              className="text-[16px] font-bold text-on-surface"
+              numberOfLines={1}
+            >
               {user?.name ?? "—"}
             </Text>
-            <Text className="text-[12px] text-on-surface-variant mt-0.5" numberOfLines={1}>
+            <Text
+              className="text-[12px] text-on-surface-variant mt-0.5"
+              numberOfLines={1}
+            >
               {user?.email ?? "—"}
             </Text>
           </View>
-          <DynamicIcon name="chevron-right" size={18} color={C.outlineVariant} />
+          <DynamicIcon
+            name="chevron-right"
+            size={18}
+            color={C.outlineVariant}
+          />
         </TouchableOpacity>
 
         {/* Sections grid */}
@@ -167,7 +170,9 @@ export default function SettingsScreen() {
             className="w-16 h-16 rounded-2xl"
           />
           <Text className="text-[16px] font-bold text-on-surface">Pika</Text>
-          <Text className="text-[12px] text-on-surface-variant">Version 1.0.0</Text>
+          <Text className="text-[12px] text-on-surface-variant">
+            Version 1.0.0
+          </Text>
           <Text className="text-[11px] text-on-surface-variant text-center opacity-60 leading-relaxed">
             {"AI-Powered Personal Finance\n& Expense Tracking"}
           </Text>
@@ -180,7 +185,9 @@ export default function SettingsScreen() {
           className="flex-row items-center justify-center gap-2 p-4 rounded-2xl bg-surface-mid"
         >
           <DynamicIcon name="log-out" size={17} color={C.tertiary} />
-          <Text className="text-[14px] font-semibold text-tertiary">Sign out</Text>
+          <Text className="text-[14px] font-semibold text-tertiary">
+            Sign out
+          </Text>
         </TouchableOpacity>
       </ScrollView>
     </View>

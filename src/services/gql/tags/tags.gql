@@ -8,6 +8,9 @@ fragment TagFields on Tag {
   isActive
   createdAt
   updatedAt
+  user {
+    id
+  }
 }
 
 query GetTags($page: Int, $limit: Int, $sort: String) {
