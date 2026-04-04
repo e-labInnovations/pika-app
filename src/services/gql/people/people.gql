@@ -5,6 +5,11 @@ fragment PersonFields on Person {
   phone
   description
   isActive
+  avatar {
+    id
+    url
+    thumbnailURL
+  }
   balance
   totalTransactions
   lastTransactionAt

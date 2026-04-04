@@ -1,9 +1,10 @@
+import { router } from "expo-router";
 import React from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 import { UserAvatar } from "../UserAvatar";
-import { useColors } from "../../theme/colors";
+import { useFormatMoney } from "../../lib/format-currency";
 
-type Person = {
+export type PersonCardPerson = {
   id: string;
   name: string;
   email?: string | null;
@@ -12,20 +13,13 @@ type Person = {
   totalTransactions?: number | null;
   lastTransactionAt?: string | null;
   isActive?: boolean | null;
+  avatar?: { id: string; url?: string | null; thumbnailURL?: string | null } | null;
 };
 
 type Props = {
-  person: Person;
+  person: PersonCardPerson;
   onPress?: () => void;
 };
-
-function fmtBalance(n: number): string {
-  const sign = n >= 0 ? "+" : "-";
-  return `${sign}$${Math.abs(n).toLocaleString("en-US", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  })}`;
-}
 
 function fmtDate(iso: string): string {
   return new Date(iso).toLocaleDateString("en-US", {
@@ -36,20 +30,32 @@ function fmtDate(iso: string): string {
 }
 
 export function PersonCard({ person, onPress }: Props) {
-  const C = useColors();
-  const balancePositive = (person.balance ?? 0) >= 0;
+  const fmt = useFormatMoney();
+  const balance = person.balance ?? 0;
   const contact = person.email ?? person.phone;
+
+  // balance > 0 → you owe → red (tertiary)
+  // balance < 0 → owes you → green (secondary)
+  const balanceColor =
+    balance > 0
+      ? "text-tertiary"
+      : balance < 0
+        ? "text-secondary"
+        : "text-on-surface-variant";
 
   return (
     <TouchableOpacity
-      onPress={onPress}
+      onPress={onPress ?? (() => router.push(`/people/${person.id}`))}
       activeOpacity={0.75}
       className="flex-row items-center gap-3 p-4 rounded-2xl bg-surface-mid"
     >
-      {/* Avatar */}
-      <UserAvatar id={person.id} name={person.name} size={44} />
+      <UserAvatar
+        id={person.id}
+        name={person.name}
+        avatarUrl={person.avatar?.url ?? null}
+        size={44}
+      />
 
-      {/* Name + contact */}
       <View className="flex-1 gap-0.5 min-w-0">
         <View className="flex-row items-center gap-2">
           <Text
@@ -80,19 +86,17 @@ export function PersonCard({ person, onPress }: Props) {
         )}
       </View>
 
-      {/* Balance + txn count */}
       <View className="items-end gap-1 shrink-0">
         {person.balance != null ? (
-          <Text
-            className={`text-[14px] font-bold ${balancePositive ? "text-secondary" : "text-tertiary"}`}
-          >
-            {fmtBalance(person.balance)}
+          <Text className={`text-[14px] font-bold ${balanceColor}`}>
+            {balance === 0 ? "Even" : fmt(Math.abs(balance))}
           </Text>
         ) : (
           <Text className="text-[14px] font-bold text-on-surface-variant">—</Text>
         )}
         <Text className="text-[11px] text-on-surface-variant">
-          {person.totalTransactions ?? 0} txn{(person.totalTransactions ?? 0) !== 1 ? "s" : ""}
+          {person.totalTransactions ?? 0}{" "}
+          txn{(person.totalTransactions ?? 0) !== 1 ? "s" : ""}
         </Text>
       </View>
     </TouchableOpacity>
