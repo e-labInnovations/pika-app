@@ -1,7 +1,7 @@
 /**
  * Proactive token refresh manager.
  *
- * Payload default tokenExpiration = 7200s (2h).
+ * Payload tokenExpiration = 30 days (configured in Users collection).
  * We refresh if the token expires within BUFFER_SECONDS.
  * Concurrent callers share a single in-flight refresh promise.
  */

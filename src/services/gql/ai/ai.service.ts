@@ -9,7 +9,6 @@ import {
 export const useTextToTransaction = () => {
   const [textToTransaction, { data, loading, error }] = useMutation(
     TextToTransactionDocument,
-    { refetchQueries: ['GetTransactions', 'GetDashboardSummary'] },
   );
 
   return {
@@ -24,7 +23,6 @@ export const useTextToTransaction = () => {
 export const useImageToTransaction = () => {
   const [imageToTransaction, { data, loading, error }] = useMutation(
     ImageToTransactionDocument,
-    { refetchQueries: ['GetTransactions', 'GetDashboardSummary'] },
   );
 
   return {

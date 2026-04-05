@@ -44,43 +44,30 @@ export function PersonPickerSheet({ visible, onClose, selectedId, onSelect }: Pr
 
   return (
     <Modal visible={visible} animationType="slide" transparent onRequestClose={onClose}>
-      <View style={{ flex: 1, justifyContent: "flex-end", backgroundColor: "rgba(0,0,0,0.45)" }}>
+      <View className="flex-1 justify-end bg-black/45">
         <View
-          style={{
-            backgroundColor: C.surfaceLow,
-            borderTopLeftRadius: 24,
-            borderTopRightRadius: 24,
-            maxHeight: "75%",
-            paddingBottom: Math.max(insets.bottom, 16),
-          }}
+          className="bg-surface-low rounded-t-3xl max-h-[75%]"
+          style={{ paddingBottom: Math.max(insets.bottom, 16) }}
         >
           {/* Handle */}
-          <View style={{ alignItems: "center", paddingTop: 12, paddingBottom: 4 }}>
-            <View style={{ width: 36, height: 4, borderRadius: 2, backgroundColor: C.outlineVariant }} />
+          <View className="items-center pt-3 pb-1">
+            <View className="w-9 h-1 rounded-sm bg-outline-variant" />
           </View>
 
           {/* Header */}
-          <View style={{ flexDirection: "row", alignItems: "center", paddingHorizontal: 20, paddingVertical: 12 }}>
-            <Text style={{ flex: 1, fontSize: 17, fontWeight: "800", color: C.onSurface }}>Person</Text>
-            <TouchableOpacity onPress={onClose} activeOpacity={0.7}
-              style={{ padding: 6, borderRadius: 20, backgroundColor: C.surfaceHigh }}>
+          <View className="flex-row items-center px-5 py-3">
+            <Text className="flex-1 text-[17px] font-extrabold text-on-surface">Person</Text>
+            <TouchableOpacity onPress={onClose} activeOpacity={0.7} className="p-1.5 rounded-full bg-surface-high">
               <DynamicIcon name="x" size={16} color={C.onSurface} />
             </TouchableOpacity>
           </View>
 
           {/* Search */}
-          <View
-            style={{
-              flexDirection: "row", alignItems: "center", gap: 8,
-              marginHorizontal: 20, marginBottom: 12,
-              backgroundColor: C.surfaceHigh, borderRadius: 12,
-              paddingHorizontal: 12, height: 42,
-            }}
-          >
+          <View className="flex-row items-center gap-2 mx-5 mb-3 bg-surface-high rounded-xl px-3 h-[42px]">
             <DynamicIcon name="search" size={15} color={C.outlineVariant} />
             <TextInput
-              style={{ flex: 1, fontSize: 14, color: C.onSurface }}
-              placeholderTextColor={C.outlineVariant}
+              className="flex-1 text-sm text-on-surface"
+              placeholderTextColorClassName="accent-outline-variant"
               placeholder="Search people…"
               value={search}
               onChangeText={setSearch}
@@ -95,34 +82,25 @@ export function PersonPickerSheet({ visible, onClose, selectedId, onSelect }: Pr
           </View>
 
           {loading ? (
-            <View style={{ padding: 40, alignItems: "center" }}>
-              <ActivityIndicator color={C.primary} />
+            <View className="p-10 items-center">
+              <ActivityIndicator colorClassName="accent-primary" />
             </View>
           ) : (
             <ScrollView showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
-              <View style={{ paddingHorizontal: 16, paddingBottom: 8, gap: 2 }}>
+              <View className="px-4 pb-2 gap-0.5">
                 {/* None option */}
                 <TouchableOpacity
                   onPress={() => { onSelect(null); onClose(); }}
                   activeOpacity={0.75}
-                  style={{
-                    flexDirection: "row", alignItems: "center", gap: 12,
-                    paddingVertical: 10, paddingHorizontal: 12, borderRadius: 14,
-                    backgroundColor: !selectedId ? `${C.primary}18` : "transparent",
-                  }}
+                  className={[
+                    "flex-row items-center gap-3 py-2.5 px-3 rounded-2xl",
+                    !selectedId ? "bg-primary/10" : "bg-transparent",
+                  ].join(" ")}
                 >
-                  <View
-                    style={{
-                      width: 40, height: 40, borderRadius: 20,
-                      backgroundColor: C.surfaceHigh,
-                      alignItems: "center", justifyContent: "center",
-                    }}
-                  >
+                  <View className="w-10 h-10 rounded-full bg-surface-high items-center justify-center">
                     <DynamicIcon name="user-x" size={18} color={C.onSurfaceVariant} />
                   </View>
-                  <Text style={{ flex: 1, fontSize: 14, fontWeight: "600", color: C.onSurfaceVariant }}>
-                    None
-                  </Text>
+                  <Text className="flex-1 text-sm font-semibold text-on-surface-variant">None</Text>
                   {!selectedId && <DynamicIcon name="check" size={16} color={C.primary} />}
                 </TouchableOpacity>
 
@@ -133,11 +111,10 @@ export function PersonPickerSheet({ visible, onClose, selectedId, onSelect }: Pr
                       key={person.id}
                       onPress={() => { onSelect(person); onClose(); }}
                       activeOpacity={0.75}
-                      style={{
-                        flexDirection: "row", alignItems: "center", gap: 12,
-                        paddingVertical: 10, paddingHorizontal: 12, borderRadius: 14,
-                        backgroundColor: isSelected ? `${C.primary}18` : "transparent",
-                      }}
+                      className={[
+                        "flex-row items-center gap-3 py-2.5 px-3 rounded-2xl",
+                        isSelected ? "bg-primary/10" : "bg-transparent",
+                      ].join(" ")}
                     >
                       <UserAvatar
                         id={person.id}
@@ -146,11 +123,11 @@ export function PersonPickerSheet({ visible, onClose, selectedId, onSelect }: Pr
                         size={40}
                         radius={20}
                       />
-                      <View style={{ flex: 1, minWidth: 0 }}>
-                        <Text style={{ fontSize: 14, fontWeight: "600", color: C.onSurface }} numberOfLines={1}>
+                      <View className="flex-1 min-w-0">
+                        <Text className="text-sm font-semibold text-on-surface" numberOfLines={1}>
                           {person.name}
                         </Text>
-                        <Text style={{ fontSize: 12, color: C.onSurfaceVariant }} numberOfLines={1}>
+                        <Text className="text-xs text-on-surface-variant" numberOfLines={1}>
                           {person.email ?? person.phone ?? fmt(person.balance ?? 0)}
                         </Text>
                       </View>
@@ -159,8 +136,8 @@ export function PersonPickerSheet({ visible, onClose, selectedId, onSelect }: Pr
                   );
                 })}
                 {filtered.length === 0 && (
-                  <View style={{ padding: 32, alignItems: "center" }}>
-                    <Text style={{ color: C.onSurfaceVariant, fontSize: 14 }}>No people found</Text>
+                  <View className="p-8 items-center">
+                    <Text className="text-on-surface-variant text-sm">No people found</Text>
                   </View>
                 )}
               </View>

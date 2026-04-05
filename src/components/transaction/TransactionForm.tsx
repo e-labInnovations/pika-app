@@ -2,7 +2,7 @@
  * Shared form for Add and Edit transaction screens.
  */
 import * as ImagePicker from "expo-image-picker";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
@@ -82,6 +82,10 @@ export type TxFormProps = {
   submitLabel: string;
   title: string;
   saving: boolean;
+  /** Called when the user taps the AI assistant button in the header */
+  onAIPress?: () => void;
+  /** Local attachments to seed on mount and begin uploading immediately (e.g. AI receipt image) */
+  seedAttachments?: { uri: string; mimeType: string; filename: string }[];
 };
 
 // ── Type mutation map ─────────────────────────────────────────────────────────
@@ -174,7 +178,7 @@ function AttachmentThumb({ att, onRemove }: { att: LocalAttachment; onRemove: ()
 
 // ── Main component ────────────────────────────────────────────────────────────
 
-export function TransactionForm({ initialValues, onSubmit, onCancel, submitLabel, title, saving }: TxFormProps) {
+export function TransactionForm({ initialValues, onSubmit, onCancel, submitLabel, title, saving, onAIPress, seedAttachments }: TxFormProps) {
   const C = useColors();
   const insets = useSafeAreaInsets();
   const topPad = insets.top || (Platform.OS === "ios" ? 44 : 24);
@@ -190,6 +194,39 @@ export function TransactionForm({ initialValues, onSubmit, onCancel, submitLabel
       mediaId: a.id, // already on server — treated as "done"
     })),
   );
+
+  // Seed attachments from AI (e.g. receipt image) — upload immediately on mount
+  useEffect(() => {
+    if (!seedAttachments?.length) return;
+    const newItems: LocalAttachment[] = seedAttachments.map((a, i) => ({
+      localId: `seed-${Date.now()}-${i}`,
+      uri: a.uri,
+      filename: a.filename,
+      mimeType: a.mimeType,
+    }));
+    setAttachments((prev) => [...prev, ...newItems]);
+
+    (async () => {
+      for (const item of newItems) {
+        try {
+          const media = await uploadMedia(
+            item.uri,
+            item.filename ?? `receipt-${Date.now()}.jpg`,
+            item.mimeType ?? "image/jpeg",
+            item.filename ?? undefined,
+          );
+          setAttachments((prev) =>
+            prev.map((a) => (a.localId === item.localId ? { ...a, mediaId: media.id } : a)),
+          );
+        } catch {
+          Alert.alert("Upload failed", `Could not upload receipt image.`);
+          setAttachments((prev) =>
+            prev.map((a) => (a.localId === item.localId ? { ...a, mediaId: null } : a)),
+          );
+        }
+      }
+    })();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Sheet visibility
   const [showCategory, setShowCategory] = useState(false);
@@ -303,6 +340,22 @@ export function TransactionForm({ initialValues, onSubmit, onCancel, submitLabel
           <Text style={{ flex: 1, fontSize: 20, fontWeight: "900", letterSpacing: -0.5, color: C.onSurface }}>
             {title}
           </Text>
+          {onAIPress && (
+            <TouchableOpacity
+              onPress={onAIPress}
+              activeOpacity={0.75}
+              style={{
+                width: 36,
+                height: 36,
+                borderRadius: 18,
+                alignItems: "center",
+                justifyContent: "center",
+                backgroundColor: "#7c3aed22",
+              }}
+            >
+              <DynamicIcon name="sparkles" size={18} color="#7c3aed" />
+            </TouchableOpacity>
+          )}
         </View>
       </View>
 
@@ -427,9 +480,9 @@ export function TransactionForm({ initialValues, onSubmit, onCancel, submitLabel
           <PickerRow label="Tags" onPress={() => setShowTags(true)}>
             {values.tags.length > 0 ? (
               <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 6, marginTop: 2 }}>
-                {values.tags.map((tag) => (
-                  <View key={tag.id} style={{ flexDirection: "row", alignItems: "center", gap: 4, paddingHorizontal: 8, paddingVertical: 4, borderRadius: 20, backgroundColor: tag.bgColor ?? `${tag.color ?? C.primary}22` }}>
-                    <DynamicIcon name={tag.icon} size={11} color={tag.color ?? C.primary} />
+                {values.tags.map((tag, i) => (
+                  <View key={tag.id ?? tag.name ?? i} style={{ flexDirection: "row", alignItems: "center", gap: 4, paddingHorizontal: 8, paddingVertical: 4, borderRadius: 20, backgroundColor: tag.bgColor ?? `${tag.color ?? C.primary}22` }}>
+                    {tag.icon ? <DynamicIcon name={tag.icon} size={11} color={tag.color ?? C.primary} /> : null}
                     <Text style={{ fontSize: 12, fontWeight: "600", color: tag.color ?? C.primary }}>{tag.name}</Text>
                   </View>
                 ))}

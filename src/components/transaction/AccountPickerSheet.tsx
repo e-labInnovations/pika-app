@@ -43,43 +43,30 @@ export function AccountPickerSheet({ visible, onClose, selectedId, onSelect, exc
 
   return (
     <Modal visible={visible} animationType="slide" transparent onRequestClose={onClose}>
-      <View style={{ flex: 1, justifyContent: "flex-end", backgroundColor: "rgba(0,0,0,0.45)" }}>
+      <View className="flex-1 justify-end bg-black/45">
         <View
-          style={{
-            backgroundColor: C.surfaceLow,
-            borderTopLeftRadius: 24,
-            borderTopRightRadius: 24,
-            maxHeight: "75%",
-            paddingBottom: Math.max(insets.bottom, 16),
-          }}
+          className="bg-surface-low rounded-t-3xl max-h-[75%]"
+          style={{ paddingBottom: Math.max(insets.bottom, 16) }}
         >
           {/* Handle */}
-          <View style={{ alignItems: "center", paddingTop: 12, paddingBottom: 4 }}>
-            <View style={{ width: 36, height: 4, borderRadius: 2, backgroundColor: C.outlineVariant }} />
+          <View className="items-center pt-3 pb-1">
+            <View className="w-9 h-1 rounded-sm bg-outline-variant" />
           </View>
 
           {/* Header */}
-          <View style={{ flexDirection: "row", alignItems: "center", paddingHorizontal: 20, paddingVertical: 12 }}>
-            <Text style={{ flex: 1, fontSize: 17, fontWeight: "800", color: C.onSurface }}>{title}</Text>
-            <TouchableOpacity onPress={onClose} activeOpacity={0.7}
-              style={{ padding: 6, borderRadius: 20, backgroundColor: C.surfaceHigh }}>
+          <View className="flex-row items-center px-5 py-3">
+            <Text className="flex-1 text-[17px] font-extrabold text-on-surface">{title}</Text>
+            <TouchableOpacity onPress={onClose} activeOpacity={0.7} className="p-1.5 rounded-full bg-surface-high">
               <DynamicIcon name="x" size={16} color={C.onSurface} />
             </TouchableOpacity>
           </View>
 
           {/* Search */}
-          <View
-            style={{
-              flexDirection: "row", alignItems: "center", gap: 8,
-              marginHorizontal: 20, marginBottom: 12,
-              backgroundColor: C.surfaceHigh, borderRadius: 12,
-              paddingHorizontal: 12, height: 42,
-            }}
-          >
+          <View className="flex-row items-center gap-2 mx-5 mb-3 bg-surface-high rounded-xl px-3 h-[42px]">
             <DynamicIcon name="search" size={15} color={C.outlineVariant} />
             <TextInput
-              style={{ flex: 1, fontSize: 14, color: C.onSurface }}
-              placeholderTextColor={C.outlineVariant}
+              className="flex-1 text-sm text-on-surface"
+              placeholderTextColorClassName="accent-outline-variant"
               placeholder="Search accounts…"
               value={search}
               onChangeText={setSearch}
@@ -94,12 +81,12 @@ export function AccountPickerSheet({ visible, onClose, selectedId, onSelect, exc
           </View>
 
           {loading ? (
-            <View style={{ padding: 40, alignItems: "center" }}>
-              <ActivityIndicator color={C.primary} />
+            <View className="p-10 items-center">
+              <ActivityIndicator colorClassName="accent-primary" />
             </View>
           ) : (
             <ScrollView showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
-              <View style={{ paddingHorizontal: 16, paddingBottom: 8, gap: 2 }}>
+              <View className="px-4 pb-2 gap-0.5">
                 {filtered.map((account) => {
                   const isSelected = selectedId === account.id;
                   return (
@@ -107,11 +94,10 @@ export function AccountPickerSheet({ visible, onClose, selectedId, onSelect, exc
                       key={account.id}
                       onPress={() => { onSelect(account); onClose(); }}
                       activeOpacity={0.75}
-                      style={{
-                        flexDirection: "row", alignItems: "center", gap: 12,
-                        paddingVertical: 10, paddingHorizontal: 12, borderRadius: 14,
-                        backgroundColor: isSelected ? `${C.primary}18` : "transparent",
-                      }}
+                      className={[
+                        "flex-row items-center gap-3 py-2.5 px-3 rounded-2xl",
+                        isSelected ? "bg-primary/10" : "bg-transparent",
+                      ].join(" ")}
                     >
                       <AccountAvatar
                         avatarUrl={account.avatar?.url}
@@ -121,15 +107,13 @@ export function AccountPickerSheet({ visible, onClose, selectedId, onSelect, exc
                         name={account.name}
                         size={40}
                       />
-                      <View style={{ flex: 1, minWidth: 0 }}>
-                        <Text style={{ fontSize: 14, fontWeight: "600", color: C.onSurface }} numberOfLines={1}>
+                      <View className="flex-1 min-w-0">
+                        <Text className="text-sm font-semibold text-on-surface" numberOfLines={1}>
                           {account.name}
                         </Text>
                         <Text
-                          style={{
-                            fontSize: 12, fontWeight: "600",
-                            color: (account.balance ?? 0) >= 0 ? "#10b981" : "#ef4444",
-                          }}
+                          className="text-xs font-semibold"
+                          style={{ color: (account.balance ?? 0) >= 0 ? "#10b981" : "#ef4444" }}
                         >
                           {fmt(account.balance ?? 0)}
                         </Text>
@@ -139,8 +123,8 @@ export function AccountPickerSheet({ visible, onClose, selectedId, onSelect, exc
                   );
                 })}
                 {filtered.length === 0 && (
-                  <View style={{ padding: 32, alignItems: "center" }}>
-                    <Text style={{ color: C.onSurfaceVariant, fontSize: 14 }}>No accounts found</Text>
+                  <View className="p-8 items-center">
+                    <Text className="text-on-surface-variant text-sm">No accounts found</Text>
                   </View>
                 )}
               </View>
