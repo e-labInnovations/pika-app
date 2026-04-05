@@ -1,7 +1,7 @@
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   KeyboardAvoidingView,
@@ -45,14 +45,34 @@ function GoogleLogo() {
 export default function SignInScreen() {
   const C = useColors();
   const insets = useSafeAreaInsets();
-  const { login } = useAuth();
+  const { login, loginWithGoogle, isAuthenticated } = useAuth();
+
+  // Safety net: if auth state becomes true while on this screen (set by
+  // auth.tsx deep-link handler or a concurrent loginWithGoogle call), navigate.
+  useEffect(() => {
+    if (isAuthenticated) router.replace("/(tabs)");
+  }, [isAuthenticated]);
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [emailFocused, setEmailFocused] = useState(false);
   const [passwordFocused, setPasswordFocused] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  async function handleGoogleSignIn() {
+    setError(null);
+    setGoogleLoading(true);
+    try {
+      const ok = await loginWithGoogle();
+      if (ok) router.replace("/(tabs)");
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Google sign-in failed.");
+    } finally {
+      setGoogleLoading(false);
+    }
+  }
 
   async function handleSignIn() {
     if (!email.trim() || !password) return;
@@ -106,8 +126,16 @@ export default function SignInScreen() {
             </View>
 
             {/* Google sign-in */}
-            <TouchableOpacity style={s.googleBtn} activeOpacity={0.85}>
-              <GoogleLogo />
+            <TouchableOpacity
+              style={s.googleBtn}
+              activeOpacity={0.85}
+              onPress={handleGoogleSignIn}
+              disabled={googleLoading || isLoading}
+            >
+              {googleLoading
+                ? <ActivityIndicator color="#1a1a2e" size="small" />
+                : <GoogleLogo />
+              }
               <Text style={s.googleText}>Sign in with Google</Text>
             </TouchableOpacity>
 

@@ -70,15 +70,39 @@ export const authApi = {
     return res.json() as Promise<RefreshResponse>;
   },
 
-  me: async (): Promise<PayloadUser | null> => {
+  /**
+   * Returns 'valid' if the server accepts the token, 'invalid' if the server
+   * explicitly rejects it (401/403), or 'network_error' if unreachable.
+   * Use this during rehydration to catch revoked / otherwise invalid tokens.
+   */
+  checkToken: async (): Promise<"valid" | "invalid" | "network_error"> => {
     const token = await storage.getToken();
+    if (!token) return "invalid";
+    try {
+      const res = await payloadFetch("/api/users/me", {
+        headers: { Authorization: `JWT ${token}` },
+      });
+      if (res.status === 401 || res.status === 403) return "invalid";
+      return res.ok ? "valid" : "network_error"; // 5xx → treat as transient
+    } catch {
+      return "network_error"; // fetch threw (no network)
+    }
+  },
+
+  me: async (tokenOverride?: string): Promise<PayloadUser | null> => {
+    const token = tokenOverride ?? (await storage.getToken());
     if (!token) return null;
 
     const res = await payloadFetch("/api/users/me", {
       headers: { Authorization: `JWT ${token}` },
     });
 
-    if (!res.ok) return null;
+    if (!res.ok) {
+      const body = await res.json().catch(() => ({}));
+      throw new Error(
+        body?.errors?.[0]?.message ?? body?.message ?? `HTTP ${res.status}`,
+      );
+    }
     const data = await res.json();
     return (data?.user ?? null) as PayloadUser | null;
   },
