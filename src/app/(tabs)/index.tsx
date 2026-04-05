@@ -5,6 +5,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { AccountsRow } from "../../components/home/AccountsRow";
 import { BalanceCard } from "../../components/home/BalanceCard";
 import { HomeHeader } from "../../components/home/HomeHeader";
+import { MonthlyCalendarCard } from "../../components/home/MonthlyCalendarCard";
 import { MonthlyPulseCard } from "../../components/home/MonthlyPulseCard";
 import { SplitsDebtsCard } from "../../components/home/SplitsDebtsCard";
 import { SpendingTagsCard } from "../../components/home/SpendingTagsCard";
@@ -61,6 +62,7 @@ export default function HomeScreen() {
         />
         <AccountsRow showBalance={showBalance} accounts={accounts} loading={accountsLoading} />
         <WeeklyActivityCard days={weeklyExpenses?.days} loading={weeklyLoading} />
+        <MonthlyCalendarCard />
         <TopCategoriesCard categories={monthlyCategories?.data} monthName={monthlyCategories?.meta?.monthName} />
         <SplitsDebtsCard />
         <View style={{ height: 24 }} />

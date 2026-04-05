@@ -2,6 +2,7 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import { LinearGradient } from "expo-linear-gradient";
 import React, { useEffect, useRef } from "react";
 import { Animated, Text, TouchableOpacity, View } from "react-native";
+import { useFormatMoney } from "../../lib/format-currency";
 import { useColors } from "../../theme/colors";
 
 type Props = {
@@ -42,9 +43,8 @@ function DarkSkeleton({ width, height, radius = 8 }: { width: number | string; h
 
 export function BalanceCard({ showBalance, onToggle, totalBalance, balanceChangePercent, loading }: Props) {
   const C = useColors();
-  const formattedBalance = totalBalance != null
-    ? `$${totalBalance.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
-    : "—";
+  const fmt = useFormatMoney();
+  const formattedBalance = totalBalance != null ? fmt(totalBalance) : "—";
   const changePositive = (balanceChangePercent ?? 0) >= 0;
   const changeText = balanceChangePercent != null
     ? `${changePositive ? "+" : ""}${balanceChangePercent.toFixed(1)}% from last month`

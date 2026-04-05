@@ -447,14 +447,20 @@ export default function HistoryScreen() {
   const insets = useSafeAreaInsets();
   const topPad = insets.top || (Platform.OS === "ios" ? 44 : 24);
 
-  const { personId, accountId } = useLocalSearchParams<{ personId?: string; accountId?: string }>();
+  const { personId, accountId, dateFrom, dateTo } = useLocalSearchParams<{
+    personId?: string;
+    accountId?: string;
+    dateFrom?: string;
+    dateTo?: string;
+  }>();
 
-  // Pre-apply filters when navigated from person/account pages
+  // Pre-apply filters when navigated from person/account/calendar pages
   useFocusEffect(
     useCallback(() => {
       if (personId) setFilter((f) => ({ ...f, people: [personId] }));
       if (accountId) setFilter((f) => ({ ...f, accounts: [accountId] }));
-    }, [personId, accountId]),
+      if (dateFrom && dateTo) setFilter((f) => ({ ...f, dateFrom, dateTo, datePreset: "" }));
+    }, [personId, accountId, dateFrom, dateTo]),
   );
 
   // ── UI state
