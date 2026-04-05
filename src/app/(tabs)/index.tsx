@@ -91,8 +91,8 @@ export default function HomeScreen() {
         />
         <MonthlyCalendarCard />
         <TopCategoriesCard />
-        <SplitsDebtsCard />
         <SpendingTagsCard />
+        <SplitsDebtsCard />
         <View style={{ height: 24 }} />
       </ScrollView>
     </View>

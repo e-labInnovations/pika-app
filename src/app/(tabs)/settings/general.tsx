@@ -459,15 +459,25 @@ export default function GeneralSettingsScreen() {
   const [currModal, setCurrModal] = useState(false);
   const [acctModal, setAcctModal] = useState(false);
 
-  // Initialize from loaded settings (only once)
+  // Sync local state whenever the saved values change (cache→network update)
   useEffect(() => {
     if (!userSettings) return;
-    setTheme(userSettings.theme ?? "system");
+    const t = userSettings.theme ?? "system";
+    setTheme(t);
     setTimezone(userSettings.timezone ?? "UTC");
     setCurrency(userSettings.currency ?? "USD");
     setDefaultAccountId(userSettings.defaultAccount?.id ?? null);
     setGeminiKey(userSettings.geminiApiKey ?? "");
-  }, [userSettings?.id]);
+    // Restore visual theme on app start / re-open
+    Appearance.setColorScheme(t === "system" ? "unspecified" : (t as "light" | "dark"));
+  }, [
+    userSettings?.id,
+    userSettings?.theme,
+    userSettings?.timezone,
+    userSettings?.currency,
+    userSettings?.defaultAccount?.id,
+    userSettings?.geminiApiKey,
+  ]);
 
   // ── Derived ────────────────────────────────────────────────────────────────────
 

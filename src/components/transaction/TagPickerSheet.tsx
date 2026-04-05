@@ -120,10 +120,8 @@ export function TagPickerSheet({ visible, onClose, selectedIds, onApply }: Props
               >
                 {filtered.map((tag) => {
                   const isSelected = localSelected.includes(tag.id);
-                  const bg = isSelected
-                    ? (tag.bgColor ?? `${tag.color ?? C.primary}40`)
-                    : C.surfaceHigh;
-                  const fg = tag.color ?? C.onSurface;
+                  const fg = tag.color ?? C.primary;
+                  const selectedBg = tag.bgColor ?? `${fg}33`;
                   return (
                     <TouchableOpacity
                       key={tag.id}
@@ -132,13 +130,14 @@ export function TagPickerSheet({ visible, onClose, selectedIds, onApply }: Props
                       style={{
                         flexDirection: "row", alignItems: "center", gap: 6,
                         paddingHorizontal: 12, paddingVertical: 8,
-                        borderRadius: 20, backgroundColor: bg,
-                        borderWidth: isSelected ? 1.5 : 1,
-                        borderColor: isSelected ? fg : C.outlineVariant,
+                        borderRadius: 20,
+                        backgroundColor: isSelected ? selectedBg : "transparent",
+                        borderWidth: 1.5,
+                        borderColor: isSelected ? fg : `${C.outlineVariant}80`,
                       }}
                     >
-                      <DynamicIcon name={tag.icon} size={13} color={fg} />
-                      <Text style={{ fontSize: 13, fontWeight: "600", color: fg }}>{tag.name}</Text>
+                      <DynamicIcon name={tag.icon} size={13} color={isSelected ? fg : C.onSurfaceVariant} />
+                      <Text style={{ fontSize: 13, fontWeight: "600", color: isSelected ? fg : C.onSurface }}>{tag.name}</Text>
                       {isSelected && <DynamicIcon name="check" size={11} color={fg} />}
                     </TouchableOpacity>
                   );

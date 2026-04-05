@@ -445,13 +445,13 @@ function TagsPanel({ local, setLocal }: { local: TxFilter; setLocal: React.Dispa
               activeOpacity={0.75}
               className="flex-row items-center gap-1.5 px-3 py-1.5 rounded-full"
               style={{
-                backgroundColor: active ? bg : C.surfaceHigh,
+                backgroundColor: active ? bg : 'transparent',
                 borderWidth: 1.5,
-                borderColor: active ? color : 'transparent',
+                borderColor: active ? color : `${C.outlineVariant}80`,
               }}
             >
               <DynamicIcon name={tag.icon} size={12} color={active ? color : C.onSurfaceVariant} />
-              <Text style={{ fontSize: 13, fontWeight: '600', color: active ? color : C.onSurfaceVariant }}>
+              <Text style={{ fontSize: 13, fontWeight: '600', color: active ? color : C.onSurface }}>
                 {tag.name}
               </Text>
             </TouchableOpacity>

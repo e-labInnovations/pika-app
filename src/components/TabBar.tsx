@@ -58,7 +58,7 @@ export function TabBar({ state, navigation }: BottomTabBarProps) {
           }
         };
 
-        // Center ADD button — always circular outline style
+        // Center ADD button — filled when active, outline when inactive
         if (isAdd) {
           return (
             <TouchableOpacity
@@ -68,9 +68,15 @@ export function TabBar({ state, navigation }: BottomTabBarProps) {
               style={s.tab}
               accessibilityLabel="Add"
             >
-              <View style={[s.addCircle, { borderColor: C.outlineVariant }]}>
-                <Ionicons name="add" size={24} color={C.onSurface} />
-              </View>
+              {isFocused ? (
+                <View style={[s.addCircle, { backgroundColor: C.primaryBright, borderColor: C.primaryBright }]}>
+                  <Ionicons name="add" size={24} color="#ffffff" />
+                </View>
+              ) : (
+                <View style={[s.addCircle, { borderColor: C.outlineVariant }]}>
+                  <Ionicons name="add" size={24} color={C.onSurface} />
+                </View>
+              )}
             </TouchableOpacity>
           );
         }
