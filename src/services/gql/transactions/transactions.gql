@@ -23,6 +23,8 @@ fragment TransactionAccountFields on Account {
 fragment TransactionPersonFields on Person {
   id
   name
+  email
+  phone
   avatar {
     id
     url
@@ -36,6 +38,17 @@ fragment TransactionTagFields on Tag {
   icon
   color
   bgColor
+}
+
+fragment TransactionAttachmentFields on Media {
+  id
+  url
+  thumbnailURL
+  mimeType
+  filesize
+  filename
+  width
+  height
 }
 
 fragment TransactionFields on Transaction {
@@ -62,6 +75,9 @@ fragment TransactionFields on Transaction {
   }
   tags {
     ...TransactionTagFields
+  }
+  attachments {
+    ...TransactionAttachmentFields
   }
 }
 

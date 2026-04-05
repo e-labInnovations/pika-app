@@ -214,7 +214,6 @@ function TransactionRow({
   const isIncome = t.type === Transaction_type.income;
   const isTransfer = t.type === Transaction_type.transfer;
   const amountColor = isIncome ? "#10b981" : isTransfer ? "#6366f1" : "#ef4444";
-  const amountSign = isIncome ? "+" : isTransfer ? "" : "−";
   const catBg = t.category?.bgColor ?? "#f59e0b22";
   const catColor = t.category?.color ?? "#f59e0b";
 
@@ -284,7 +283,7 @@ function TransactionRow({
         {/* Amount + time + person */}
         <View className="items-end gap-0.5 shrink-0">
           <Text style={{ fontSize: 14, fontWeight: "700", color: amountColor }}>
-            {amountSign}{fmt(amount)}
+            {fmt(amount)}
           </Text>
           {showDate ? (
             <Text className="text-[11px] text-on-surface-variant">{formatDate(t.date)}</Text>
