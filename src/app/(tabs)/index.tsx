@@ -21,9 +21,9 @@ export default function HomeScreen() {
 
   const [showBalance, setShowBalance] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
-  const { data: dashboard, refetch: refetchDashboard } = useGetDashboardSummary();
-  const { accounts, refetch: refetchAccounts } = useGetAccounts({ limit: 20, sort: "name" });
-  const { data: weeklyExpenses, refetch: refetchWeekly } = useGetWeeklyExpenses();
+  const { data: dashboard, loading: dashboardLoading, refetch: refetchDashboard } = useGetDashboardSummary();
+  const { accounts, loading: accountsLoading, refetch: refetchAccounts } = useGetAccounts({ limit: 20, sort: "-updatedAt" });
+  const { data: weeklyExpenses, loading: weeklyLoading, refetch: refetchWeekly } = useGetWeeklyExpenses();
   const { data: monthlyCategories, refetch: refetchCategories } = useGetMonthlyCategories();
   const pulse = dashboard?.monthlyPulse;
 
@@ -49,6 +49,7 @@ export default function HomeScreen() {
           onToggle={() => setShowBalance((v) => !v)}
           totalBalance={dashboard?.totalBalance}
           balanceChangePercent={dashboard?.balanceChangePercent}
+          loading={dashboardLoading}
         />
         <MonthlyPulseCard
           showBalance={showBalance}
@@ -56,9 +57,10 @@ export default function HomeScreen() {
           expenses={pulse?.expenses}
           surplus={pulse?.surplus}
           monthName={pulse?.monthName}
+          loading={dashboardLoading}
         />
-        <AccountsRow showBalance={showBalance} accounts={accounts} />
-        <WeeklyActivityCard days={weeklyExpenses?.days} />
+        <AccountsRow showBalance={showBalance} accounts={accounts} loading={accountsLoading} />
+        <WeeklyActivityCard days={weeklyExpenses?.days} loading={weeklyLoading} />
         <TopCategoriesCard categories={monthlyCategories?.data} monthName={monthlyCategories?.meta?.monthName} />
         <SplitsDebtsCard />
         <View style={{ height: 24 }} />
