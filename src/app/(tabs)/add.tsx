@@ -1,5 +1,5 @@
 import { router, useLocalSearchParams } from "expo-router";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Alert } from "react-native";
 import {
   TransactionForm,
@@ -9,6 +9,7 @@ import {
 import { AIAssistantSheet } from "../../components/transaction/AIAssistantSheet";
 import { useCreateTransaction } from "../../services/gql/transactions/transactions.service";
 import { useGetPerson } from "../../services/gql/people/people.service";
+import { usePendingShare } from "../../context/ShareIntentBridgeContext";
 import type { TxType } from "../../components/transaction/CategoryPickerSheet";
 
 const DEFAULT_FORM_VALUES = (
@@ -35,6 +36,24 @@ export default function AddTransactionScreen() {
   const [aiOpen, setAiOpen] = useState(false);
   const [aiPrefill, setAiPrefill] = useState<Partial<TxFormValues> | null>(null);
   const [aiSeedImage, setAiSeedImage] = useState<{ uri: string; mimeType: string; filename: string } | null>(null);
+  const [aiInitialText, setAiInitialText] = useState<string | undefined>();
+  const [aiInitialImage, setAiInitialImage] = useState<{ uri: string; base64: string; mimeType: string } | undefined>();
+
+  const { pending, clearPending } = usePendingShare();
+
+  // Auto-open AI sheet when a share intent arrives
+  useEffect(() => {
+    if (!pending) return;
+    if (pending.type === "text") {
+      setAiInitialText(pending.text);
+      setAiInitialImage(undefined);
+    } else {
+      setAiInitialImage({ uri: pending.uri, base64: pending.base64, mimeType: pending.mimeType });
+      setAiInitialText(undefined);
+    }
+    clearPending();
+    setAiOpen(true);
+  }, [pending]);
 
   const { personId, type, amount } = useLocalSearchParams<{
     personId?: string;
@@ -90,6 +109,8 @@ export default function AddTransactionScreen() {
         visible={aiOpen}
         onClose={() => setAiOpen(false)}
         onUseDetails={handleAIUseDetails}
+        initialText={aiInitialText}
+        initialImage={aiInitialImage}
       />
     </>
   );

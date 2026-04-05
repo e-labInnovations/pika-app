@@ -6,6 +6,7 @@ import { ShareIntentProvider } from "expo-share-intent";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 import { AuthProvider, useAuth } from "../context/AuthContext";
+import { ShareIntentBridgeProvider } from "../context/ShareIntentBridgeContext";
 import { apolloClient } from "../services/gql/client";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 
@@ -27,11 +28,13 @@ export default function Layout() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <ShareIntentProvider>
-        <ApolloProvider client={apolloClient}>
-          <AuthProvider>
-            <RootSlot />
-          </AuthProvider>
-        </ApolloProvider>
+        <ShareIntentBridgeProvider>
+          <ApolloProvider client={apolloClient}>
+            <AuthProvider>
+              <RootSlot />
+            </AuthProvider>
+          </ApolloProvider>
+        </ShareIntentBridgeProvider>
       </ShareIntentProvider>
     </GestureHandlerRootView>
   );

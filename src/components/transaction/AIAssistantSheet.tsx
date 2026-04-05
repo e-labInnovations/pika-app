@@ -91,6 +91,10 @@ interface Props {
     values: Partial<TxFormValues>,
     image?: AIImageAttachment,
   ) => void;
+  /** Pre-fill the text tab with this string and open straight to analyze */
+  initialText?: string;
+  /** Pre-load the receipt tab with this image */
+  initialImage?: { uri: string; base64: string; mimeType: string };
 }
 
 // ── Analysis preview component ────────────────────────────────────────────────
@@ -405,7 +409,7 @@ function AnalysisPreview({
 
 // ── Main sheet ────────────────────────────────────────────────────────────────
 
-export function AIAssistantSheet({ visible, onClose, onUseDetails }: Props) {
+export function AIAssistantSheet({ visible, onClose, onUseDetails, initialText, initialImage }: Props) {
   const C = useColors();
   const insets = useSafeAreaInsets();
 
@@ -422,6 +426,20 @@ export function AIAssistantSheet({ visible, onClose, onUseDetails }: Props) {
   const { textToTransaction, loading: textLoading } = useTextToTransaction();
   const { imageToTransaction, loading: imageLoading } = useImageToTransaction();
   const analyzing = textLoading || imageLoading;
+
+  // Apply pre-filled content from share intent when sheet opens
+  React.useEffect(() => {
+    if (!visible) return;
+    if (initialImage) {
+      setTab("receipt");
+      setImage(initialImage);
+      setResult(null);
+    } else if (initialText) {
+      setTab("text");
+      setTextInput(initialText);
+      setResult(null);
+    }
+  }, [visible, initialText, initialImage]);
 
   // ── Handlers ────────────────────────────────────────────────────────────────
 
