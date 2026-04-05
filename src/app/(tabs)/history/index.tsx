@@ -1,5 +1,5 @@
 // cspell:ignore Swipeable
-import { router } from "expo-router";
+import { router, useLocalSearchParams, useFocusEffect } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
@@ -446,6 +446,17 @@ export default function HistoryScreen() {
   const C = useColors();
   const insets = useSafeAreaInsets();
   const topPad = insets.top || (Platform.OS === "ios" ? 44 : 24);
+
+  const { personId } = useLocalSearchParams<{ personId?: string }>();
+
+  // Pre-apply person filter when navigated from a person's page
+  useFocusEffect(
+    useCallback(() => {
+      if (personId) {
+        setFilter((f) => ({ ...f, people: [personId] }));
+      }
+    }, [personId]),
+  );
 
   // ── UI state
   const [showSearch, setShowSearch] = useState(false);

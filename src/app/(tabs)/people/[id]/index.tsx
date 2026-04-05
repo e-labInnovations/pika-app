@@ -13,11 +13,17 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { DynamicIcon } from "../../../../components/Icon";
 import { Skeleton } from "../../../../components/ui/Skeleton";
 import { UserAvatar } from "../../../../components/UserAvatar";
+import { AccountAvatar } from "../../../../components/AccountAvatar";
 import { useFormatMoney } from "../../../../lib/format-currency";
 import {
   useGetPerson,
   useDeletePerson,
 } from "../../../../services/gql/people/people.service";
+import { useGetTransactions } from "../../../../services/gql/transactions/transactions.service";
+import {
+  Transaction_type,
+  type TransactionFieldsFragment,
+} from "../../../../services/gql/types/graphql";
 import { useColors } from "../../../../theme/colors";
 
 function PersonDetailSkeleton({ insets }: { insets: { bottom: number } }) {
@@ -58,6 +64,51 @@ function PersonDetailSkeleton({ insets }: { insets: { bottom: number } }) {
         ))}
       </View>
     </ScrollView>
+  );
+}
+
+function txTypeConfig(type: Transaction_type) {
+  if (type === Transaction_type.income) return { color: "#10b981" };
+  if (type === Transaction_type.transfer) return { color: "#6366f1" };
+  return { color: "#ef4444" };
+}
+
+function txDate(iso: string): string {
+  const d = new Date(iso);
+  const now = new Date();
+  if (d.toDateString() === now.toDateString()) return "Today";
+  const y = new Date(now);
+  y.setDate(y.getDate() - 1);
+  if (d.toDateString() === y.toDateString()) return "Yesterday";
+  return d.toLocaleDateString("en-US", { month: "short", day: "numeric",
+    year: d.getFullYear() !== now.getFullYear() ? "numeric" : undefined });
+}
+
+function RecentTxRow({ t, onPress }: { t: TransactionFieldsFragment; onPress: () => void }) {
+  const C = useColors();
+  const fmt = useFormatMoney();
+  const { color } = txTypeConfig(t.type);
+  const catBg = t.category?.bgColor ?? "#f59e0b22";
+  const catColor = t.category?.color ?? "#f59e0b";
+  return (
+    <TouchableOpacity onPress={onPress} activeOpacity={0.75} className="flex-row items-center gap-3 px-4 py-3">
+      <View style={{ width: 38, height: 38, borderRadius: 12, backgroundColor: catBg, alignItems: "center", justifyContent: "center" }}>
+        <DynamicIcon name={t.category?.icon ?? "receipt"} size={16} color={catColor} />
+      </View>
+      <View className="flex-1 min-w-0 gap-0.5">
+        <Text className="text-[13px] font-semibold text-on-surface" numberOfLines={1}>{t.title}</Text>
+        <View className="flex-row items-center gap-1.5">
+          <AccountAvatar avatarUrl={t.account.avatar?.url} icon={t.account.icon} bgColor={t.account.bgColor} iconColor={t.account.color} name={t.account.name} size={12} />
+          <Text className="text-[11px] text-on-surface-variant" numberOfLines={1}>
+            {t.account.name}{t.toAccount ? ` → ${t.toAccount.name}` : ""}
+          </Text>
+        </View>
+      </View>
+      <View className="items-end gap-0.5 shrink-0">
+        <Text style={{ fontSize: 13, fontWeight: "700", color }}>{fmt(parseFloat(t.amount))}</Text>
+        <Text className="text-[11px] text-on-surface-variant">{txDate(t.date)}</Text>
+      </View>
+    </TouchableOpacity>
   );
 }
 
@@ -117,6 +168,12 @@ export default function PersonDetailScreen() {
   const { data: person, loading, error, refetch } = useGetPerson(id);
   const { deletePerson, loading: deleting } = useDeletePerson();
   const fmt = useFormatMoney();
+
+  const { transactions: recentTx, loading: txLoading } = useGetTransactions({
+    limit: 10,
+    sort: "-date",
+    where: { person: { in: [id] } },
+  });
 
   const balance = person?.balance ?? 0;
   const avatar = person?.avatar ?? null;
@@ -351,6 +408,72 @@ export default function PersonDetailScreen() {
               iconColor="#f59e0b"
               iconBg="#f59e0b20"
             />
+          </View>
+
+          {/* Recent Transactions */}
+          <View className="rounded-2xl overflow-hidden" style={{ backgroundColor: C.surfaceMid }}>
+            {/* Header row */}
+            <View className="flex-row items-center px-4 pt-3.5 pb-1">
+              <Text className="flex-1 text-[11px] font-bold uppercase tracking-[0.7px] text-on-surface-variant">
+                Recent Transactions
+              </Text>
+              <TouchableOpacity
+                onPress={() => router.push({ pathname: "/(tabs)/history", params: { personId: id } })}
+                activeOpacity={0.7}
+                className="flex-row items-center gap-1"
+              >
+                <Text style={{ fontSize: 12, fontWeight: "700", color: C.primary }}>View All</Text>
+                <DynamicIcon name="chevron-right" size={13} color={C.primary} />
+              </TouchableOpacity>
+            </View>
+
+            {txLoading && !recentTx ? (
+              /* Skeleton */
+              <View className="px-4 py-2 gap-3">
+                {[1, 2, 3].map((i) => (
+                  <View key={i} className="flex-row items-center gap-3">
+                    <Skeleton width={38} height={38} radius={12} />
+                    <View className="flex-1 gap-1.5">
+                      <Skeleton width="55%" height={12} />
+                      <Skeleton width="35%" height={10} />
+                    </View>
+                    <View className="items-end gap-1.5">
+                      <Skeleton width={56} height={12} />
+                      <Skeleton width={36} height={10} />
+                    </View>
+                  </View>
+                ))}
+              </View>
+            ) : !recentTx || recentTx.length === 0 ? (
+              <View className="items-center py-6 gap-1">
+                <DynamicIcon name="receipt" size={22} color={C.outlineVariant} />
+                <Text className="text-[12px] text-on-surface-variant">No transactions yet</Text>
+              </View>
+            ) : (
+              <>
+                {recentTx.map((t, idx) => (
+                  <React.Fragment key={t.id}>
+                    {idx > 0 && <Divider />}
+                    <RecentTxRow t={t} onPress={() => router.push(`/history/${t.id}`)} />
+                  </React.Fragment>
+                ))}
+                {(person.totalTransactions ?? 0) > 10 && (
+                  <>
+                    <Divider />
+                    <TouchableOpacity
+                      onPress={() => router.push({ pathname: "/(tabs)/history", params: { personId: id } })}
+                      activeOpacity={0.75}
+                      className="flex-row items-center justify-center gap-1.5 py-3"
+                    >
+                      <Text style={{ fontSize: 13, fontWeight: "700", color: C.primary }}>
+                        View all {person.totalTransactions} transactions
+                      </Text>
+                      <DynamicIcon name="arrow-right" size={13} color={C.primary} />
+                    </TouchableOpacity>
+                  </>
+                )}
+              </>
+            )}
           </View>
 
           {/* Delete */}
