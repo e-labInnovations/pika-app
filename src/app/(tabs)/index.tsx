@@ -1,6 +1,12 @@
 import { StatusBar } from "expo-status-bar";
 import React, { useCallback, useState } from "react";
-import { Platform, RefreshControl, ScrollView, StyleSheet, View } from "react-native";
+import {
+  Platform,
+  RefreshControl,
+  ScrollView,
+  StyleSheet,
+  View,
+} from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { AccountsRow } from "../../components/home/AccountsRow";
 import { BalanceCard } from "../../components/home/BalanceCard";
@@ -11,7 +17,10 @@ import { SplitsDebtsCard } from "../../components/home/SplitsDebtsCard";
 import { SpendingTagsCard } from "../../components/home/SpendingTagsCard";
 import { TopCategoriesCard } from "../../components/home/TopCategoriesCard";
 import { WeeklyActivityCard } from "../../components/home/WeeklyActivityCard";
-import { useGetDashboardSummary, useGetMonthlyCategories, useGetWeeklyExpenses } from "../../services/gql/analytics/analytics.service";
+import {
+  useGetDashboardSummary,
+  useGetWeeklyExpenses,
+} from "../../services/gql/analytics/analytics.service";
 import { useGetAccounts } from "../../services/gql/accounts/accounts.service";
 import { useColors } from "../../theme/colors";
 
@@ -22,17 +31,28 @@ export default function HomeScreen() {
 
   const [showBalance, setShowBalance] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
-  const { data: dashboard, loading: dashboardLoading, refetch: refetchDashboard } = useGetDashboardSummary();
-  const { accounts, loading: accountsLoading, refetch: refetchAccounts } = useGetAccounts({ limit: 20, sort: "-updatedAt" });
-  const { data: weeklyExpenses, loading: weeklyLoading, refetch: refetchWeekly } = useGetWeeklyExpenses();
-  const { data: monthlyCategories, refetch: refetchCategories } = useGetMonthlyCategories();
+  const {
+    data: dashboard,
+    loading: dashboardLoading,
+    refetch: refetchDashboard,
+  } = useGetDashboardSummary();
+  const {
+    accounts,
+    loading: accountsLoading,
+    refetch: refetchAccounts,
+  } = useGetAccounts({ limit: 20, sort: "-updatedAt" });
+  const {
+    data: weeklyExpenses,
+    loading: weeklyLoading,
+    refetch: refetchWeekly,
+  } = useGetWeeklyExpenses();
   const pulse = dashboard?.monthlyPulse;
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
-    await Promise.all([refetchDashboard(), refetchAccounts(), refetchWeekly(), refetchCategories()]);
+    await Promise.all([refetchDashboard(), refetchAccounts(), refetchWeekly()]);
     setRefreshing(false);
-  }, [refetchDashboard, refetchAccounts, refetchWeekly, refetchCategories]);
+  }, [refetchDashboard, refetchAccounts, refetchWeekly]);
 
   return (
     <View style={[s.root, { backgroundColor: C.surface }]}>
@@ -60,11 +80,19 @@ export default function HomeScreen() {
           monthName={pulse?.monthName}
           loading={dashboardLoading}
         />
-        <AccountsRow showBalance={showBalance} accounts={accounts} loading={accountsLoading} />
-        <WeeklyActivityCard days={weeklyExpenses?.days} loading={weeklyLoading} />
+        <AccountsRow
+          showBalance={showBalance}
+          accounts={accounts}
+          loading={accountsLoading}
+        />
+        <WeeklyActivityCard
+          days={weeklyExpenses?.days}
+          loading={weeklyLoading}
+        />
         <MonthlyCalendarCard />
-        <TopCategoriesCard categories={monthlyCategories?.data} monthName={monthlyCategories?.meta?.monthName} />
+        <TopCategoriesCard />
         <SplitsDebtsCard />
+        <SpendingTagsCard />
         <View style={{ height: 24 }} />
       </ScrollView>
     </View>

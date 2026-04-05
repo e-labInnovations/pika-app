@@ -161,7 +161,7 @@ function TagRow({
   const C = useColors();
   const swipeRef = useRef<SwipeableMethods>(null);
   const iconColor = tag.color ?? C.primaryBright;
-  const bgColor = tag.bgColor ? `${tag.bgColor}33` : `${iconColor}22`;
+  const bgColor = tag.bgColor ?? `${iconColor}22`;
 
   const pulse = useSharedValue(0);
 
@@ -224,7 +224,9 @@ function TagRow({
           ) : null}
         </View>
 
-        <DynamicIcon name="chevron-left" size={14} color={C.outlineVariant} style={{ transform: [{ scaleX: -1 }] }} />
+        <View style={{ transform: [{ scaleX: -1 }] }}>
+          <DynamicIcon name="chevron-left" size={14} color={C.outlineVariant} />
+        </View>
       </Reanimated.View>
     </ReanimatedSwipeable>
   );

@@ -41,10 +41,11 @@ function AccountCard({
     <TouchableOpacity
       onPress={onPress}
       activeOpacity={0.8}
-      style={{ width: CARD_WIDTH, borderRadius: 20, backgroundColor: C.surfaceMid, padding: 16, gap: 12 }}
+      style={{ width: CARD_WIDTH }}
+      className="rounded-2xl bg-surface-mid p-4 gap-3"
     >
-      {/* Row 1: Avatar (left) | Balance + txn count (right) */}
-      <View style={{ flexDirection: "row", alignItems: "center", gap: 12 }}>
+      {/* Row 1: Avatar | Balance + txn count */}
+      <View className="flex-row items-center gap-3">
         <AccountAvatar
           avatarUrl={account.avatar?.url}
           icon={account.icon}
@@ -53,11 +54,11 @@ function AccountCard({
           name={account.name}
           size={48}
         />
-        <View style={{ flex: 1, gap: 3 }}>
+        <View className="flex-1 gap-0.5">
           <Text
+            className="font-extrabold"
             style={{
               fontSize: showBalance ? 18 : 14,
-              fontWeight: "800",
               letterSpacing: showBalance ? -0.5 : 4,
               color: showBalance ? balanceColor : C.onSurfaceVariant,
               opacity: showBalance ? 1 : 0.5,
@@ -66,15 +67,15 @@ function AccountCard({
           >
             {showBalance ? fmt(balance) : HIDDEN}
           </Text>
-          <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+          <View className="flex-row items-center gap-1.5">
             {(account.totalTransactions ?? 0) > 0 && (
-              <Text style={{ fontSize: 11, fontWeight: "600", color: C.onSurfaceVariant }}>
+              <Text className="text-[11px] font-semibold text-on-surface-variant">
                 {account.totalTransactions} txn{account.totalTransactions === 1 ? "" : "s"}
               </Text>
             )}
             {account.isActive === false && (
-              <View style={{ backgroundColor: `${C.outlineVariant}33`, borderRadius: 20, paddingHorizontal: 6, paddingVertical: 2 }}>
-                <Text style={{ fontSize: 9, fontWeight: "700", color: C.onSurfaceVariant, textTransform: "uppercase", letterSpacing: 0.5 }}>
+              <View className="rounded-full px-1.5 py-0.5" style={{ backgroundColor: `${C.outlineVariant}33` }}>
+                <Text className="text-[9px] font-bold uppercase tracking-[0.5px] text-on-surface-variant">
                   Inactive
                 </Text>
               </View>
@@ -84,13 +85,13 @@ function AccountCard({
       </View>
 
       {/* Row 2: Name */}
-      <Text style={{ fontSize: 14, fontWeight: "800", color: C.onSurface, letterSpacing: -0.2 }} numberOfLines={1}>
+      <Text className="text-[14px] font-extrabold text-on-surface tracking-tight" numberOfLines={1}>
         {account.name}
       </Text>
 
       {/* Row 3: Description */}
       {account.description ? (
-        <Text style={{ fontSize: 11, color: C.onSurfaceVariant, marginTop: -8 }} numberOfLines={1}>
+        <Text className="text-[11px] text-on-surface-variant -mt-2" numberOfLines={1}>
           {account.description}
         </Text>
       ) : null}
@@ -101,12 +102,11 @@ function AccountCard({
 // ── Skeleton Card ─────────────────────────────────────────────────────────────
 
 function AccountCardSkeleton() {
-  const C = useColors();
   return (
-    <View style={{ width: CARD_WIDTH, borderRadius: 20, backgroundColor: C.surfaceMid, padding: 16, gap: 12 }}>
-      <View style={{ flexDirection: "row", alignItems: "center", gap: 12 }}>
+    <View style={{ width: CARD_WIDTH }} className="rounded-2xl bg-surface-mid p-4 gap-3">
+      <View className="flex-row items-center gap-3">
         <Skeleton width={48} height={48} radius={13} />
-        <View style={{ flex: 1, gap: 6 }}>
+        <View className="flex-1 gap-1.5">
           <Skeleton width="70%" height={18} />
           <Skeleton width="40%" height={11} />
         </View>
@@ -136,28 +136,23 @@ function AccountActionsSheet({
   return (
     <Modal visible={!!account} transparent animationType="slide" onRequestClose={onClose}>
       <TouchableOpacity
-        style={{ flex: 1, backgroundColor: "rgba(0,0,0,0.45)" }}
+        className="flex-1"
+        style={{ backgroundColor: "rgba(0,0,0,0.45)" }}
         activeOpacity={1}
         onPress={onClose}
       />
       <View
-        style={{
-          position: "absolute",
-          bottom: 0, left: 0, right: 0,
-          backgroundColor: C.surfaceLow,
-          borderTopLeftRadius: 24,
-          borderTopRightRadius: 24,
-          paddingBottom: Math.max(insets.bottom, 16) + 4,
-        }}
+        className="absolute bottom-0 left-0 right-0 bg-surface-low rounded-t-3xl"
+        style={{ paddingBottom: Math.max(insets.bottom, 16) + 4 }}
       >
         {/* Handle */}
-        <View style={{ alignItems: "center", paddingTop: 12, paddingBottom: 4 }}>
-          <View style={{ width: 36, height: 4, borderRadius: 2, backgroundColor: C.outlineVariant }} />
+        <View className="items-center pt-3 pb-1">
+          <View className="w-9 h-1 rounded-full bg-outline-variant" />
         </View>
 
         {/* Account header */}
         {account && (
-          <View style={{ flexDirection: "row", alignItems: "center", gap: 12, paddingHorizontal: 20, paddingVertical: 12 }}>
+          <View className="flex-row items-center gap-3 px-5 py-3">
             <AccountAvatar
               avatarUrl={account.avatar?.url}
               icon={account.icon}
@@ -166,12 +161,12 @@ function AccountActionsSheet({
               name={account.name}
               size={44}
             />
-            <View style={{ flex: 1, minWidth: 0 }}>
-              <Text style={{ fontSize: 16, fontWeight: "800", color: C.onSurface }} numberOfLines={1}>
+            <View className="flex-1 min-w-0">
+              <Text className="text-base font-extrabold text-on-surface" numberOfLines={1}>
                 {account.name}
               </Text>
               {account.description ? (
-                <Text style={{ fontSize: 12, color: C.onSurfaceVariant }} numberOfLines={1}>
+                <Text className="text-[12px] text-on-surface-variant" numberOfLines={1}>
                   {account.description}
                 </Text>
               ) : null}
@@ -179,20 +174,20 @@ function AccountActionsSheet({
           </View>
         )}
 
-        <View style={{ height: 1, backgroundColor: `${C.outlineVariant}33`, marginHorizontal: 20, marginBottom: 12 }} />
+        <View className="mx-5 mb-3" style={{ height: 1, backgroundColor: `${C.outlineVariant}33` }} />
 
-        <View style={{ paddingHorizontal: 16, gap: 8 }}>
+        <View className="px-4 gap-2">
           <TouchableOpacity
             onPress={onViewHistory}
             activeOpacity={0.75}
-            style={{ flexDirection: "row", alignItems: "center", gap: 14, padding: 16, borderRadius: 16, backgroundColor: C.surfaceMid }}
+            className="flex-row items-center gap-3.5 p-4 rounded-2xl bg-surface-mid"
           >
-            <View style={{ width: 40, height: 40, borderRadius: 12, backgroundColor: "#6366f120", alignItems: "center", justifyContent: "center" }}>
+            <View className="w-10 h-10 rounded-xl items-center justify-center" style={{ backgroundColor: "#6366f120" }}>
               <DynamicIcon name="clock" size={18} color="#6366f1" />
             </View>
-            <View style={{ flex: 1 }}>
-              <Text style={{ fontSize: 14, fontWeight: "700", color: C.onSurface }}>View Transactions</Text>
-              <Text style={{ fontSize: 12, color: C.onSurfaceVariant }}>All transactions for this account</Text>
+            <View className="flex-1">
+              <Text className="text-[14px] font-bold text-on-surface">View Transactions</Text>
+              <Text className="text-[12px] text-on-surface-variant">All transactions for this account</Text>
             </View>
             <DynamicIcon name="chevron-right" size={16} color={C.outlineVariant} />
           </TouchableOpacity>
@@ -200,26 +195,26 @@ function AccountActionsSheet({
           <TouchableOpacity
             onPress={onEdit}
             activeOpacity={0.75}
-            style={{ flexDirection: "row", alignItems: "center", gap: 14, padding: 16, borderRadius: 16, backgroundColor: C.surfaceMid }}
+            className="flex-row items-center gap-3.5 p-4 rounded-2xl bg-surface-mid"
           >
-            <View style={{ width: 40, height: 40, borderRadius: 12, backgroundColor: `${C.primary}20`, alignItems: "center", justifyContent: "center" }}>
+            <View className="w-10 h-10 rounded-xl items-center justify-center" style={{ backgroundColor: `${C.primary}20` }}>
               <DynamicIcon name="pencil" size={18} color={C.primary} />
             </View>
-            <View style={{ flex: 1 }}>
-              <Text style={{ fontSize: 14, fontWeight: "700", color: C.onSurface }}>Edit Account</Text>
-              <Text style={{ fontSize: 12, color: C.onSurfaceVariant }}>Update account details</Text>
+            <View className="flex-1">
+              <Text className="text-[14px] font-bold text-on-surface">Edit Account</Text>
+              <Text className="text-[12px] text-on-surface-variant">Update account details</Text>
             </View>
             <DynamicIcon name="chevron-right" size={16} color={C.outlineVariant} />
           </TouchableOpacity>
         </View>
 
-        <View style={{ paddingHorizontal: 16, marginTop: 8 }}>
+        <View className="px-4 mt-2">
           <TouchableOpacity
             onPress={onClose}
             activeOpacity={0.75}
-            style={{ padding: 16, borderRadius: 16, alignItems: "center", backgroundColor: C.surfaceMid }}
+            className="p-4 rounded-2xl items-center bg-surface-mid"
           >
-            <Text style={{ fontSize: 14, fontWeight: "700", color: C.onSurface }}>Cancel</Text>
+            <Text className="text-[14px] font-bold text-on-surface">Cancel</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -230,11 +225,9 @@ function AccountActionsSheet({
 // ── Main component ────────────────────────────────────────────────────────────
 
 export function AccountsRow({ showBalance, accounts, loading }: Props) {
-  const C = useColors();
   const fmt = useFormatMoney();
   const [selected, setSelected] = useState<AccountFieldsFragment | null>(null);
 
-  // Sort by most recently active (lastTransactionAt → updatedAt → name)
   const sorted = useMemo(() => {
     if (!accounts) return [];
     return [...accounts].sort((a, b) => {
@@ -252,12 +245,10 @@ export function AccountsRow({ showBalance, accounts, loading }: Props) {
 
   return (
     <>
-      <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
-        <Text style={{ fontSize: 16, fontWeight: "800", color: C.onSurface, letterSpacing: -0.2 }}>
-          Accounts
-        </Text>
+      <View className="flex-row items-center justify-between">
+        <Text className="text-base font-extrabold text-on-surface tracking-tight">Accounts</Text>
         <TouchableOpacity onPress={() => router.push("/settings/accounts")} activeOpacity={0.75}>
-          <Text style={{ fontSize: 13, fontWeight: "600", color: C.primaryBright }}>See All</Text>
+          <Text className="text-[13px] font-semibold text-primary-bright">See All</Text>
         </TouchableOpacity>
       </View>
 
@@ -280,7 +271,6 @@ export function AccountsRow({ showBalance, accounts, loading }: Props) {
             ))}
       </ScrollView>
 
-      {/* Single action sheet shared across all cards */}
       <AccountActionsSheet
         account={selected}
         onClose={() => setSelected(null)}

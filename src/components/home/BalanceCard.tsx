@@ -1,9 +1,11 @@
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { LinearGradient } from "expo-linear-gradient";
 import React, { useEffect, useRef } from "react";
-import { Animated, Text, TouchableOpacity, View } from "react-native";
+import { Animated, Text, TouchableOpacity, useColorScheme, View } from "react-native";
 import { useFormatMoney } from "../../lib/format-currency";
-import { useColors } from "../../theme/colors";
+
+const DARK_GRADIENT = ["#1e293b", "#0f172a"] as const;
+const LIGHT_GRADIENT = ["#1a4fd6", "#0f35a8"] as const;
 
 type Props = {
   showBalance: boolean;
@@ -13,7 +15,7 @@ type Props = {
   loading?: boolean;
 };
 
-// Dark-background skeleton block (pulses white/translucent)
+// Dark-background skeleton — pulses white/translucent on dark gradient
 function DarkSkeleton({ width, height, radius = 8 }: { width: number | string; height: number; radius?: number }) {
   const opacity = useRef(new Animated.Value(1)).current;
 
@@ -42,7 +44,7 @@ function DarkSkeleton({ width, height, radius = 8 }: { width: number | string; h
 }
 
 export function BalanceCard({ showBalance, onToggle, totalBalance, balanceChangePercent, loading }: Props) {
-  const C = useColors();
+  const scheme = useColorScheme();
   const fmt = useFormatMoney();
   const formattedBalance = totalBalance != null ? fmt(totalBalance) : "—";
   const changePositive = (balanceChangePercent ?? 0) >= 0;
@@ -52,7 +54,7 @@ export function BalanceCard({ showBalance, onToggle, totalBalance, balanceChange
 
   return (
     <LinearGradient
-      colors={["#1e293b", "#0f172a"]}
+      colors={scheme === "dark" ? DARK_GRADIENT : LIGHT_GRADIENT}
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 1 }}
       style={{ borderRadius: 16, padding: 24, overflow: "hidden" }}
@@ -65,17 +67,17 @@ export function BalanceCard({ showBalance, onToggle, totalBalance, balanceChange
       <View className="absolute rounded-full bg-primary-bright"
         style={{ width: 100, height: 100, right: -10, bottom: -10, opacity: 0.09 }} />
 
-      <View className="flex-row items-center justify-between">
-        <View style={{ gap: 8 }}>
-          <Text className="text-[13px] font-medium text-on-surface-variant">Total Balance</Text>
+      <View className="flex-row items-center justify-between gap-2">
+        <View className="gap-2">
+          <Text className="text-[13px] font-medium" style={{ color: "rgba(255,255,255,0.65)" }}>Total Balance</Text>
           {loading ? (
             <DarkSkeleton width={180} height={40} radius={10} />
           ) : showBalance ? (
-            <Text className="text-[36px] font-black tracking-[-1px] mt-1 text-on-surface">
+            <Text className="text-[36px] font-black tracking-[-1px] mt-1" style={{ color: "#ffffff" }}>
               {formattedBalance}
             </Text>
           ) : (
-            <Text className="text-[28px] font-black tracking-[4px] mt-1 opacity-50 text-on-surface">
+            <Text className="text-[28px] font-black tracking-[4px] mt-1" style={{ color: "rgba(255,255,255,0.5)" }}>
               ••••••••
             </Text>
           )}
@@ -89,12 +91,12 @@ export function BalanceCard({ showBalance, onToggle, totalBalance, balanceChange
           <Ionicons
             name={showBalance ? "eye-outline" : "eye-off-outline"}
             size={18}
-            color={C.onSurface}
+            color="rgba(255,255,255,0.85)"
           />
         </TouchableOpacity>
       </View>
 
-      <View style={{ marginTop: 14, height: 20, justifyContent: "center" }}>
+      <View className="mt-3.5 h-5 justify-center">
         {loading ? (
           <DarkSkeleton width={160} height={14} radius={6} />
         ) : changeText ? (
@@ -102,9 +104,9 @@ export function BalanceCard({ showBalance, onToggle, totalBalance, balanceChange
             <Ionicons
               name={changePositive ? "trending-up-outline" : "trending-down-outline"}
               size={14}
-              color={changePositive ? C.secondary : C.tertiary}
+              color={changePositive ? "#6ee7b7" : "#fca5a5"}
             />
-            <Text className={`text-[13px] font-semibold ${changePositive ? "text-secondary" : "text-tertiary"}`}>
+            <Text className="text-[13px] font-semibold" style={{ color: changePositive ? "#6ee7b7" : "#fca5a5" }}>
               {changeText}
             </Text>
           </View>

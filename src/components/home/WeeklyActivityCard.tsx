@@ -25,10 +25,8 @@ const DAY_KEYS: { key: keyof WeeklyDays; label: string }[] = [
   { key: "sat", label: "Sat" },
 ];
 
-// Preset heights for skeleton to look like a plausible chart
 const SKELETON_FILLS = [0.4, 0.65, 0.5, 1.0, 0.7, 0.45, 0.3];
-
-const todayIndex = new Date().getDay(); // 0=Sun … 6=Sat
+const todayIndex = new Date().getDay();
 
 function fmtAmount(n: number): string {
   if (n === 0) return "";
@@ -47,21 +45,21 @@ export function WeeklyActivityCard({ days, loading }: Props) {
   const hasAnyActivity = values.some((v) => v > 0);
 
   return (
-    <View style={{ borderRadius: 20, padding: 20, gap: 16, backgroundColor: C.surfaceLow }}>
+    <View className="rounded-2xl p-5 gap-4 bg-surface-low">
       {/* Header */}
-      <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
-        <Text style={{ fontSize: 16, fontWeight: "800", letterSpacing: -0.2, color: C.onSurface }}>
+      <View className="flex-row items-center justify-between">
+        <Text className="text-base font-extrabold tracking-tight text-on-surface">
           Weekly Activity
         </Text>
-        <View style={{ paddingHorizontal: 10, paddingVertical: 4, borderRadius: 20, backgroundColor: C.surfaceHighest }}>
-          <Text style={{ fontSize: 9, fontWeight: "800", letterSpacing: 1, textTransform: "uppercase", color: C.primaryBright }}>
+        <View className="px-2.5 py-1 rounded-full bg-surface-highest">
+          <Text className="text-[9px] font-extrabold tracking-[1px] uppercase text-primary-bright">
             This Week
           </Text>
         </View>
       </View>
 
       {/* Chart */}
-      <View style={{ flexDirection: "row", alignItems: "flex-end", gap: 6 }}>
+      <View className="flex-row items-end gap-1.5">
         {DAY_KEYS.map(({ label }, i) => {
           const isToday = i === todayIndex;
           const value = values[i];
@@ -69,16 +67,12 @@ export function WeeklyActivityCard({ days, loading }: Props) {
           const barFill = fillPct || (hasAnyActivity ? 0 : 0.03);
 
           return (
-            <View key={label} style={{ flex: 1, alignItems: "center", gap: 5 }}>
+            <View key={label} className="flex-1 items-center gap-1">
               {/* Amount label */}
-              <View style={{ height: 12 }}>
+              <View className="h-3">
                 {!loading && value > 0 && (
                   <Text
-                    style={{
-                      fontSize: 8,
-                      fontWeight: isToday ? "800" : "600",
-                      color: isToday ? C.primaryBright : C.onSurfaceVariant,
-                    }}
+                    className={`text-[8px] ${isToday ? "font-extrabold text-primary-bright" : "font-semibold text-on-surface-variant"}`}
                     numberOfLines={1}
                   >
                     {fmtAmount(value)}
@@ -87,7 +81,10 @@ export function WeeklyActivityCard({ days, loading }: Props) {
               </View>
 
               {/* Bar */}
-              <View style={{ height: BAR_HEIGHT, width: "100%", borderRadius: 8, overflow: "hidden", backgroundColor: C.surfaceHighest, justifyContent: "flex-end" }}>
+              <View
+                className="w-full rounded-lg overflow-hidden bg-surface-highest justify-end"
+                style={{ height: BAR_HEIGHT }}
+              >
                 {loading ? (
                   <Skeleton
                     height={Math.round(SKELETON_FILLS[i] * BAR_HEIGHT)}
@@ -106,24 +103,15 @@ export function WeeklyActivityCard({ days, loading }: Props) {
               </View>
 
               {/* Day label + today dot */}
-              <View style={{ alignItems: "center", gap: 3 }}>
+              <View className="items-center gap-0.5">
                 <Text
-                  style={{
-                    fontSize: 9,
-                    fontWeight: isToday ? "800" : "600",
-                    letterSpacing: 0.2,
-                    color: isToday ? C.primaryBright : C.onSurfaceVariant,
-                  }}
+                  className={`text-[9px] tracking-[0.2px] ${isToday ? "font-extrabold text-primary-bright" : "font-semibold text-on-surface-variant"}`}
                 >
                   {label}
                 </Text>
                 <View
-                  style={{
-                    width: 4,
-                    height: 4,
-                    borderRadius: 2,
-                    backgroundColor: isToday ? C.primaryBright : "transparent",
-                  }}
+                  className="w-1 h-1 rounded-full"
+                  style={{ backgroundColor: isToday ? C.primaryBright : "transparent" }}
                 />
               </View>
             </View>

@@ -166,7 +166,7 @@ function ChildRow({
   const C = useColors();
   const swipeRef = useRef<SwipeableMethods>(null);
   const iconColor = child.color ?? C.primaryBright;
-  const bgColor = child.bgColor ? `${child.bgColor}22` : `${iconColor}18`;
+  const bgColor = child.bgColor ?? `${iconColor}18`;
 
   const pulse = useSharedValue(0);
 
@@ -265,7 +265,7 @@ function CategoryCard({
   const C = useColors();
   const swipeRef = useRef<SwipeableMethods>(null);
   const iconColor = parent.color ?? C.primaryBright;
-  const bgColor = parent.bgColor ? `${parent.bgColor}33` : `${iconColor}22`;
+  const bgColor = parent.bgColor ?? `${iconColor}22`;
 
   const parentPulse = useSharedValue(0);
 
@@ -360,7 +360,7 @@ function CategoryCard({
         onPress={onAddChild}
         activeOpacity={0.7}
         className="flex-row items-center justify-center gap-2 mx-4 mb-3 mt-1 py-2.5 rounded-xl"
-        style={{ backgroundColor: `${iconColor}12` }}
+        style={{ backgroundColor: bgColor }}
       >
         <DynamicIcon name="plus" size={13} color={iconColor} />
         <Text className="text-[12px] font-semibold" style={{ color: iconColor }}>
