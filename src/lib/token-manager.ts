@@ -38,6 +38,16 @@ export const tokenManager = {
         refreshPromise = null;
       });
     }
-    return refreshPromise;
+
+    try {
+      // null = server explicitly rejected the token (bad/revoked)
+      // string = new token
+      return await refreshPromise;
+    } catch {
+      // Network error on wake (no connection yet, timeout, etc.)
+      // Return the existing token — Apollo will get a 401 if truly invalid,
+      // which triggers setUnauthenticatedHandler → logout.
+      return token;
+    }
   },
 };

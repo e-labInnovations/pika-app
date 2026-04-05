@@ -84,22 +84,32 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const savedUser = await storage.getUser<PayloadUser>();
         if (!savedUser) return; // No stored session → go to sign-in
 
-        // Attempt to get/refresh a valid token
+        const token = await storage.getToken();
+        if (!token) {
+          await storage.clear();
+          return; // No token at all — must log in
+        }
+
+        // Try to refresh if needed. getValidToken falls back to the existing
+        // token on network errors so we don't log the user out just because
+        // the device hasn't reconnected yet after waking from sleep.
         const validToken = await tokenManager.getValidToken();
         if (!validToken) {
+          // Server explicitly rejected the token (revoked / bad signature)
           await storage.clear();
           return;
         }
 
-        // Fetch user + settings in parallel; splash stays up until both resolve
-        const userSettings = await fetchSettings(savedUser.id);
+        // Best-effort settings fetch — failure here shouldn't block the session
+        const userSettings = await fetchSettings(savedUser.id).catch(() => null);
 
         if (!cancelled) {
           setUser(savedUser);
           setSettings(userSettings);
         }
       } catch {
-        await storage.clear();
+        // Don't clear storage for unexpected errors (network down on startup, etc.)
+        // The user stays logged in; individual screens will surface errors normally.
       } finally {
         if (!cancelled) setIsLoading(false);
       }
