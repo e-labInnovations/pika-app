@@ -128,7 +128,7 @@ function PersonRow({
   const contact = person.email ?? person.phone;
 
   const balanceColor =
-    balance > 0 ? C.tertiary : balance < 0 ? C.secondary : C.onSurfaceVariant;
+    balance > 0 ? "#ef4444" : balance < 0 ? "#10b981" : C.onSurfaceVariant;
 
   const pulse = useSharedValue(0);
 

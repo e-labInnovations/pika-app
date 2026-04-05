@@ -1,0 +1,589 @@
+/**
+ * Shared form for Add and Edit transaction screens.
+ */
+import * as ImagePicker from "expo-image-picker";
+import React, { useState } from "react";
+import {
+  ActivityIndicator,
+  Alert,
+  Image,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { DynamicIcon } from "../Icon";
+import { AccountAvatar } from "../AccountAvatar";
+import { UserAvatar } from "../UserAvatar";
+import { DateTimePicker } from "./DateTimePicker";
+import { CategoryPickerSheet, type TxType } from "./CategoryPickerSheet";
+import { AccountPickerSheet } from "./AccountPickerSheet";
+import { PersonPickerSheet } from "./PersonPickerSheet";
+import { TagPickerSheet } from "./TagPickerSheet";
+import { TxTypeSelector, TX_TYPE_COLORS } from "./TxTypeSelector";
+import {
+  type CategoryFieldsFragment,
+  type AccountFieldsFragment,
+  type PersonFieldsFragment,
+  type TagFieldsFragment,
+  Transaction_type_MutationInput,
+} from "../../services/gql/types/graphql";
+import { uploadMedia, resolveMediaUrl } from "../../lib/media-upload";
+import { useColors } from "../../theme/colors";
+
+// ── Types ─────────────────────────────────────────────────────────────────────
+
+/** A server-side attachment that already exists on the transaction */
+export type ExistingAttachment = {
+  id: string;
+  url: string | null;
+  mimeType: string | null;
+  filename: string | null;
+};
+
+type LocalAttachment = {
+  /** Stable local ID — never changes, immune to array mutations */
+  localId: string;
+  /** Local file URI (new) or resolved server URL (existing) */
+  uri: string;
+  filename: string | null;
+  mimeType: string | null;
+  /**
+   * undefined = still uploading (new item)
+   * string    = server media doc ID (uploaded or pre-existing)
+   * null      = upload failed
+   */
+  mediaId?: string | null;
+};
+
+export type TxFormValues = {
+  title: string;
+  amount: string;
+  date: Date;
+  type: TxType;
+  category: CategoryFieldsFragment | null;
+  account: AccountFieldsFragment | null;
+  toAccount: AccountFieldsFragment | null;
+  person: PersonFieldsFragment | null;
+  tags: TagFieldsFragment[];
+  note: string;
+  /** Full attachment data for items already on the server (edit mode) */
+  existingAttachments: ExistingAttachment[];
+};
+
+export type TxFormProps = {
+  initialValues: TxFormValues;
+  onSubmit: (values: TxFormValues, attachmentIds: string[]) => Promise<void>;
+  onCancel: () => void;
+  submitLabel: string;
+  title: string;
+  saving: boolean;
+};
+
+// ── Type mutation map ─────────────────────────────────────────────────────────
+
+const TX_MUTATION_TYPE: Record<TxType, Transaction_type_MutationInput> = {
+  expense: Transaction_type_MutationInput.expense,
+  income: Transaction_type_MutationInput.income,
+  transfer: Transaction_type_MutationInput.transfer,
+};
+
+// ── Picker row wrapper ────────────────────────────────────────────────────────
+
+function PickerRow({
+  label,
+  onPress,
+  children,
+  rightIcon = "chevron-right",
+}: {
+  label: string;
+  onPress: () => void;
+  children: React.ReactNode;
+  rightIcon?: string;
+}) {
+  const C = useColors();
+  return (
+    <TouchableOpacity
+      onPress={onPress}
+      activeOpacity={0.75}
+      style={{ flexDirection: "row", alignItems: "center", gap: 12, paddingHorizontal: 14, paddingVertical: 12 }}
+    >
+      <View style={{ flex: 1 }}>
+        <Text style={{ fontSize: 11, fontWeight: "700", textTransform: "uppercase", letterSpacing: 0.5, color: C.onSurfaceVariant, marginBottom: 3 }}>
+          {label}
+        </Text>
+        {children}
+      </View>
+      <DynamicIcon name={rightIcon} size={16} color={C.outlineVariant} />
+    </TouchableOpacity>
+  );
+}
+
+// ── Attachment thumbnail ──────────────────────────────────────────────────────
+
+const THUMB_SIZE = 88;
+
+function AttachmentThumb({ att, onRemove }: { att: LocalAttachment; onRemove: () => void }) {
+  const C = useColors();
+  const uploading = att.mediaId === undefined;
+  const failed = att.mediaId === null;
+  const isImg = (att.mimeType ?? "").startsWith("image/");
+  const SIZE = THUMB_SIZE;
+  return (
+    <View style={{ width: SIZE, height: SIZE, borderRadius: 12, overflow: "hidden", backgroundColor: C.surfaceHigh }}>
+      {isImg ? (
+        <Image source={{ uri: att.uri }} style={{ width: SIZE, height: SIZE }} resizeMode="cover" />
+      ) : (
+        <View style={{ flex: 1, alignItems: "center", justifyContent: "center", gap: 3 }}>
+          <DynamicIcon name="file-text" size={22} color={C.onSurfaceVariant} />
+          <Text style={{ fontSize: 9, color: C.onSurfaceVariant, textAlign: "center", paddingHorizontal: 4 }} numberOfLines={2}>
+            {att.filename}
+          </Text>
+        </View>
+      )}
+      {uploading ? (
+        <View style={{ position: "absolute", inset: 0, backgroundColor: "rgba(0,0,0,0.45)", alignItems: "center", justifyContent: "center" }}>
+          <ActivityIndicator size="small" color="#fff" />
+        </View>
+      ) : (
+        <TouchableOpacity
+          onPress={onRemove}
+          activeOpacity={0.8}
+          style={{
+            position: "absolute", top: 4, right: 4,
+            width: 20, height: 20, borderRadius: 10,
+            backgroundColor: failed ? "rgba(239,68,68,0.8)" : "rgba(0,0,0,0.55)",
+            alignItems: "center", justifyContent: "center",
+          }}
+        >
+          <DynamicIcon name="x" size={11} color="#fff" />
+        </TouchableOpacity>
+      )}
+      {att.mediaId && (
+        <View style={{ position: "absolute", bottom: 4, right: 4, width: 16, height: 16, borderRadius: 8, backgroundColor: "#10b981", alignItems: "center", justifyContent: "center" }}>
+          <DynamicIcon name="check" size={9} color="#fff" />
+        </View>
+      )}
+    </View>
+  );
+}
+
+// ── Main component ────────────────────────────────────────────────────────────
+
+export function TransactionForm({ initialValues, onSubmit, onCancel, submitLabel, title, saving }: TxFormProps) {
+  const C = useColors();
+  const insets = useSafeAreaInsets();
+  const topPad = insets.top || (Platform.OS === "ios" ? 44 : 24);
+
+  const [values, setValues] = useState<TxFormValues>(initialValues);
+  // Seed from existing (edit mode) — they already have a mediaId (their server doc id)
+  const [attachments, setAttachments] = useState<LocalAttachment[]>(() =>
+    initialValues.existingAttachments.map((a) => ({
+      localId: `existing-${a.id}`,
+      uri: resolveMediaUrl(a.url) ?? "",
+      filename: a.filename,
+      mimeType: a.mimeType,
+      mediaId: a.id, // already on server — treated as "done"
+    })),
+  );
+
+  // Sheet visibility
+  const [showCategory, setShowCategory] = useState(false);
+  const [showAccount, setShowAccount] = useState(false);
+  const [showToAccount, setShowToAccount] = useState(false);
+  const [showPerson, setShowPerson] = useState(false);
+  const [showTags, setShowTags] = useState(false);
+
+  const set = <K extends keyof TxFormValues>(key: K, val: TxFormValues[K]) =>
+    setValues((v) => ({ ...v, [key]: val }));
+
+  const typeColor = TX_TYPE_COLORS[values.type];
+  const isTransfer = values.type === "transfer";
+
+  // Block save while any attachment is still uploading (mediaId === undefined)
+  const anyUploading = attachments.some((a) => a.mediaId === undefined);
+
+  const canSave =
+    values.title.trim().length > 0 &&
+    values.amount.trim().length > 0 &&
+    !isNaN(parseFloat(values.amount)) &&
+    values.account !== null &&
+    (!isTransfer || values.toAccount !== null) &&
+    values.category !== null &&
+    !anyUploading &&
+    !saving;
+
+  const handleTypeChange = (t: TxType) => {
+    setValues((v) => ({
+      ...v,
+      type: t,
+      category: null,                              // each type has its own categories
+      person: t === "transfer" ? null : v.person,  // transfers don't have a person
+      toAccount: t !== "transfer" ? null : v.toAccount,
+    }));
+  };
+
+  // ── Attachment helpers ────────────────────────────────────────────────────
+
+  const pickAttachment = async () => {
+    const perm = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (!perm.granted) {
+      Alert.alert("Permission required", "Allow access to your photo library to add attachments.");
+      return;
+    }
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ["images"],
+      allowsMultipleSelection: true,
+      quality: 0.85,
+    });
+    if (result.canceled) return;
+
+    const newItems: LocalAttachment[] = result.assets.map((a, i) => ({
+      // Unique stable ID: timestamp + position ensures no collisions across picks
+      localId: `${Date.now()}-${i}`,
+      uri: a.uri,
+      filename: a.fileName ?? `attachment-${Date.now()}-${i}.jpg`,
+      mimeType: a.mimeType ?? "image/jpeg",
+      // mediaId === undefined means "uploading"
+    }));
+
+    // Add all items immediately (they show a spinner until uploaded)
+    setAttachments((prev) => [...prev, ...newItems]);
+
+    // Upload each independently — tracked by localId, not array index
+    for (const item of newItems) {
+      try {
+        // Use the filename as alt to guarantee uniqueness per upload
+        const media = await uploadMedia(item.uri, item.filename ?? `file-${Date.now()}`, item.mimeType ?? "image/jpeg", item.filename ?? undefined);
+        setAttachments((prev) =>
+          prev.map((a) => a.localId === item.localId ? { ...a, mediaId: media.id } : a),
+        );
+      } catch {
+        Alert.alert("Upload failed", `Could not upload ${item.filename}.`);
+        // Mark as failed (null) so the user sees the red × and can remove it
+        setAttachments((prev) =>
+          prev.map((a) => a.localId === item.localId ? { ...a, mediaId: null } : a),
+        );
+      }
+    }
+  };
+
+  const removeAttachment = (localId: string) => {
+    setAttachments((prev) => prev.filter((a) => a.localId !== localId));
+  };
+
+  const handleSubmit = async () => {
+    if (!canSave) return;
+    // Collect all successfully uploaded/pre-existing attachment IDs
+    const allIds = attachments
+      .filter((a) => typeof a.mediaId === "string")
+      .map((a) => a.mediaId as string);
+    await onSubmit(values, allIds);
+  };
+
+  return (
+    <KeyboardAvoidingView
+      style={{ flex: 1, backgroundColor: C.surface }}
+      behavior={Platform.OS === "ios" ? "padding" : undefined}
+    >
+      {/* Header */}
+      <View style={{ paddingTop: topPad, paddingHorizontal: 20, paddingBottom: 12, backgroundColor: C.surface }}>
+        <View style={{ flexDirection: "row", alignItems: "center", gap: 12 }}>
+          <TouchableOpacity
+            onPress={onCancel}
+            activeOpacity={0.7}
+            style={{ width: 36, height: 36, borderRadius: 18, alignItems: "center", justifyContent: "center", backgroundColor: C.surfaceMid }}
+          >
+            <DynamicIcon name="chevron-left" size={20} color={C.onSurface} />
+          </TouchableOpacity>
+          <Text style={{ flex: 1, fontSize: 20, fontWeight: "900", letterSpacing: -0.5, color: C.onSurface }}>
+            {title}
+          </Text>
+        </View>
+      </View>
+
+      <ScrollView
+        contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 40, gap: 10 }}
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
+      >
+        {/* ── Type selector (matches Categories page style) ── */}
+        <TxTypeSelector value={values.type} onChange={handleTypeChange} />
+
+        {/* ── Amount + Title ── */}
+        <View style={{ borderRadius: 16, backgroundColor: C.surfaceMid, overflow: "hidden" }}>
+          <View style={{ paddingHorizontal: 16, paddingTop: 14, paddingBottom: 6 }}>
+            <Text style={{ fontSize: 11, fontWeight: "700", textTransform: "uppercase", letterSpacing: 0.5, color: C.onSurfaceVariant, marginBottom: 4 }}>
+              Amount *
+            </Text>
+            <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+              <View style={{ backgroundColor: `${typeColor}22`, borderRadius: 8, padding: 6 }}>
+                <DynamicIcon name={values.type === "income" ? "arrow-down-left" : values.type === "transfer" ? "arrow-right-left" : "arrow-up-right"} size={14} color={typeColor} />
+              </View>
+              <TextInput
+                value={values.amount}
+                onChangeText={(v) => set("amount", v)}
+                style={{ flex: 1, fontSize: 28, fontWeight: "800", color: typeColor, letterSpacing: -0.5 }}
+                placeholderTextColor={`${typeColor}60`}
+                placeholder="0.00"
+                keyboardType="decimal-pad"
+                returnKeyType="next"
+              />
+            </View>
+          </View>
+          <View style={{ height: 1, backgroundColor: `${C.outlineVariant}40`, marginHorizontal: 16 }} />
+          <View style={{ paddingHorizontal: 16, paddingTop: 8, paddingBottom: 14 }}>
+            <Text style={{ fontSize: 11, fontWeight: "700", textTransform: "uppercase", letterSpacing: 0.5, color: C.onSurfaceVariant, marginBottom: 4 }}>
+              Title *
+            </Text>
+            <TextInput
+              value={values.title}
+              onChangeText={(v) => set("title", v)}
+              style={{ fontSize: 16, color: C.onSurface }}
+              placeholderTextColor={C.outlineVariant}
+              placeholder="e.g. Grocery shopping"
+              autoCorrect={false}
+              returnKeyType="next"
+            />
+          </View>
+        </View>
+
+        {/* ── Date & Time ── */}
+        <View style={{ borderRadius: 16, backgroundColor: C.surfaceMid, overflow: "hidden", padding: 14 }}>
+          <Text style={{ fontSize: 11, fontWeight: "700", textTransform: "uppercase", letterSpacing: 0.5, color: C.onSurfaceVariant, marginBottom: 8 }}>
+            Date & Time
+          </Text>
+          <DateTimePicker value={values.date} onChange={(d) => set("date", d)} />
+        </View>
+
+        {/* ── Category ── */}
+        <View style={{ borderRadius: 16, backgroundColor: C.surfaceMid, overflow: "hidden" }}>
+          <PickerRow label="Category *" onPress={() => setShowCategory(true)}>
+            {values.category ? (
+              <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+                <View style={{ width: 28, height: 28, borderRadius: 8, backgroundColor: values.category.bgColor ?? `${values.category.color ?? "#f59e0b"}22`, alignItems: "center", justifyContent: "center" }}>
+                  <DynamicIcon name={values.category.icon ?? "folder"} size={14} color={values.category.color ?? "#f59e0b"} />
+                </View>
+                <Text style={{ fontSize: 14, fontWeight: "600", color: C.onSurface }}>{values.category.name}</Text>
+              </View>
+            ) : (
+              <Text style={{ fontSize: 14, color: C.outlineVariant }}>Select category…</Text>
+            )}
+          </PickerRow>
+        </View>
+
+        {/* ── Account(s) ── */}
+        <View style={{ borderRadius: 16, backgroundColor: C.surfaceMid, overflow: "hidden" }}>
+          <PickerRow label={isTransfer ? "From Account *" : "Account *"} onPress={() => setShowAccount(true)}>
+            {values.account ? (
+              <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+                <AccountAvatar avatarUrl={values.account.avatar?.url} icon={values.account.icon} bgColor={values.account.bgColor} iconColor={values.account.color} name={values.account.name} size={28} />
+                <Text style={{ fontSize: 14, fontWeight: "600", color: C.onSurface }}>{values.account.name}</Text>
+              </View>
+            ) : (
+              <Text style={{ fontSize: 14, color: C.outlineVariant }}>Select account…</Text>
+            )}
+          </PickerRow>
+
+          {isTransfer && (
+            <>
+              <View style={{ height: 1, backgroundColor: `${C.outlineVariant}40`, marginHorizontal: 14 }} />
+              <PickerRow label="To Account *" onPress={() => setShowToAccount(true)}>
+                {values.toAccount ? (
+                  <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+                    <AccountAvatar avatarUrl={values.toAccount.avatar?.url} icon={values.toAccount.icon} bgColor={values.toAccount.bgColor} iconColor={values.toAccount.color} name={values.toAccount.name} size={28} />
+                    <Text style={{ fontSize: 14, fontWeight: "600", color: C.onSurface }}>{values.toAccount.name}</Text>
+                  </View>
+                ) : (
+                  <Text style={{ fontSize: 14, color: C.outlineVariant }}>Select destination…</Text>
+                )}
+              </PickerRow>
+            </>
+          )}
+        </View>
+
+        {/* ── Person (hidden for transfer) ── */}
+        {!isTransfer && (
+          <View style={{ borderRadius: 16, backgroundColor: C.surfaceMid, overflow: "hidden" }}>
+            <PickerRow label="Person" onPress={() => setShowPerson(true)}>
+              {values.person ? (
+                <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+                  <UserAvatar id={values.person.id} name={values.person.name} avatarUrl={values.person.avatar?.url} size={28} radius={14} />
+                  <Text style={{ fontSize: 14, fontWeight: "600", color: C.onSurface }}>{values.person.name}</Text>
+                </View>
+              ) : (
+                <Text style={{ fontSize: 14, color: C.outlineVariant }}>Optional person…</Text>
+              )}
+            </PickerRow>
+          </View>
+        )}
+
+        {/* ── Tags ── */}
+        <View style={{ borderRadius: 16, backgroundColor: C.surfaceMid, overflow: "hidden" }}>
+          <PickerRow label="Tags" onPress={() => setShowTags(true)}>
+            {values.tags.length > 0 ? (
+              <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 6, marginTop: 2 }}>
+                {values.tags.map((tag) => (
+                  <View key={tag.id} style={{ flexDirection: "row", alignItems: "center", gap: 4, paddingHorizontal: 8, paddingVertical: 4, borderRadius: 20, backgroundColor: tag.bgColor ?? `${tag.color ?? C.primary}22` }}>
+                    <DynamicIcon name={tag.icon} size={11} color={tag.color ?? C.primary} />
+                    <Text style={{ fontSize: 12, fontWeight: "600", color: tag.color ?? C.primary }}>{tag.name}</Text>
+                  </View>
+                ))}
+              </View>
+            ) : (
+              <Text style={{ fontSize: 14, color: C.outlineVariant }}>Add tags…</Text>
+            )}
+          </PickerRow>
+        </View>
+
+        {/* ── Note ── */}
+        <View style={{ borderRadius: 16, backgroundColor: C.surfaceMid, overflow: "hidden" }}>
+          <View style={{ paddingHorizontal: 16, paddingTop: 12, paddingBottom: 4 }}>
+            <Text style={{ fontSize: 11, fontWeight: "700", textTransform: "uppercase", letterSpacing: 0.5, color: C.onSurfaceVariant }}>
+              Note
+            </Text>
+          </View>
+          <TextInput
+            value={values.note}
+            onChangeText={(v) => set("note", v)}
+            style={{ fontSize: 14, color: C.onSurface, paddingHorizontal: 16, paddingBottom: 14, minHeight: 60 }}
+            placeholderTextColor={C.outlineVariant}
+            placeholder="Add a note…"
+            multiline
+            returnKeyType="done"
+            autoCorrect={false}
+          />
+        </View>
+
+        {/* ── Attachments ── */}
+        <View style={{ borderRadius: 16, backgroundColor: C.surfaceMid, overflow: "hidden", padding: 14 }}>
+          <Text style={{ fontSize: 11, fontWeight: "700", textTransform: "uppercase", letterSpacing: 0.5, color: C.onSurfaceVariant, marginBottom: 10 }}>
+            {`Attachments${attachments.length > 0 ? ` · ${attachments.length}` : ""}`}
+          </Text>
+          <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
+            {/* All attachments (existing pre-seeded + newly picked) */}
+            {attachments.map((att) => (
+              <AttachmentThumb
+                key={att.localId}
+                att={att}
+                onRemove={() => removeAttachment(att.localId)}
+              />
+            ))}
+            {/* Add button */}
+            <TouchableOpacity
+              onPress={pickAttachment}
+              activeOpacity={0.75}
+              style={{
+                width: THUMB_SIZE, height: THUMB_SIZE, borderRadius: 14,
+                borderWidth: 1.5, borderStyle: "dashed",
+                borderColor: C.outlineVariant,
+                alignItems: "center", justifyContent: "center", gap: 4,
+              }}
+            >
+              <DynamicIcon name="plus" size={22} color={C.outlineVariant} />
+              <Text style={{ fontSize: 10, color: C.outlineVariant, fontWeight: "600" }}>Add</Text>
+            </TouchableOpacity>
+          </View>
+          {anyUploading && (
+            <Text style={{ fontSize: 11, color: "#f59e0b", marginTop: 8 }}>Uploading…</Text>
+          )}
+        </View>
+      </ScrollView>
+
+      {/* Save button */}
+      <View style={{ paddingHorizontal: 16, paddingBottom: Math.max(insets.bottom, 16) + 4, paddingTop: 12, backgroundColor: C.surface }}>
+        <TouchableOpacity
+          onPress={handleSubmit}
+          activeOpacity={0.85}
+          disabled={!canSave}
+          style={{
+            flexDirection: "row", alignItems: "center", justifyContent: "center",
+            gap: 8, paddingVertical: 16, borderRadius: 16,
+            backgroundColor: canSave ? typeColor : `${C.outlineVariant}55`,
+          }}
+        >
+          {saving ? (
+            <ActivityIndicator size="small" color="#fff" />
+          ) : (
+            <>
+              <DynamicIcon name="check" size={18} color={canSave ? "#fff" : C.outlineVariant} />
+              <Text style={{ fontSize: 15, fontWeight: "700", color: canSave ? "#fff" : C.outlineVariant }}>
+                {submitLabel}
+              </Text>
+            </>
+          )}
+        </TouchableOpacity>
+      </View>
+
+      {/* ── Pickers ── */}
+      <CategoryPickerSheet
+        visible={showCategory}
+        onClose={() => setShowCategory(false)}
+        selectedId={values.category?.id ?? null}
+        onSelect={(cat) => set("category", cat)}
+        txType={values.type}
+      />
+      <AccountPickerSheet
+        visible={showAccount}
+        onClose={() => setShowAccount(false)}
+        selectedId={values.account?.id ?? null}
+        onSelect={(acc) => set("account", acc)}
+        title={isTransfer ? "From Account" : "Account"}
+        excludeId={values.toAccount?.id}
+      />
+      <AccountPickerSheet
+        visible={showToAccount}
+        onClose={() => setShowToAccount(false)}
+        selectedId={values.toAccount?.id ?? null}
+        onSelect={(acc) => set("toAccount", acc)}
+        title="To Account"
+        excludeId={values.account?.id}
+      />
+      <PersonPickerSheet
+        visible={showPerson}
+        onClose={() => setShowPerson(false)}
+        selectedId={values.person?.id ?? null}
+        onSelect={(p) => set("person", p)}
+      />
+      <TagPickerSheet
+        visible={showTags}
+        onClose={() => setShowTags(false)}
+        selectedIds={values.tags.map((t) => t.id)}
+        onApply={(tags) => set("tags", tags)}
+      />
+    </KeyboardAvoidingView>
+  );
+}
+
+// ── Export mutation helpers ───────────────────────────────────────────────────
+
+function baseFields(v: TxFormValues, attachmentIds: string[]) {
+  return {
+    title: v.title.trim(),
+    amount: v.amount.trim(),
+    date: v.date.toISOString(),
+    category: v.category?.id ?? undefined,
+    account: v.account?.id,
+    toAccount: v.toAccount?.id ?? undefined,
+    person: v.person?.id ?? undefined,
+    tags: v.tags.map((t) => t.id),
+    note: v.note.trim() || undefined,
+    attachments: attachmentIds.length > 0 ? attachmentIds : undefined,
+  };
+}
+
+/** Use for createTransaction */
+export function formValuesToMutationInput(v: TxFormValues, attachmentIds: string[] = []) {
+  return { ...baseFields(v, attachmentIds), type: TX_MUTATION_TYPE[v.type] };
+}
+
+/** Use for updateTransaction (different type enum) */
+export function formValuesToUpdateInput(v: TxFormValues, attachmentIds: string[] = []) {
+  type UpdateType = import("../../services/gql/types/graphql").TransactionUpdate_type_MutationInput;
+  const t = v.type as unknown as UpdateType;
+  return { ...baseFields(v, attachmentIds), type: t };
+}

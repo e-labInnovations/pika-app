@@ -26,6 +26,7 @@ import Reanimated, {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { DynamicIcon } from "../../../components/Icon";
 import { Skeleton } from "../../../components/ui/Skeleton";
+import { TxTypeSelector } from "../../../components/transaction/TxTypeSelector";
 import { useAuth } from "../../../context/AuthContext";
 import { useGetCategories, useDeleteCategory } from "../../../services/gql/categories/categories.service";
 import type { CategoryFieldsFragment } from "../../../services/gql/types/graphql";
@@ -35,12 +36,6 @@ import { useColors } from "../../../theme/colors";
 
 type TransactionType = "expense" | "income" | "transfer";
 type SwipeableRef = { current: SwipeableMethods | null };
-
-const TYPES: { id: TransactionType; label: string; icon: string }[] = [
-  { id: "expense", label: "Expense", icon: "arrow-up-right" },
-  { id: "income", label: "Income", icon: "arrow-down-left" },
-  { id: "transfer", label: "Transfer", icon: "arrow-right-left" },
-];
 
 const TYPE_COLORS: Record<TransactionType, string> = {
   expense: "#ef4444",
@@ -514,33 +509,7 @@ export default function CategoriesScreen() {
         </View>
 
         {/* Type tabs */}
-        <View className="flex-row p-1 rounded-2xl bg-surface-mid gap-1">
-          {TYPES.map((t) => {
-            const isActive = t.id === activeType;
-            const tColor = TYPE_COLORS[t.id];
-            return (
-              <TouchableOpacity
-                key={t.id}
-                onPress={() => setActiveType(t.id)}
-                activeOpacity={0.8}
-                className="flex-1 flex-row items-center justify-center gap-1.5 py-2.5 rounded-xl"
-                style={isActive ? { backgroundColor: `${tColor}22` } : undefined}
-              >
-                <DynamicIcon
-                  name={t.icon}
-                  size={13}
-                  color={isActive ? tColor : C.onSurfaceVariant}
-                />
-                <Text
-                  className="text-[12px] font-semibold"
-                  style={{ color: isActive ? tColor : C.onSurfaceVariant }}
-                >
-                  {t.label}
-                </Text>
-              </TouchableOpacity>
-            );
-          })}
-        </View>
+        <TxTypeSelector value={activeType} onChange={setActiveType} />
       </View>
 
       <ScrollView

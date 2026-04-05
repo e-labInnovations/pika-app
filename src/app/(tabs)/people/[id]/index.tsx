@@ -241,7 +241,7 @@ export default function PersonDetailScreen() {
               ) : (
                 <>
                   <Text
-                    className={`text-[28px] font-black tracking-[-0.5px] ${balance > 0 ? "text-tertiary" : "text-secondary"}`}
+                    style={{ fontSize: 28, fontWeight: "900", letterSpacing: -0.5, color: balance > 0 ? "#ef4444" : "#10b981" }}
                   >
                     {fmt(Math.abs(balance))}
                   </Text>
@@ -259,7 +259,7 @@ export default function PersonDetailScreen() {
               onPress={() =>
                 router.push({
                   pathname: "/(tabs)/add",
-                  params: { person: id, type: "expense" },
+                  params: { personId: id, type: "expense" },
                 })
               }
               activeOpacity={0.75}
@@ -277,9 +277,9 @@ export default function PersonDetailScreen() {
                 router.push({
                   pathname: "/(tabs)/add",
                   params: {
-                    person: id,
+                    personId: id,
                     type: balance > 0 ? "expense" : "income",
-                    amount: Math.abs(balance),
+                    amount: String(Math.abs(balance)),
                   },
                 });
               }}
