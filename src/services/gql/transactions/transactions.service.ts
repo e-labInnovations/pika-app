@@ -46,11 +46,22 @@ export const useGetTransaction = (id: string) => {
   };
 };
 
+const TRANSACTION_REFETCH_QUERIES = [
+  'GetTransactions',
+  'GetDashboardSummary',
+  'GetAccounts',
+  'GetMonthlyPeople',
+  'GetMonthlyCategories',
+  'GetMonthlyTags',
+  'GetWeeklyExpenses',
+  'GetMonthlyCalendar',
+];
+
 export const useCreateTransaction = () => {
   const [createTransaction, { data, loading, error }] = useMutation(
     CreateTransactionDocument,
     {
-      refetchQueries: ['GetTransactions', 'GetDashboardSummary'],
+      refetchQueries: TRANSACTION_REFETCH_QUERIES,
     },
   );
 
@@ -67,7 +78,7 @@ export const useUpdateTransaction = () => {
   const [updateTransaction, { data, loading, error }] = useMutation(
     UpdateTransactionDocument,
     {
-      refetchQueries: ['GetTransactions', 'GetDashboardSummary'],
+      refetchQueries: TRANSACTION_REFETCH_QUERIES,
     },
   );
 
@@ -84,7 +95,7 @@ export const useDeleteTransaction = () => {
   const [deleteTransaction, { data, loading, error }] = useMutation(
     DeleteTransactionDocument,
     {
-      refetchQueries: ['GetTransactions', 'GetDashboardSummary'],
+      refetchQueries: TRANSACTION_REFETCH_QUERIES,
     },
   );
 

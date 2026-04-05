@@ -1,3 +1,4 @@
+import { useApolloClient } from "@apollo/client/react";
 import { StatusBar } from "expo-status-bar";
 import React, { useCallback, useState } from "react";
 import {
@@ -29,6 +30,7 @@ export default function HomeScreen() {
   const insets = useSafeAreaInsets();
   const topPad = insets.top || (Platform.OS === "ios" ? 44 : 24);
 
+  const apolloClient = useApolloClient();
   const [showBalance, setShowBalance] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const {
@@ -50,9 +52,14 @@ export default function HomeScreen() {
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
-    await Promise.all([refetchDashboard(), refetchAccounts(), refetchWeekly()]);
+    await Promise.all([
+      refetchDashboard(),
+      refetchAccounts(),
+      refetchWeekly(),
+      apolloClient.refetchQueries({ include: "active" }),
+    ]);
     setRefreshing(false);
-  }, [refetchDashboard, refetchAccounts, refetchWeekly]);
+  }, [refetchDashboard, refetchAccounts, refetchWeekly, apolloClient]);
 
   return (
     <View style={[s.root, { backgroundColor: C.surface }]}>
@@ -93,7 +100,6 @@ export default function HomeScreen() {
         <TopCategoriesCard />
         <SpendingTagsCard />
         <SplitsDebtsCard />
-        <View style={{ height: 24 }} />
       </ScrollView>
     </View>
   );
