@@ -3,7 +3,6 @@ import * as ImagePicker from "expo-image-picker";
 import React, { useState } from "react";
 import {
   ActivityIndicator,
-  Alert,
   Platform,
   ScrollView,
   Text,
@@ -13,6 +12,7 @@ import {
   type StyleProp,
   type TextStyle,
 } from "react-native";
+import { showAlert } from "../../../components/ui/AlertDialog";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { DynamicIcon } from "../../../components/Icon";
 import { UserAvatar } from "../../../components/UserAvatar";
@@ -106,7 +106,7 @@ export default function AddPersonScreen() {
       router.back();
     } catch (err: any) {
       setUploading(false);
-      Alert.alert("Error", err?.message ?? "Could not save person.");
+      showAlert({ title: "Error", message: err?.message ?? "Could not save person." });
     } finally {
       setSaving(false);
     }

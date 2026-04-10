@@ -2,7 +2,6 @@ import { router } from "expo-router";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   ActivityIndicator,
-  Alert,
   Appearance,
   FlatList,
   Modal,
@@ -13,6 +12,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { showAlert } from "../../../components/ui/AlertDialog";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { AccountAvatar } from "../../../components/AccountAvatar";
 import { DynamicIcon } from "../../../components/Icon";
@@ -554,7 +554,7 @@ export default function GeneralSettingsScreen() {
         err?.graphQLErrors?.[0]?.message ||
         err?.message ||
         "Failed to save settings.";
-      Alert.alert("Error", msg);
+      showAlert({ title: "Error", message: msg });
     } finally {
       setSaving(false);
     }

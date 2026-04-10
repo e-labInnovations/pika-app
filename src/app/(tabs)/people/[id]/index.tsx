@@ -2,13 +2,13 @@ import { router, useLocalSearchParams } from "expo-router";
 import React from "react";
 import {
   ActivityIndicator,
-  Alert,
   Platform,
   ScrollView,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
+import { showAlert } from "../../../../components/ui/AlertDialog";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { DynamicIcon } from "../../../../components/Icon";
 import { Skeleton } from "../../../../components/ui/Skeleton";
@@ -187,10 +187,10 @@ export default function PersonDetailScreen() {
     : null;
 
   const handleDelete = () => {
-    Alert.alert(
-      "Delete Person",
-      `Are you sure you want to delete "${person?.name}"? This cannot be undone.`,
-      [
+    showAlert({
+      title: "Delete Person",
+      message: `Are you sure you want to delete "${person?.name}"? This cannot be undone.`,
+      buttons: [
         { text: "Cancel", style: "cancel" },
         {
           text: "Delete",
@@ -200,12 +200,12 @@ export default function PersonDetailScreen() {
               await deletePerson(id);
               router.back();
             } catch (err: any) {
-              Alert.alert("Error", err?.message ?? "Could not delete person.");
+              showAlert({ title: "Error", message: err?.message ?? "Could not delete person." });
             }
           },
         },
       ],
-    );
+    });
   };
 
   return (

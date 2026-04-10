@@ -2,7 +2,6 @@ import { router, useLocalSearchParams } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
-  Alert,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -11,6 +10,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { showAlert } from "../../../../components/ui/AlertDialog";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { DynamicIcon } from "../../../../components/Icon";
 import { Skeleton } from "../../../../components/ui/Skeleton";
@@ -95,10 +95,10 @@ export default function EditTagScreen() {
   };
 
   const handleDelete = () => {
-    Alert.alert(
-      "Delete Tag",
-      `Are you sure you want to delete "${name}"? This cannot be undone.`,
-      [
+    showAlert({
+      title: "Delete Tag",
+      message: `Are you sure you want to delete "${name}"? This cannot be undone.`,
+      buttons: [
         { text: "Cancel", style: "cancel" },
         {
           text: "Delete",
@@ -113,12 +113,12 @@ export default function EditTagScreen() {
                 err?.errors?.[0]?.message ||
                 err?.message ||
                 "Failed to delete tag.";
-              Alert.alert("Cannot Delete", message);
+              showAlert({ title: "Cannot Delete", message });
             }
           },
         },
       ],
-    );
+    });
   };
 
   return (

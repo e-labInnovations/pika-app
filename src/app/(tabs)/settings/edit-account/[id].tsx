@@ -3,7 +3,6 @@ import * as ImagePicker from "expo-image-picker";
 import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
-  Alert,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -12,6 +11,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { showAlert } from "../../../../components/ui/AlertDialog";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { AccountAvatar } from "../../../../components/AccountAvatar";
 import { DynamicIcon } from "../../../../components/Icon";
@@ -102,7 +102,7 @@ export default function EditAccountScreen() {
   const handlePickAvatar = async () => {
     const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (!permission.granted) {
-      Alert.alert("Permission required", "Allow access to your photo library to set an account avatar.");
+      showAlert({ title: "Permission required", message: "Allow access to your photo library to set an account avatar." });
       return;
     }
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -138,7 +138,7 @@ export default function EditAccountScreen() {
         avatarId = media.id;
       } catch {
         setUploading(false);
-        Alert.alert("Upload failed", "Could not upload the avatar image. The account will be saved without the new image.");
+        showAlert({ title: "Upload failed", message: "Could not upload the avatar image. The account will be saved without the new image." });
         return;
       }
       setUploading(false);
@@ -163,10 +163,10 @@ export default function EditAccountScreen() {
   };
 
   const handleDelete = () => {
-    Alert.alert(
-      "Delete Account",
-      `Are you sure you want to delete "${name}"? All associated transactions will lose this account reference.`,
-      [
+    showAlert({
+      title: "Delete Account",
+      message: `Are you sure you want to delete "${name}"? All associated transactions will lose this account reference.`,
+      buttons: [
         { text: "Cancel", style: "cancel" },
         {
           text: "Delete",
@@ -181,12 +181,12 @@ export default function EditAccountScreen() {
                 err?.errors?.[0]?.message ||
                 err?.message ||
                 "Failed to delete account.";
-              Alert.alert("Cannot Delete", message);
+              showAlert({ title: "Cannot Delete", message });
             }
           },
         },
       ],
-    );
+    });
   };
 
   const balance = account?.balance ?? 0;

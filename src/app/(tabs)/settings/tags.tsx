@@ -2,7 +2,6 @@
 import { router } from "expo-router";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
-  Alert,
   Platform,
   RefreshControl,
   ScrollView,
@@ -10,6 +9,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { showAlert } from "../../../components/ui/AlertDialog";
 import ReanimatedSwipeable, {
   type SwipeableMethods,
 } from "react-native-gesture-handler/ReanimatedSwipeable";
@@ -289,10 +289,10 @@ export default function TagsScreen() {
   }, [refetch]);
 
   const handleDelete = (tag: TagFieldsFragment) => {
-    Alert.alert(
-      "Delete Tag",
-      `Are you sure you want to delete "${tag.name}"? This cannot be undone.`,
-      [
+    showAlert({
+      title: "Delete Tag",
+      message: `Are you sure you want to delete "${tag.name}"? This cannot be undone.`,
+      buttons: [
         { text: "Cancel", style: "cancel" },
         {
           text: "Delete",
@@ -308,12 +308,12 @@ export default function TagsScreen() {
                 err?.errors?.[0]?.message ||
                 err?.message ||
                 "Failed to delete tag.";
-              Alert.alert("Cannot Delete", message);
+              showAlert({ title: "Cannot Delete", message });
             }
           },
         },
       ],
-    );
+    });
   };
 
   const sortedTags = (tags ?? []).slice().sort((a, b) => a.name.localeCompare(b.name));

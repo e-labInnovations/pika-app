@@ -3,7 +3,6 @@ import { router } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import React, { useCallback, useEffect, useRef, useState, useMemo } from "react";
 import {
-  Alert,
   Platform,
   RefreshControl,
   ScrollView,
@@ -12,6 +11,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { showAlert } from "../../../components/ui/AlertDialog";
 import ReanimatedSwipeable, {
   type SwipeableMethods,
 } from "react-native-gesture-handler/ReanimatedSwipeable";
@@ -300,10 +300,10 @@ export default function PeopleScreen() {
   }, [refetch]);
 
   const handleDelete = (person: PersonFieldsFragment) => {
-    Alert.alert(
-      "Delete Person",
-      `Are you sure you want to delete "${person.name}"? This cannot be undone.`,
-      [
+    showAlert({
+      title: "Delete Person",
+      message: `Are you sure you want to delete "${person.name}"? This cannot be undone.`,
+      buttons: [
         { text: "Cancel", style: "cancel" },
         {
           text: "Delete",
@@ -319,12 +319,12 @@ export default function PeopleScreen() {
                 err?.errors?.[0]?.message ||
                 err?.message ||
                 "Failed to delete person.";
-              Alert.alert("Cannot Delete", message);
+              showAlert({ title: "Cannot Delete", message });
             }
           },
         },
       ],
-    );
+    });
   };
 
   return (

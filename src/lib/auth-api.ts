@@ -5,12 +5,26 @@
 import { API_URL } from "./constants";
 import { storage } from "./storage";
 
+export type PayloadUserSettings = {
+  id: string;
+  user: string;
+  currency?: string | null;
+  timezone?: string | null;
+  locale?: string | null;
+  theme?: string | null;
+  defaultAccount?: { id: string; name: string; icon: string } | null;
+  geminiApiKey?: string | null;
+  createdAt?: string | null;
+  updatedAt?: string | null;
+};
+
 export type PayloadUser = {
   id: string;
   email: string;
   name?: string | null;
   role: "user" | "admin" | "system";
   avatar?: { id: string; url: string; thumbnailURL?: string | null } | null;
+  settings?: { docs: PayloadUserSettings[]; hasNextPage: boolean } | null;
   createdAt: string;
   updatedAt: string;
 };

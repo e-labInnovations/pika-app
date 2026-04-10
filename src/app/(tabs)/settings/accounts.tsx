@@ -2,7 +2,6 @@
 import { router } from "expo-router";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
-  Alert,
   Platform,
   RefreshControl,
   ScrollView,
@@ -10,6 +9,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { showAlert } from "../../../components/ui/AlertDialog";
 import ReanimatedSwipeable, {
   type SwipeableMethods,
 } from "react-native-gesture-handler/ReanimatedSwipeable";
@@ -237,6 +237,18 @@ function AccountRowSkeleton() {
   );
 }
 
+function NetWorthSkeleton() {
+  return (
+    <View className="rounded-2xl p-4" style={{ backgroundColor: `#f59e0b18` }}>
+      <Skeleton width="30%" height={11} />
+      <View className="mt-2 mb-1">
+        <Skeleton width="55%" height={26} />
+      </View>
+      <Skeleton width="45%" height={11} />
+    </View>
+  );
+}
+
 function AccountListSkeleton() {
   return (
     <View className="rounded-2xl overflow-hidden bg-surface-mid">
@@ -276,10 +288,10 @@ export default function AccountsScreen() {
   }, [refetch]);
 
   const handleDelete = (account: AccountFieldsFragment) => {
-    Alert.alert(
-      "Delete Account",
-      `Are you sure you want to delete "${account.name}"? This cannot be undone.`,
-      [
+    showAlert({
+      title: "Delete Account",
+      message: `Are you sure you want to delete "${account.name}"? This cannot be undone.`,
+      buttons: [
         { text: "Cancel", style: "cancel" },
         {
           text: "Delete",
@@ -295,12 +307,12 @@ export default function AccountsScreen() {
                 err?.errors?.[0]?.message ||
                 err?.message ||
                 "Failed to delete account.";
-              Alert.alert("Cannot Delete", message);
+              showAlert({ title: "Cannot Delete", message });
             }
           },
         },
       ],
-    );
+    });
   };
 
   const sortedAccounts = (accounts ?? [])
@@ -351,7 +363,9 @@ export default function AccountsScreen() {
         }
       >
         {/* Net worth summary */}
-        {!loading && sortedAccounts.length > 0 && (
+        {loading && !accounts ? (
+          <NetWorthSkeleton />
+        ) : !loading && sortedAccounts.length > 0 && (
           <View
             className="rounded-2xl p-4"
             style={{ backgroundColor: `#f59e0b18` }}

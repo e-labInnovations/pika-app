@@ -8,15 +8,11 @@ import React, {
   useEffect,
   useState,
 } from "react";
-import { authApi, type PayloadUser } from "../lib/auth-api";
+import { authApi, type PayloadUser, type PayloadUserSettings } from "../lib/auth-api";
 import { API_URL } from "../lib/constants";
 import { apolloClient, setUnauthenticatedHandler } from "../services/gql/client";
 import { storage } from "../lib/storage";
 import { tokenManager } from "../lib/token-manager";
-import {
-  GetUserSettingsDocument,
-  type UserSettingsFieldsFragment,
-} from "../services/gql/types/graphql";
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
@@ -24,7 +20,7 @@ type AuthContextType = {
   /** Currently authenticated user, or null. */
   user: PayloadUser | null;
   /** User settings loaded after authentication. */
-  settings: UserSettingsFieldsFragment | null;
+  settings: PayloadUserSettings | null;
   /** True while the initial session rehydration (+ settings fetch) is in progress. */
   isLoading: boolean;
   isAuthenticated: boolean;
@@ -45,21 +41,11 @@ const AuthContext = createContext<AuthContextType | null>(null);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<PayloadUser | null>(null);
-  const [settings, setSettings] = useState<UserSettingsFieldsFragment | null>(null);
+  const [settings, setSettings] = useState<PayloadUserSettings | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // ── Fetch settings imperatively (no hook needed) ────────────────────────────
-  async function fetchSettings(userId: string): Promise<UserSettingsFieldsFragment | null> {
-    try {
-      const result = await apolloClient.query({
-        query: GetUserSettingsDocument,
-        variables: { userId },
-        fetchPolicy: "network-only",
-      });
-      return (result.data?.UserSettings?.docs?.[0] as UserSettingsFieldsFragment) ?? null;
-    } catch {
-      return null;
-    }
+  function extractSettings(user: PayloadUser): PayloadUserSettings | null {
+    return user.settings?.docs?.[0] ?? null;
   }
 
   // ── Logout ─────────────────────────────────────────────────────────────────
@@ -110,12 +96,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           return;
         }
 
-        // Best-effort settings fetch — failure here shouldn't block the session
-        const userSettings = await fetchSettings(savedUser.id).catch(() => null);
-
         if (!cancelled) {
           setUser(savedUser);
-          setSettings(userSettings);
+          setSettings(extractSettings(savedUser));
         }
       } catch {
         // Don't clear storage for unexpected errors (network down on startup, etc.)
@@ -137,8 +120,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     await storage.setExp(data.exp);
     await storage.setUser(data.user);
 
-    const userSettings = await fetchSettings(data.user.id);
-    setSettings(userSettings);
+    setSettings(extractSettings(data.user));
     setUser(data.user);
     // Navigation is handled by the sign-in screen after this resolves
   }, []);
@@ -154,9 +136,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       throw new Error("Sign-in failed: could not load profile.");
     }
 
-    const userSettings = await fetchSettings(fetchedUser.id);
     await storage.setUser(fetchedUser);
-    setSettings(userSettings);
+    setSettings(extractSettings(fetchedUser));
     setUser(fetchedUser);
     // Navigation is handled by the caller
   }, []);
@@ -167,25 +148,32 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     //   iOS  — ASWebAuthenticationSession intercepts pika:// and returns { type:'success', url }
     //   Android — uses an internal Linking watcher; if the OS dispatches the
     //             Intent to Expo Router before expo-web-browser sees it, the
-    //             result is { type:'cancel' } and auth.tsx handles the token.
+    //             result is { type:'cancel' } and auth.tsx handles the code.
     const result = await WebBrowser.openAuthSessionAsync(
-      `${API_URL}/api/auth/mobile-init`,
+      `${API_URL}/api/auth/client-init?callback=pika://auth`,
       "pika://auth",
     );
 
     if (result.type !== "success") {
       // User cancelled, or Android dispatched pika:// to Expo Router first.
-      // auth.tsx will process the token if the deep link was real.
+      // auth.tsx will process the code if the deep link was real.
       return false;
     }
 
     const parsed = Linking.parse(result.url);
-    const token = parsed.queryParams?.token as string | undefined;
-    const expStr = parsed.queryParams?.exp as string | undefined;
+    const code = parsed.queryParams?.code as string | undefined;
 
-    if (!token) throw new Error("Google sign-in failed: no token received.");
+    if (!code) throw new Error("Google sign-in failed: no code received.");
 
-    await loginWithToken(token, expStr ? parseInt(expStr, 10) : undefined);
+    const res = await fetch(`${API_URL}/api/auth/exchange`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ code }),
+    });
+    if (!res.ok) throw new Error("Google sign-in failed: code exchange error.");
+    const { token, exp } = await res.json();
+
+    await loginWithToken(token, exp);
     return true;
   }, [loginWithToken]);
 
@@ -195,6 +183,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (!fetchedUser) return;
     await storage.setUser(fetchedUser);
     setUser(fetchedUser);
+    setSettings(extractSettings(fetchedUser));
   }, []);
 
   return (

@@ -3,7 +3,6 @@ import * as ImagePicker from "expo-image-picker";
 import React, { useState } from "react";
 import {
   ActivityIndicator,
-  Alert,
   KeyboardAvoidingView,
   Modal,
   Platform,
@@ -13,6 +12,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { showAlert } from "../../../components/ui/AlertDialog";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { DynamicIcon } from "../../../components/Icon";
 import { UserAvatar } from "../../../components/UserAvatar";
@@ -254,31 +254,35 @@ export default function ProfileScreen() {
       setLocalAvatarUri(null); // let refreshed user.avatar.url take over
     } catch (err: any) {
       setLocalAvatarUri(null);
-      Alert.alert("Upload failed", err?.message ?? "Could not upload avatar.");
+      showAlert({ title: "Upload failed", message: err?.message ?? "Could not upload avatar." });
     } finally {
       setUploading(false);
     }
   };
 
   const handleRemoveAvatar = () => {
-    Alert.alert("Remove photo", "Remove your profile photo?", [
-      { text: "Cancel", style: "cancel" },
-      {
-        text: "Remove",
-        style: "destructive",
-        onPress: async () => {
-          setUploading(true);
-          try {
-            await updateUser({ id: user!.id, data: { avatar: null } });
-            await refreshUser();
-          } catch (err: any) {
-            Alert.alert("Error", err?.message ?? "Could not remove avatar.");
-          } finally {
-            setUploading(false);
-          }
+    showAlert({
+      title: "Remove photo",
+      message: "Remove your profile photo?",
+      buttons: [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Remove",
+          style: "destructive",
+          onPress: async () => {
+            setUploading(true);
+            try {
+              await updateUser({ id: user!.id, data: { avatar: null } });
+              await refreshUser();
+            } catch (err: any) {
+              showAlert({ title: "Error", message: err?.message ?? "Could not remove avatar." });
+            } finally {
+              setUploading(false);
+            }
+          },
         },
-      },
-    ]);
+      ],
+    });
   };
 
   const handleSaveName = async (name: string) => {
@@ -287,16 +291,20 @@ export default function ProfileScreen() {
       await refreshUser();
       setNameDialogVisible(false);
     } catch (err: any) {
-      Alert.alert("Error", err?.message ?? "Could not update name.");
+      showAlert({ title: "Error", message: err?.message ?? "Could not update name." });
       throw err; // re-throw so dialog keeps saving=true off
     }
   };
 
   const handleLogout = () => {
-    Alert.alert("Sign out", "Are you sure you want to sign out?", [
-      { text: "Cancel", style: "cancel" },
-      { text: "Sign out", style: "destructive", onPress: logout },
-    ]);
+    showAlert({
+      title: "Sign out",
+      message: "Are you sure you want to sign out?",
+      buttons: [
+        { text: "Cancel", style: "cancel" },
+        { text: "Sign out", style: "destructive", onPress: logout },
+      ],
+    });
   };
 
   if (!user) return null;

@@ -4,15 +4,16 @@ import { StatusBar } from "expo-status-bar";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   ActivityIndicator,
-  Alert,
   FlatList,
   Platform,
   RefreshControl,
+  ScrollView,
   Text,
   TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
+import { showAlert } from "../../../components/ui/AlertDialog";
 import ReanimatedSwipeable, {
   type SwipeableMethods,
 } from "react-native-gesture-handler/ReanimatedSwipeable";
@@ -540,21 +541,21 @@ export default function HistoryScreen() {
   }, [hasNextPage, loadingMore, loading, fetchMore, currentPage, backendSortStr, where]);
 
   const handleDelete = (t: TransactionFieldsFragment) => {
-    Alert.alert(
-      "Delete Transaction",
-      `Delete "${t.title}"? This cannot be undone.`,
-      [
+    showAlert({
+      title: "Delete Transaction",
+      message: `Delete "${t.title}"? This cannot be undone.`,
+      buttons: [
         { text: "Cancel", style: "cancel" },
         {
           text: "Delete",
           style: "destructive",
           onPress: async () => {
             try { await deleteTransaction(t.id); }
-            catch (err: any) { Alert.alert("Error", err?.message ?? "Could not delete."); }
+            catch (err: any) { showAlert({ title: "Error", message: err?.message ?? "Could not delete." }); }
           },
         },
       ],
-    );
+    });
   };
 
   const clearAll = () => {
@@ -695,7 +696,11 @@ export default function HistoryScreen() {
       {showSkeleton ? (
         <TransactionListSkeleton />
       ) : isEmpty ? (
-        <View className="flex-1 items-center justify-center gap-3 px-6">
+        <ScrollView
+          className="flex-1"
+          contentContainerStyle={{ flex: 1, alignItems: "center", justifyContent: "center", gap: 12, paddingHorizontal: 24 }}
+          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+        >
           <View
             className="w-16 h-16 rounded-full items-center justify-center"
             style={{ backgroundColor: `${C.outlineVariant}33` }}
@@ -715,7 +720,7 @@ export default function HistoryScreen() {
               <Text className="text-[13px] font-semibold text-on-surface">Clear filters</Text>
             </TouchableOpacity>
           )}
-        </View>
+        </ScrollView>
       ) : (
         <FlatList
           data={listItems}

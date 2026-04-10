@@ -2,7 +2,6 @@
 import { router } from "expo-router";
 import React, { useCallback, useEffect, useRef, useMemo, useState } from "react";
 import {
-  Alert,
   Platform,
   RefreshControl,
   ScrollView,
@@ -10,6 +9,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { showAlert } from "../../../components/ui/AlertDialog";
 import ReanimatedSwipeable, {
   type SwipeableMethods,
 } from "react-native-gesture-handler/ReanimatedSwipeable";
@@ -454,14 +454,14 @@ export default function CategoriesScreen() {
   }, [refetch]);
 
   const confirmDelete = (name: string, onConfirm: () => void) => {
-    Alert.alert(
-      "Delete Category",
-      `Are you sure you want to delete "${name}"? This cannot be undone.`,
-      [
+    showAlert({
+      title: "Delete Category",
+      message: `Are you sure you want to delete "${name}"? This cannot be undone.`,
+      buttons: [
         { text: "Cancel", style: "cancel" },
         { text: "Delete", style: "destructive", onPress: onConfirm },
       ],
-    );
+    });
   };
 
   const handleDeleteCategory = (category: CategoryFieldsFragment) => {
@@ -476,7 +476,7 @@ export default function CategoriesScreen() {
           err?.errors?.[0]?.message ||
           err?.message ||
           "Failed to delete category.";
-        Alert.alert("Cannot Delete", message);
+        showAlert({ title: "Cannot Delete", message });
       }
     });
   };

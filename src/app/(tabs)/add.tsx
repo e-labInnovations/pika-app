@@ -1,6 +1,6 @@
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useEffect, useState } from "react";
-import { Alert } from "react-native";
+import { showAlert } from "../../components/ui/AlertDialog";
 import {
   TransactionForm,
   formValuesToMutationInput,
@@ -82,7 +82,7 @@ export default function AddTransactionScreen() {
       setAiSeedImage(null);
       router.back();
     } catch (err: any) {
-      Alert.alert("Error", err?.message ?? "Could not save transaction.");
+      showAlert({ title: "Error", message: err?.message ?? "Could not save transaction." });
     }
   };
 

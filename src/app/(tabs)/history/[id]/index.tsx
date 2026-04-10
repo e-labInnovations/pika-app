@@ -3,7 +3,6 @@ import * as Linking from "expo-linking";
 import React, { useRef, useState } from "react";
 import {
   ActivityIndicator,
-  Alert,
   Dimensions,
   Image,
   Modal,
@@ -13,6 +12,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { showAlert } from "../../../../components/ui/AlertDialog";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { DynamicIcon } from "../../../../components/Icon";
 import { Skeleton } from "../../../../components/ui/Skeleton";
@@ -255,16 +255,20 @@ export default function TransactionDetailScreen() {
   const attachments = tx?.attachments ?? [];
 
   const handleDelete = () => {
-    Alert.alert("Delete Transaction", `Delete "${tx?.title}"? This cannot be undone.`, [
-      { text: "Cancel", style: "cancel" },
-      {
-        text: "Delete", style: "destructive",
-        onPress: async () => {
-          try { await deleteTransaction(id); router.back(); }
-          catch (err: any) { Alert.alert("Error", err?.message ?? "Could not delete transaction."); }
+    showAlert({
+      title: "Delete Transaction",
+      message: `Delete "${tx?.title}"? This cannot be undone.`,
+      buttons: [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Delete", style: "destructive",
+          onPress: async () => {
+            try { await deleteTransaction(id); router.back(); }
+            catch (err: any) { showAlert({ title: "Error", message: err?.message ?? "Could not delete transaction." }); }
+          },
         },
-      },
-    ]);
+      ],
+    });
   };
 
   return (

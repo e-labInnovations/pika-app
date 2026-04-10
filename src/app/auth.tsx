@@ -1,20 +1,24 @@
 /**
  * OAuth deep-link callback route — matched when the backend redirects to
- * `pika://auth?token=JWT&exp=TIMESTAMP`.
+ * `pika://auth?code=<one-time-code>`.
  *
  * On iOS, ASWebAuthenticationSession intercepts the redirect before Expo
  * Router sees it, so loginWithGoogle handles it directly. On Android the
  * deep link is dispatched to the app as a Linking event (also handled in
  * loginWithGoogle) and may also navigate here as a fallback.
+ *
+ * The code is short-lived (60s) and HMAC-signed. It is exchanged for a JWT
+ * via POST /api/auth/exchange — the JWT never travels in a URL.
  */
 import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
 import { ActivityIndicator, Text, TouchableOpacity, View } from "react-native";
 import { PikaLogo } from "../components/PikaLogo";
 import { useAuth } from "../context/AuthContext";
+import { API_URL } from "../lib/constants";
 
 export default function AuthCallbackScreen() {
-  const { token, exp } = useLocalSearchParams<{ token?: string; exp?: string }>();
+  const { code } = useLocalSearchParams<{ code?: string }>();
   const { isAuthenticated, loginWithToken } = useAuth();
   const [error, setError] = useState<string | null>(null);
 
@@ -24,12 +28,23 @@ export default function AuthCallbackScreen() {
       return;
     }
 
-    if (!token) {
-      setError("No token received from server.");
+    if (!code) {
+      setError("No code received from server.");
       return;
     }
 
-    loginWithToken(token, exp ? parseInt(exp, 10) : undefined)
+    fetch(`${API_URL}/api/auth/exchange`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ code }),
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error(`Code exchange failed (${res.status})`);
+        return res.json();
+      })
+      .then(({ token, exp }: { token: string; exp: number | null }) =>
+        loginWithToken(token, exp ?? undefined),
+      )
       .then(() => router.replace("/(tabs)"))
       .catch((e: unknown) => {
         const msg = e instanceof Error ? e.message : String(e);

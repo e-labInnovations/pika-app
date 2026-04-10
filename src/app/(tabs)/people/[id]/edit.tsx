@@ -3,7 +3,6 @@ import * as ImagePicker from "expo-image-picker";
 import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
-  Alert,
   Platform,
   ScrollView,
   Text,
@@ -13,6 +12,7 @@ import {
   type StyleProp,
   type TextStyle,
 } from "react-native";
+import { showAlert } from "../../../../components/ui/AlertDialog";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { DynamicIcon } from "../../../../components/Icon";
 import { Skeleton } from "../../../../components/ui/Skeleton";
@@ -162,17 +162,17 @@ export default function EditPersonScreen() {
       router.back();
     } catch (err: any) {
       setUploading(false);
-      Alert.alert("Error", err?.message ?? "Could not update person.");
+      showAlert({ title: "Error", message: err?.message ?? "Could not update person." });
     } finally {
       setSaving(false);
     }
   };
 
   const handleDelete = () => {
-    Alert.alert(
-      "Delete Person",
-      `Are you sure you want to delete "${name}"? This cannot be undone.`,
-      [
+    showAlert({
+      title: "Delete Person",
+      message: `Are you sure you want to delete "${name}"? This cannot be undone.`,
+      buttons: [
         { text: "Cancel", style: "cancel" },
         {
           text: "Delete",
@@ -183,13 +183,13 @@ export default function EditPersonScreen() {
               await deletePerson(id);
               router.replace("/people");
             } catch (err: any) {
-              Alert.alert("Error", err?.message ?? "Could not delete person.");
+              showAlert({ title: "Error", message: err?.message ?? "Could not delete person." });
               setDeleting(false);
             }
           },
         },
       ],
-    );
+    });
   };
 
   const isBusy = saving || uploading || deleting;

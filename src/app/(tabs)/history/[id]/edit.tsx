@@ -1,6 +1,7 @@
 import { router, useLocalSearchParams } from "expo-router";
 import React from "react";
-import { Alert, View, Text, TouchableOpacity, ScrollView, Platform } from "react-native";
+import { View, Text, TouchableOpacity, ScrollView, Platform } from "react-native";
+import { showAlert } from "../../../../components/ui/AlertDialog";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Skeleton } from "../../../../components/ui/Skeleton";
 import { DynamicIcon } from "../../../../components/Icon";
@@ -125,7 +126,7 @@ export default function EditTransactionScreen() {
       await updateTransaction({ id, data: formValuesToUpdateInput(values, attachmentIds) });
       router.back();
     } catch (err: any) {
-      Alert.alert("Error", err?.message ?? "Could not update transaction.");
+      showAlert({ title: "Error", message: err?.message ?? "Could not update transaction." });
     }
   };
 

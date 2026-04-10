@@ -9,6 +9,7 @@ import { useEffect } from "react";
 import { AuthProvider, useAuth } from "../context/AuthContext";
 import { ShareIntentBridgeProvider, usePendingShare } from "../context/ShareIntentBridgeContext";
 import { apolloClient } from "../services/gql/client";
+import { AlertProvider } from "../components/ui/AlertDialog";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 SplashScreen.preventAutoHideAsync();
@@ -68,6 +69,7 @@ export default function Layout() {
             <AuthProvider>
               <ShareIntentListener />
               <RootSlot />
+              <AlertProvider />
             </AuthProvider>
           </ApolloProvider>
         </ShareIntentBridgeProvider>

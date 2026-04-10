@@ -3,7 +3,6 @@ import * as ImagePicker from "expo-image-picker";
 import React, { useState } from "react";
 import {
   ActivityIndicator,
-  Alert,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -12,6 +11,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { showAlert } from "../../../components/ui/AlertDialog";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { AccountAvatar } from "../../../components/AccountAvatar";
 import { DynamicIcon } from "../../../components/Icon";
@@ -47,7 +47,7 @@ export default function AddAccountScreen() {
   const handlePickAvatar = async () => {
     const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (!permission.granted) {
-      Alert.alert("Permission required", "Allow access to your photo library to set an account avatar.");
+      showAlert({ title: "Permission required", message: "Allow access to your photo library to set an account avatar." });
       return;
     }
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -81,7 +81,7 @@ export default function AddAccountScreen() {
       }
     } catch {
       setUploading(false);
-      Alert.alert("Upload failed", "Could not upload the avatar image. The account will be saved without it.");
+      showAlert({ title: "Upload failed", message: "Could not upload the avatar image. The account will be saved without it." });
     } finally {
       setUploading(false);
     }

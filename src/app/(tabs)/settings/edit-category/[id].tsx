@@ -2,7 +2,6 @@ import { router, useLocalSearchParams } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
-  Alert,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -11,6 +10,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { showAlert } from "../../../../components/ui/AlertDialog";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { DynamicIcon } from "../../../../components/Icon";
 import { Skeleton } from "../../../../components/ui/Skeleton";
@@ -113,10 +113,10 @@ export default function EditCategoryScreen() {
   };
 
   const handleDelete = () => {
-    Alert.alert(
-      "Delete Category",
-      `Are you sure you want to delete "${name}"? This cannot be undone.`,
-      [
+    showAlert({
+      title: "Delete Category",
+      message: `Are you sure you want to delete "${name}"? This cannot be undone.`,
+      buttons: [
         { text: "Cancel", style: "cancel" },
         {
           text: "Delete",
@@ -127,7 +127,7 @@ export default function EditCategoryScreen() {
           },
         },
       ],
-    );
+    });
   };
 
   // ── Render ──────────────────────────────────────────────────────────────────

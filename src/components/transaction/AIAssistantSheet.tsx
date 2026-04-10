@@ -13,7 +13,6 @@ import * as ImagePicker from "expo-image-picker";
 import React, { useState } from "react";
 import {
   ActivityIndicator,
-  Alert,
   Dimensions,
   Image,
   KeyboardAvoidingView,
@@ -27,6 +26,7 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { DynamicIcon } from "../Icon";
+import { showAlert } from "../ui/AlertDialog";
 import { useColors } from "../../theme/colors";
 import {
   useTextToTransaction,
@@ -459,10 +459,7 @@ export function AIAssistantSheet({ visible, onClose, onUseDetails, initialText, 
   const handlePickImage = async () => {
     const perm = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (!perm.granted) {
-      Alert.alert(
-        "Permission required",
-        "Allow access to your photo library to pick a receipt.",
-      );
+      showAlert({ title: "Permission required", message: "Allow access to your photo library to pick a receipt." });
       return;
     }
     const res = await ImagePicker.launchImageLibraryAsync({
@@ -474,7 +471,7 @@ export function AIAssistantSheet({ visible, onClose, onUseDetails, initialText, 
     if (res.canceled) return;
     const asset = res.assets[0];
     if (!asset.base64) {
-      Alert.alert("Error", "Could not read image data.");
+      showAlert({ title: "Error", message: "Could not read image data." });
       return;
     }
     setImage({
@@ -501,10 +498,12 @@ export function AIAssistantSheet({ visible, onClose, onUseDetails, initialText, 
         setResult(data as AITransactionData);
       }
     } catch (err: any) {
-      Alert.alert(
-        "Analysis failed",
-        err?.message ?? "Could not analyze. Please try again.",
-      );
+      const msg =
+        err?.graphQLErrors?.[0]?.message ??
+        err?.networkError?.message ??
+        err?.message ??
+        "Could not analyze. Please try again.";
+      showAlert({ title: "Analysis failed", message: msg });
     }
   };
 

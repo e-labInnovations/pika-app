@@ -5,7 +5,6 @@ import * as ImagePicker from "expo-image-picker";
 import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
-  Alert,
   Image,
   KeyboardAvoidingView,
   Platform,
@@ -15,6 +14,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { showAlert } from "../ui/AlertDialog";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { DynamicIcon } from "../Icon";
 import { AccountAvatar } from "../AccountAvatar";
@@ -219,7 +219,7 @@ export function TransactionForm({ initialValues, onSubmit, onCancel, submitLabel
             prev.map((a) => (a.localId === item.localId ? { ...a, mediaId: media.id } : a)),
           );
         } catch {
-          Alert.alert("Upload failed", `Could not upload receipt image.`);
+          showAlert({ title: "Upload failed", message: `Could not upload receipt image.` });
           setAttachments((prev) =>
             prev.map((a) => (a.localId === item.localId ? { ...a, mediaId: null } : a)),
           );
@@ -269,7 +269,7 @@ export function TransactionForm({ initialValues, onSubmit, onCancel, submitLabel
   const pickAttachment = async () => {
     const perm = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (!perm.granted) {
-      Alert.alert("Permission required", "Allow access to your photo library to add attachments.");
+      showAlert({ title: "Permission required", message: "Allow access to your photo library to add attachments." });
       return;
     }
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -300,7 +300,7 @@ export function TransactionForm({ initialValues, onSubmit, onCancel, submitLabel
           prev.map((a) => a.localId === item.localId ? { ...a, mediaId: media.id } : a),
         );
       } catch {
-        Alert.alert("Upload failed", `Could not upload ${item.filename}.`);
+        showAlert({ title: "Upload failed", message: `Could not upload ${item.filename}.` });
         // Mark as failed (null) so the user sees the red × and can remove it
         setAttachments((prev) =>
           prev.map((a) => a.localId === item.localId ? { ...a, mediaId: null } : a),
