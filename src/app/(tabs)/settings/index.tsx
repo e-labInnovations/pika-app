@@ -52,6 +52,14 @@ const SECTIONS: SettingSection[] = [
     color: "#6b7280",
     onPress: () => router.push("/settings/general"),
   },
+  {
+    id: "ai",
+    title: "AI",
+    icon: "sparkles",
+    description: "Gemini key and MCP API keys",
+    color: "#8b5cf6",
+    onPress: () => router.push("/settings/ai"),
+  },
 ];
 
 function chunk<T>(arr: T[], size: number): T[][] {

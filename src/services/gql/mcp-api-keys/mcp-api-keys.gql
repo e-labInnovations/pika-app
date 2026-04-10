@@ -1,0 +1,50 @@
+fragment McpApiKeyFields on PayloadMcpApiKey {
+  id
+  label
+  description
+  enableAPIKey
+  apiKey
+  createdAt
+  updatedAt
+  accounts { find create update delete }
+  people { find create update delete }
+  categories { find create update delete }
+  tags { find create update delete }
+  transactions { find create update delete }
+  transactionLinks { find create update delete }
+  reminders { find create update delete }
+  userSettings { find update }
+  payload_mcp_tool { getDashboardSummary getMonthlyCategories getMonthlyTags getCurrentUser getMonthlyPeople }
+  payload_mcp_resource { currencies currency timezones timezone }
+}
+
+query GetMcpApiKeys($userId: JSON) {
+  PayloadMcpApiKeys(
+    where: { user: { equals: $userId } }
+    limit: 50
+    sort: "-createdAt"
+  ) {
+    docs {
+      ...McpApiKeyFields
+    }
+    totalDocs
+  }
+}
+
+mutation CreateMcpApiKey($data: mutationPayloadMcpApiKeyInput!) {
+  createPayloadMcpApiKey(data: $data) {
+    ...McpApiKeyFields
+  }
+}
+
+mutation UpdateMcpApiKey($id: String!, $data: mutationPayloadMcpApiKeyUpdateInput!) {
+  updatePayloadMcpApiKey(id: $id, data: $data) {
+    ...McpApiKeyFields
+  }
+}
+
+mutation DeleteMcpApiKey($id: String!) {
+  deletePayloadMcpApiKey(id: $id) {
+    id
+  }
+}
