@@ -5,6 +5,7 @@ import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   KeyboardAvoidingView,
+  Linking,
   Platform,
   ScrollView,
   StyleSheet,
@@ -13,6 +14,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { API_URL } from "../lib/constants";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Path, Svg } from "react-native-svg";
 import { PikaLogo } from "../components/PikaLogo";
@@ -237,9 +239,12 @@ export default function SignInScreen() {
 
           {/* Footer links */}
           <View style={s.footerLinks}>
-            {["Privacy Policy", "Terms of Service", "Help Center"].map((link) => (
-              <TouchableOpacity key={link} activeOpacity={0.7}>
-                <Text style={[s.footerLink, { color: C.onSurfaceVariant }]}>{link}</Text>
+            {([
+              { label: "Privacy Policy", path: "/privacy-policy" },
+              { label: "Terms of Service", path: "/terms" },
+            ] as const).map(({ label, path }) => (
+              <TouchableOpacity key={label} activeOpacity={0.7} onPress={() => Linking.openURL(`${API_URL}${path}`)}>
+                <Text style={[s.footerLink, { color: C.onSurfaceVariant }]}>{label}</Text>
               </TouchableOpacity>
             ))}
           </View>

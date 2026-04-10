@@ -2,6 +2,7 @@ import { router } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
+  Linking,
   Modal,
   Platform,
   ScrollView,
@@ -12,6 +13,7 @@ import {
   View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { API_URL } from "../../../lib/constants";
 import { showAlert } from "../../../components/ui/AlertDialog";
 import { DynamicIcon } from "../../../components/Icon";
 import { Skeleton } from "../../../components/ui/Skeleton";
@@ -1315,6 +1317,28 @@ export default function AiSettingsScreen() {
             <Text style={{ fontSize: 14, fontWeight: "700", color: C.primary }}>
               Create API Key
             </Text>
+          </TouchableOpacity>
+
+          {/* MCP Setup Guide link */}
+          <TouchableOpacity
+            onPress={() => Linking.openURL(`${API_URL}/mcp-setup`)}
+            activeOpacity={0.75}
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              gap: 10,
+              paddingVertical: 13,
+              paddingHorizontal: 14,
+              borderRadius: 14,
+              marginTop: 8,
+              backgroundColor: C.surfaceHigh,
+            }}
+          >
+            <DynamicIcon name="book-open" size={15} color={C.onSurfaceVariant} />
+            <Text style={{ flex: 1, fontSize: 13, fontWeight: "600", color: C.onSurface }}>
+              MCP Setup Guide
+            </Text>
+            <DynamicIcon name="external-link" size={13} color={C.onSurfaceVariant} />
           </TouchableOpacity>
         </ScrollView>
       )}
