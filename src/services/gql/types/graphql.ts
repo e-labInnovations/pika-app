@@ -51,6 +51,7 @@ export type Access = {
   categories?: Maybe<categoriesAccess>;
   media?: Maybe<mediaAccess>;
   oauth_accounts?: Maybe<oauth_accountsAccess>;
+  oauth_codes?: Maybe<oauth_codesAccess>;
   payload_kv?: Maybe<payload_kvAccess>;
   payload_locked_documents?: Maybe<payload_locked_documentsAccess>;
   payload_mcp_api_keys?: Maybe<payload_mcp_api_keysAccess>;
@@ -58,6 +59,7 @@ export type Access = {
   people?: Maybe<peopleAccess>;
   reminders?: Maybe<remindersAccess>;
   tags?: Maybe<tagsAccess>;
+  transaction_links?: Maybe<transaction_linksAccess>;
   transactions?: Maybe<transactionsAccess>;
   user_settings?: Maybe<user_settingsAccess>;
   users?: Maybe<usersAccess>;
@@ -5172,6 +5174,7 @@ export type Mutation = {
   createCategory?: Maybe<Category>;
   createMedia?: Maybe<Media>;
   createOauthAccount?: Maybe<OauthAccount>;
+  createOauthCode?: Maybe<OauthCode>;
   createPayloadKv?: Maybe<PayloadKv>;
   createPayloadLockedDocument?: Maybe<PayloadLockedDocument>;
   createPayloadMcpApiKey?: Maybe<PayloadMcpApiKey>;
@@ -5180,6 +5183,7 @@ export type Mutation = {
   createReminder?: Maybe<Reminder>;
   createTag?: Maybe<Tag>;
   createTransaction?: Maybe<Transaction>;
+  createTransactionLink?: Maybe<TransactionLink>;
   createUser?: Maybe<User>;
   createUserSetting?: Maybe<UserSetting>;
   deleteAccount?: Maybe<Account>;
@@ -5187,6 +5191,7 @@ export type Mutation = {
   deleteCategory?: Maybe<Category>;
   deleteMedia?: Maybe<Media>;
   deleteOauthAccount?: Maybe<OauthAccount>;
+  deleteOauthCode?: Maybe<OauthCode>;
   deletePayloadKv?: Maybe<PayloadKv>;
   deletePayloadLockedDocument?: Maybe<PayloadLockedDocument>;
   deletePayloadMcpApiKey?: Maybe<PayloadMcpApiKey>;
@@ -5195,6 +5200,7 @@ export type Mutation = {
   deleteReminder?: Maybe<Reminder>;
   deleteTag?: Maybe<Tag>;
   deleteTransaction?: Maybe<Transaction>;
+  deleteTransactionLink?: Maybe<TransactionLink>;
   deleteUser?: Maybe<User>;
   deleteUserSetting?: Maybe<UserSetting>;
   duplicateAccount?: Maybe<Account>;
@@ -5202,6 +5208,7 @@ export type Mutation = {
   duplicateCategory?: Maybe<Category>;
   duplicateMedia?: Maybe<Media>;
   duplicateOauthAccount?: Maybe<OauthAccount>;
+  duplicateOauthCode?: Maybe<OauthCode>;
   duplicatePayloadKv?: Maybe<PayloadKv>;
   duplicatePayloadLockedDocument?: Maybe<PayloadLockedDocument>;
   duplicatePayloadPreference?: Maybe<PayloadPreference>;
@@ -5209,6 +5216,7 @@ export type Mutation = {
   duplicateReminder?: Maybe<Reminder>;
   duplicateTag?: Maybe<Tag>;
   duplicateTransaction?: Maybe<Transaction>;
+  duplicateTransactionLink?: Maybe<TransactionLink>;
   duplicateUserSetting?: Maybe<UserSetting>;
   forgotPasswordUser: Scalars['Boolean']['output'];
   imageToTransaction?: Maybe<AITransactionResult>;
@@ -5226,6 +5234,7 @@ export type Mutation = {
   updateCategory?: Maybe<Category>;
   updateMedia?: Maybe<Media>;
   updateOauthAccount?: Maybe<OauthAccount>;
+  updateOauthCode?: Maybe<OauthCode>;
   updatePayloadKv?: Maybe<PayloadKv>;
   updatePayloadLockedDocument?: Maybe<PayloadLockedDocument>;
   updatePayloadMcpApiKey?: Maybe<PayloadMcpApiKey>;
@@ -5234,6 +5243,7 @@ export type Mutation = {
   updateReminder?: Maybe<Reminder>;
   updateTag?: Maybe<Tag>;
   updateTransaction?: Maybe<Transaction>;
+  updateTransactionLink?: Maybe<TransactionLink>;
   updateUser?: Maybe<User>;
   updateUserSetting?: Maybe<UserSetting>;
   verifyEmailUser?: Maybe<Scalars['Boolean']['output']>;
@@ -5266,6 +5276,12 @@ export type MutationcreateMediaArgs = {
 
 export type MutationcreateOauthAccountArgs = {
   data: mutationOauthAccountInput;
+  draft?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+
+export type MutationcreateOauthCodeArgs = {
+  data: mutationOauthCodeInput;
   draft?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
@@ -5318,6 +5334,12 @@ export type MutationcreateTransactionArgs = {
 };
 
 
+export type MutationcreateTransactionLinkArgs = {
+  data: mutationTransactionLinkInput;
+  draft?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+
 export type MutationcreateUserArgs = {
   data: mutationUserInput;
   draft?: InputMaybe<Scalars['Boolean']['input']>;
@@ -5355,6 +5377,12 @@ export type MutationdeleteMediaArgs = {
 
 
 export type MutationdeleteOauthAccountArgs = {
+  id: Scalars['String']['input'];
+  trash?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+
+export type MutationdeleteOauthCodeArgs = {
   id: Scalars['String']['input'];
   trash?: InputMaybe<Scalars['Boolean']['input']>;
 };
@@ -5408,6 +5436,12 @@ export type MutationdeleteTransactionArgs = {
 };
 
 
+export type MutationdeleteTransactionLinkArgs = {
+  id: Scalars['String']['input'];
+  trash?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+
 export type MutationdeleteUserArgs = {
   id: Scalars['String']['input'];
   trash?: InputMaybe<Scalars['Boolean']['input']>;
@@ -5450,6 +5484,12 @@ export type MutationduplicateOauthAccountArgs = {
 };
 
 
+export type MutationduplicateOauthCodeArgs = {
+  data: mutationOauthCodeInput;
+  id: Scalars['String']['input'];
+};
+
+
 export type MutationduplicatePayloadKvArgs = {
   data: mutationPayloadKvInput;
   id: Scalars['String']['input'];
@@ -5488,6 +5528,12 @@ export type MutationduplicateTagArgs = {
 
 export type MutationduplicateTransactionArgs = {
   data: mutationTransactionInput;
+  id: Scalars['String']['input'];
+};
+
+
+export type MutationduplicateTransactionLinkArgs = {
+  data: mutationTransactionLinkInput;
   id: Scalars['String']['input'];
 };
 
@@ -5596,6 +5642,15 @@ export type MutationupdateOauthAccountArgs = {
 };
 
 
+export type MutationupdateOauthCodeArgs = {
+  autosave?: InputMaybe<Scalars['Boolean']['input']>;
+  data: mutationOauthCodeUpdateInput;
+  draft?: InputMaybe<Scalars['Boolean']['input']>;
+  id: Scalars['String']['input'];
+  trash?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+
 export type MutationupdatePayloadKvArgs = {
   autosave?: InputMaybe<Scalars['Boolean']['input']>;
   data: mutationPayloadKvUpdateInput;
@@ -5662,6 +5717,15 @@ export type MutationupdateTagArgs = {
 export type MutationupdateTransactionArgs = {
   autosave?: InputMaybe<Scalars['Boolean']['input']>;
   data: mutationTransactionUpdateInput;
+  draft?: InputMaybe<Scalars['Boolean']['input']>;
+  id: Scalars['String']['input'];
+  trash?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+
+export type MutationupdateTransactionLinkArgs = {
+  autosave?: InputMaybe<Scalars['Boolean']['input']>;
+  data: mutationTransactionLinkUpdateInput;
   draft?: InputMaybe<Scalars['Boolean']['input']>;
   id: Scalars['String']['input'];
   trash?: InputMaybe<Scalars['Boolean']['input']>;
@@ -6447,6 +6511,834 @@ export type OauthAccountsUpdateDocAccess = {
   where?: Maybe<Scalars['JSONObject']['output']>;
 };
 
+export type OauthCode = {
+  __typename?: 'OauthCode';
+  apiKeyId: Scalars['String']['output'];
+  apiKeyValue: Scalars['String']['output'];
+  clientId: Scalars['String']['output'];
+  code: Scalars['String']['output'];
+  codeChallenge?: Maybe<Scalars['String']['output']>;
+  createdAt?: Maybe<Scalars['DateTime']['output']>;
+  expiresAt: Scalars['DateTime']['output'];
+  id: Scalars['String']['output'];
+  redirectUri: Scalars['String']['output'];
+  updatedAt?: Maybe<Scalars['DateTime']['output']>;
+  userId: Scalars['String']['output'];
+};
+
+export type OauthCode_apiKeyId_operator = {
+  all?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  contains?: InputMaybe<Scalars['String']['input']>;
+  equals?: InputMaybe<Scalars['String']['input']>;
+  in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  like?: InputMaybe<Scalars['String']['input']>;
+  not_equals?: InputMaybe<Scalars['String']['input']>;
+  not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+};
+
+export type OauthCode_apiKeyValue_operator = {
+  all?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  contains?: InputMaybe<Scalars['String']['input']>;
+  equals?: InputMaybe<Scalars['String']['input']>;
+  in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  like?: InputMaybe<Scalars['String']['input']>;
+  not_equals?: InputMaybe<Scalars['String']['input']>;
+  not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+};
+
+export type OauthCode_clientId_operator = {
+  all?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  contains?: InputMaybe<Scalars['String']['input']>;
+  equals?: InputMaybe<Scalars['String']['input']>;
+  in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  like?: InputMaybe<Scalars['String']['input']>;
+  not_equals?: InputMaybe<Scalars['String']['input']>;
+  not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+};
+
+export type OauthCode_codeChallenge_operator = {
+  all?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  contains?: InputMaybe<Scalars['String']['input']>;
+  equals?: InputMaybe<Scalars['String']['input']>;
+  exists?: InputMaybe<Scalars['Boolean']['input']>;
+  in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  like?: InputMaybe<Scalars['String']['input']>;
+  not_equals?: InputMaybe<Scalars['String']['input']>;
+  not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+};
+
+export type OauthCode_code_operator = {
+  all?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  contains?: InputMaybe<Scalars['String']['input']>;
+  equals?: InputMaybe<Scalars['String']['input']>;
+  in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  like?: InputMaybe<Scalars['String']['input']>;
+  not_equals?: InputMaybe<Scalars['String']['input']>;
+  not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+};
+
+export type OauthCode_createdAt_operator = {
+  equals?: InputMaybe<Scalars['DateTime']['input']>;
+  exists?: InputMaybe<Scalars['Boolean']['input']>;
+  greater_than?: InputMaybe<Scalars['DateTime']['input']>;
+  greater_than_equal?: InputMaybe<Scalars['DateTime']['input']>;
+  less_than?: InputMaybe<Scalars['DateTime']['input']>;
+  less_than_equal?: InputMaybe<Scalars['DateTime']['input']>;
+  like?: InputMaybe<Scalars['DateTime']['input']>;
+  not_equals?: InputMaybe<Scalars['DateTime']['input']>;
+};
+
+export type OauthCode_expiresAt_operator = {
+  equals?: InputMaybe<Scalars['DateTime']['input']>;
+  greater_than?: InputMaybe<Scalars['DateTime']['input']>;
+  greater_than_equal?: InputMaybe<Scalars['DateTime']['input']>;
+  less_than?: InputMaybe<Scalars['DateTime']['input']>;
+  less_than_equal?: InputMaybe<Scalars['DateTime']['input']>;
+  like?: InputMaybe<Scalars['DateTime']['input']>;
+  not_equals?: InputMaybe<Scalars['DateTime']['input']>;
+};
+
+export type OauthCode_id_operator = {
+  all?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  contains?: InputMaybe<Scalars['String']['input']>;
+  equals?: InputMaybe<Scalars['String']['input']>;
+  exists?: InputMaybe<Scalars['Boolean']['input']>;
+  in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  like?: InputMaybe<Scalars['String']['input']>;
+  not_equals?: InputMaybe<Scalars['String']['input']>;
+  not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+};
+
+export type OauthCode_redirectUri_operator = {
+  all?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  contains?: InputMaybe<Scalars['String']['input']>;
+  equals?: InputMaybe<Scalars['String']['input']>;
+  in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  like?: InputMaybe<Scalars['String']['input']>;
+  not_equals?: InputMaybe<Scalars['String']['input']>;
+  not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+};
+
+export type OauthCode_updatedAt_operator = {
+  equals?: InputMaybe<Scalars['DateTime']['input']>;
+  exists?: InputMaybe<Scalars['Boolean']['input']>;
+  greater_than?: InputMaybe<Scalars['DateTime']['input']>;
+  greater_than_equal?: InputMaybe<Scalars['DateTime']['input']>;
+  less_than?: InputMaybe<Scalars['DateTime']['input']>;
+  less_than_equal?: InputMaybe<Scalars['DateTime']['input']>;
+  like?: InputMaybe<Scalars['DateTime']['input']>;
+  not_equals?: InputMaybe<Scalars['DateTime']['input']>;
+};
+
+export type OauthCode_userId_operator = {
+  all?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  contains?: InputMaybe<Scalars['String']['input']>;
+  equals?: InputMaybe<Scalars['String']['input']>;
+  in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  like?: InputMaybe<Scalars['String']['input']>;
+  not_equals?: InputMaybe<Scalars['String']['input']>;
+  not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+};
+
+export type OauthCode_where = {
+  AND?: InputMaybe<Array<InputMaybe<OauthCode_where_and>>>;
+  OR?: InputMaybe<Array<InputMaybe<OauthCode_where_or>>>;
+  apiKeyId?: InputMaybe<OauthCode_apiKeyId_operator>;
+  apiKeyValue?: InputMaybe<OauthCode_apiKeyValue_operator>;
+  clientId?: InputMaybe<OauthCode_clientId_operator>;
+  code?: InputMaybe<OauthCode_code_operator>;
+  codeChallenge?: InputMaybe<OauthCode_codeChallenge_operator>;
+  createdAt?: InputMaybe<OauthCode_createdAt_operator>;
+  expiresAt?: InputMaybe<OauthCode_expiresAt_operator>;
+  id?: InputMaybe<OauthCode_id_operator>;
+  redirectUri?: InputMaybe<OauthCode_redirectUri_operator>;
+  updatedAt?: InputMaybe<OauthCode_updatedAt_operator>;
+  userId?: InputMaybe<OauthCode_userId_operator>;
+};
+
+export type OauthCode_where_and = {
+  AND?: InputMaybe<Array<InputMaybe<OauthCode_where_and>>>;
+  OR?: InputMaybe<Array<InputMaybe<OauthCode_where_or>>>;
+  apiKeyId?: InputMaybe<OauthCode_apiKeyId_operator>;
+  apiKeyValue?: InputMaybe<OauthCode_apiKeyValue_operator>;
+  clientId?: InputMaybe<OauthCode_clientId_operator>;
+  code?: InputMaybe<OauthCode_code_operator>;
+  codeChallenge?: InputMaybe<OauthCode_codeChallenge_operator>;
+  createdAt?: InputMaybe<OauthCode_createdAt_operator>;
+  expiresAt?: InputMaybe<OauthCode_expiresAt_operator>;
+  id?: InputMaybe<OauthCode_id_operator>;
+  redirectUri?: InputMaybe<OauthCode_redirectUri_operator>;
+  updatedAt?: InputMaybe<OauthCode_updatedAt_operator>;
+  userId?: InputMaybe<OauthCode_userId_operator>;
+};
+
+export type OauthCode_where_or = {
+  AND?: InputMaybe<Array<InputMaybe<OauthCode_where_and>>>;
+  OR?: InputMaybe<Array<InputMaybe<OauthCode_where_or>>>;
+  apiKeyId?: InputMaybe<OauthCode_apiKeyId_operator>;
+  apiKeyValue?: InputMaybe<OauthCode_apiKeyValue_operator>;
+  clientId?: InputMaybe<OauthCode_clientId_operator>;
+  code?: InputMaybe<OauthCode_code_operator>;
+  codeChallenge?: InputMaybe<OauthCode_codeChallenge_operator>;
+  createdAt?: InputMaybe<OauthCode_createdAt_operator>;
+  expiresAt?: InputMaybe<OauthCode_expiresAt_operator>;
+  id?: InputMaybe<OauthCode_id_operator>;
+  redirectUri?: InputMaybe<OauthCode_redirectUri_operator>;
+  updatedAt?: InputMaybe<OauthCode_updatedAt_operator>;
+  userId?: InputMaybe<OauthCode_userId_operator>;
+};
+
+export type OauthCodes = {
+  __typename?: 'OauthCodes';
+  docs: Array<OauthCode>;
+  hasNextPage: Scalars['Boolean']['output'];
+  hasPrevPage: Scalars['Boolean']['output'];
+  limit: Scalars['Int']['output'];
+  nextPage?: Maybe<Scalars['Int']['output']>;
+  offset?: Maybe<Scalars['Int']['output']>;
+  page: Scalars['Int']['output'];
+  pagingCounter: Scalars['Int']['output'];
+  prevPage?: Maybe<Scalars['Int']['output']>;
+  totalDocs: Scalars['Int']['output'];
+  totalPages: Scalars['Int']['output'];
+};
+
+export type OauthCodesCreateAccess = {
+  __typename?: 'OauthCodesCreateAccess';
+  permission: Scalars['Boolean']['output'];
+  where?: Maybe<Scalars['JSONObject']['output']>;
+};
+
+export type OauthCodesCreateDocAccess = {
+  __typename?: 'OauthCodesCreateDocAccess';
+  permission: Scalars['Boolean']['output'];
+  where?: Maybe<Scalars['JSONObject']['output']>;
+};
+
+export type OauthCodesDeleteAccess = {
+  __typename?: 'OauthCodesDeleteAccess';
+  permission: Scalars['Boolean']['output'];
+  where?: Maybe<Scalars['JSONObject']['output']>;
+};
+
+export type OauthCodesDeleteDocAccess = {
+  __typename?: 'OauthCodesDeleteDocAccess';
+  permission: Scalars['Boolean']['output'];
+  where?: Maybe<Scalars['JSONObject']['output']>;
+};
+
+export type OauthCodesDocAccessFields = {
+  __typename?: 'OauthCodesDocAccessFields';
+  apiKeyId?: Maybe<OauthCodesDocAccessFields_apiKeyId>;
+  apiKeyValue?: Maybe<OauthCodesDocAccessFields_apiKeyValue>;
+  clientId?: Maybe<OauthCodesDocAccessFields_clientId>;
+  code?: Maybe<OauthCodesDocAccessFields_code>;
+  codeChallenge?: Maybe<OauthCodesDocAccessFields_codeChallenge>;
+  createdAt?: Maybe<OauthCodesDocAccessFields_createdAt>;
+  expiresAt?: Maybe<OauthCodesDocAccessFields_expiresAt>;
+  redirectUri?: Maybe<OauthCodesDocAccessFields_redirectUri>;
+  updatedAt?: Maybe<OauthCodesDocAccessFields_updatedAt>;
+  userId?: Maybe<OauthCodesDocAccessFields_userId>;
+};
+
+export type OauthCodesDocAccessFields_apiKeyId = {
+  __typename?: 'OauthCodesDocAccessFields_apiKeyId';
+  create?: Maybe<OauthCodesDocAccessFields_apiKeyId_Create>;
+  delete?: Maybe<OauthCodesDocAccessFields_apiKeyId_Delete>;
+  read?: Maybe<OauthCodesDocAccessFields_apiKeyId_Read>;
+  update?: Maybe<OauthCodesDocAccessFields_apiKeyId_Update>;
+};
+
+export type OauthCodesDocAccessFields_apiKeyId_Create = {
+  __typename?: 'OauthCodesDocAccessFields_apiKeyId_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type OauthCodesDocAccessFields_apiKeyId_Delete = {
+  __typename?: 'OauthCodesDocAccessFields_apiKeyId_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type OauthCodesDocAccessFields_apiKeyId_Read = {
+  __typename?: 'OauthCodesDocAccessFields_apiKeyId_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type OauthCodesDocAccessFields_apiKeyId_Update = {
+  __typename?: 'OauthCodesDocAccessFields_apiKeyId_Update';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type OauthCodesDocAccessFields_apiKeyValue = {
+  __typename?: 'OauthCodesDocAccessFields_apiKeyValue';
+  create?: Maybe<OauthCodesDocAccessFields_apiKeyValue_Create>;
+  delete?: Maybe<OauthCodesDocAccessFields_apiKeyValue_Delete>;
+  read?: Maybe<OauthCodesDocAccessFields_apiKeyValue_Read>;
+  update?: Maybe<OauthCodesDocAccessFields_apiKeyValue_Update>;
+};
+
+export type OauthCodesDocAccessFields_apiKeyValue_Create = {
+  __typename?: 'OauthCodesDocAccessFields_apiKeyValue_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type OauthCodesDocAccessFields_apiKeyValue_Delete = {
+  __typename?: 'OauthCodesDocAccessFields_apiKeyValue_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type OauthCodesDocAccessFields_apiKeyValue_Read = {
+  __typename?: 'OauthCodesDocAccessFields_apiKeyValue_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type OauthCodesDocAccessFields_apiKeyValue_Update = {
+  __typename?: 'OauthCodesDocAccessFields_apiKeyValue_Update';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type OauthCodesDocAccessFields_clientId = {
+  __typename?: 'OauthCodesDocAccessFields_clientId';
+  create?: Maybe<OauthCodesDocAccessFields_clientId_Create>;
+  delete?: Maybe<OauthCodesDocAccessFields_clientId_Delete>;
+  read?: Maybe<OauthCodesDocAccessFields_clientId_Read>;
+  update?: Maybe<OauthCodesDocAccessFields_clientId_Update>;
+};
+
+export type OauthCodesDocAccessFields_clientId_Create = {
+  __typename?: 'OauthCodesDocAccessFields_clientId_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type OauthCodesDocAccessFields_clientId_Delete = {
+  __typename?: 'OauthCodesDocAccessFields_clientId_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type OauthCodesDocAccessFields_clientId_Read = {
+  __typename?: 'OauthCodesDocAccessFields_clientId_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type OauthCodesDocAccessFields_clientId_Update = {
+  __typename?: 'OauthCodesDocAccessFields_clientId_Update';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type OauthCodesDocAccessFields_code = {
+  __typename?: 'OauthCodesDocAccessFields_code';
+  create?: Maybe<OauthCodesDocAccessFields_code_Create>;
+  delete?: Maybe<OauthCodesDocAccessFields_code_Delete>;
+  read?: Maybe<OauthCodesDocAccessFields_code_Read>;
+  update?: Maybe<OauthCodesDocAccessFields_code_Update>;
+};
+
+export type OauthCodesDocAccessFields_codeChallenge = {
+  __typename?: 'OauthCodesDocAccessFields_codeChallenge';
+  create?: Maybe<OauthCodesDocAccessFields_codeChallenge_Create>;
+  delete?: Maybe<OauthCodesDocAccessFields_codeChallenge_Delete>;
+  read?: Maybe<OauthCodesDocAccessFields_codeChallenge_Read>;
+  update?: Maybe<OauthCodesDocAccessFields_codeChallenge_Update>;
+};
+
+export type OauthCodesDocAccessFields_codeChallenge_Create = {
+  __typename?: 'OauthCodesDocAccessFields_codeChallenge_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type OauthCodesDocAccessFields_codeChallenge_Delete = {
+  __typename?: 'OauthCodesDocAccessFields_codeChallenge_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type OauthCodesDocAccessFields_codeChallenge_Read = {
+  __typename?: 'OauthCodesDocAccessFields_codeChallenge_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type OauthCodesDocAccessFields_codeChallenge_Update = {
+  __typename?: 'OauthCodesDocAccessFields_codeChallenge_Update';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type OauthCodesDocAccessFields_code_Create = {
+  __typename?: 'OauthCodesDocAccessFields_code_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type OauthCodesDocAccessFields_code_Delete = {
+  __typename?: 'OauthCodesDocAccessFields_code_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type OauthCodesDocAccessFields_code_Read = {
+  __typename?: 'OauthCodesDocAccessFields_code_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type OauthCodesDocAccessFields_code_Update = {
+  __typename?: 'OauthCodesDocAccessFields_code_Update';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type OauthCodesDocAccessFields_createdAt = {
+  __typename?: 'OauthCodesDocAccessFields_createdAt';
+  create?: Maybe<OauthCodesDocAccessFields_createdAt_Create>;
+  delete?: Maybe<OauthCodesDocAccessFields_createdAt_Delete>;
+  read?: Maybe<OauthCodesDocAccessFields_createdAt_Read>;
+  update?: Maybe<OauthCodesDocAccessFields_createdAt_Update>;
+};
+
+export type OauthCodesDocAccessFields_createdAt_Create = {
+  __typename?: 'OauthCodesDocAccessFields_createdAt_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type OauthCodesDocAccessFields_createdAt_Delete = {
+  __typename?: 'OauthCodesDocAccessFields_createdAt_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type OauthCodesDocAccessFields_createdAt_Read = {
+  __typename?: 'OauthCodesDocAccessFields_createdAt_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type OauthCodesDocAccessFields_createdAt_Update = {
+  __typename?: 'OauthCodesDocAccessFields_createdAt_Update';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type OauthCodesDocAccessFields_expiresAt = {
+  __typename?: 'OauthCodesDocAccessFields_expiresAt';
+  create?: Maybe<OauthCodesDocAccessFields_expiresAt_Create>;
+  delete?: Maybe<OauthCodesDocAccessFields_expiresAt_Delete>;
+  read?: Maybe<OauthCodesDocAccessFields_expiresAt_Read>;
+  update?: Maybe<OauthCodesDocAccessFields_expiresAt_Update>;
+};
+
+export type OauthCodesDocAccessFields_expiresAt_Create = {
+  __typename?: 'OauthCodesDocAccessFields_expiresAt_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type OauthCodesDocAccessFields_expiresAt_Delete = {
+  __typename?: 'OauthCodesDocAccessFields_expiresAt_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type OauthCodesDocAccessFields_expiresAt_Read = {
+  __typename?: 'OauthCodesDocAccessFields_expiresAt_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type OauthCodesDocAccessFields_expiresAt_Update = {
+  __typename?: 'OauthCodesDocAccessFields_expiresAt_Update';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type OauthCodesDocAccessFields_redirectUri = {
+  __typename?: 'OauthCodesDocAccessFields_redirectUri';
+  create?: Maybe<OauthCodesDocAccessFields_redirectUri_Create>;
+  delete?: Maybe<OauthCodesDocAccessFields_redirectUri_Delete>;
+  read?: Maybe<OauthCodesDocAccessFields_redirectUri_Read>;
+  update?: Maybe<OauthCodesDocAccessFields_redirectUri_Update>;
+};
+
+export type OauthCodesDocAccessFields_redirectUri_Create = {
+  __typename?: 'OauthCodesDocAccessFields_redirectUri_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type OauthCodesDocAccessFields_redirectUri_Delete = {
+  __typename?: 'OauthCodesDocAccessFields_redirectUri_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type OauthCodesDocAccessFields_redirectUri_Read = {
+  __typename?: 'OauthCodesDocAccessFields_redirectUri_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type OauthCodesDocAccessFields_redirectUri_Update = {
+  __typename?: 'OauthCodesDocAccessFields_redirectUri_Update';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type OauthCodesDocAccessFields_updatedAt = {
+  __typename?: 'OauthCodesDocAccessFields_updatedAt';
+  create?: Maybe<OauthCodesDocAccessFields_updatedAt_Create>;
+  delete?: Maybe<OauthCodesDocAccessFields_updatedAt_Delete>;
+  read?: Maybe<OauthCodesDocAccessFields_updatedAt_Read>;
+  update?: Maybe<OauthCodesDocAccessFields_updatedAt_Update>;
+};
+
+export type OauthCodesDocAccessFields_updatedAt_Create = {
+  __typename?: 'OauthCodesDocAccessFields_updatedAt_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type OauthCodesDocAccessFields_updatedAt_Delete = {
+  __typename?: 'OauthCodesDocAccessFields_updatedAt_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type OauthCodesDocAccessFields_updatedAt_Read = {
+  __typename?: 'OauthCodesDocAccessFields_updatedAt_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type OauthCodesDocAccessFields_updatedAt_Update = {
+  __typename?: 'OauthCodesDocAccessFields_updatedAt_Update';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type OauthCodesDocAccessFields_userId = {
+  __typename?: 'OauthCodesDocAccessFields_userId';
+  create?: Maybe<OauthCodesDocAccessFields_userId_Create>;
+  delete?: Maybe<OauthCodesDocAccessFields_userId_Delete>;
+  read?: Maybe<OauthCodesDocAccessFields_userId_Read>;
+  update?: Maybe<OauthCodesDocAccessFields_userId_Update>;
+};
+
+export type OauthCodesDocAccessFields_userId_Create = {
+  __typename?: 'OauthCodesDocAccessFields_userId_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type OauthCodesDocAccessFields_userId_Delete = {
+  __typename?: 'OauthCodesDocAccessFields_userId_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type OauthCodesDocAccessFields_userId_Read = {
+  __typename?: 'OauthCodesDocAccessFields_userId_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type OauthCodesDocAccessFields_userId_Update = {
+  __typename?: 'OauthCodesDocAccessFields_userId_Update';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type OauthCodesFields = {
+  __typename?: 'OauthCodesFields';
+  apiKeyId?: Maybe<OauthCodesFields_apiKeyId>;
+  apiKeyValue?: Maybe<OauthCodesFields_apiKeyValue>;
+  clientId?: Maybe<OauthCodesFields_clientId>;
+  code?: Maybe<OauthCodesFields_code>;
+  codeChallenge?: Maybe<OauthCodesFields_codeChallenge>;
+  createdAt?: Maybe<OauthCodesFields_createdAt>;
+  expiresAt?: Maybe<OauthCodesFields_expiresAt>;
+  redirectUri?: Maybe<OauthCodesFields_redirectUri>;
+  updatedAt?: Maybe<OauthCodesFields_updatedAt>;
+  userId?: Maybe<OauthCodesFields_userId>;
+};
+
+export type OauthCodesFields_apiKeyId = {
+  __typename?: 'OauthCodesFields_apiKeyId';
+  create?: Maybe<OauthCodesFields_apiKeyId_Create>;
+  delete?: Maybe<OauthCodesFields_apiKeyId_Delete>;
+  read?: Maybe<OauthCodesFields_apiKeyId_Read>;
+  update?: Maybe<OauthCodesFields_apiKeyId_Update>;
+};
+
+export type OauthCodesFields_apiKeyId_Create = {
+  __typename?: 'OauthCodesFields_apiKeyId_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type OauthCodesFields_apiKeyId_Delete = {
+  __typename?: 'OauthCodesFields_apiKeyId_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type OauthCodesFields_apiKeyId_Read = {
+  __typename?: 'OauthCodesFields_apiKeyId_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type OauthCodesFields_apiKeyId_Update = {
+  __typename?: 'OauthCodesFields_apiKeyId_Update';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type OauthCodesFields_apiKeyValue = {
+  __typename?: 'OauthCodesFields_apiKeyValue';
+  create?: Maybe<OauthCodesFields_apiKeyValue_Create>;
+  delete?: Maybe<OauthCodesFields_apiKeyValue_Delete>;
+  read?: Maybe<OauthCodesFields_apiKeyValue_Read>;
+  update?: Maybe<OauthCodesFields_apiKeyValue_Update>;
+};
+
+export type OauthCodesFields_apiKeyValue_Create = {
+  __typename?: 'OauthCodesFields_apiKeyValue_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type OauthCodesFields_apiKeyValue_Delete = {
+  __typename?: 'OauthCodesFields_apiKeyValue_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type OauthCodesFields_apiKeyValue_Read = {
+  __typename?: 'OauthCodesFields_apiKeyValue_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type OauthCodesFields_apiKeyValue_Update = {
+  __typename?: 'OauthCodesFields_apiKeyValue_Update';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type OauthCodesFields_clientId = {
+  __typename?: 'OauthCodesFields_clientId';
+  create?: Maybe<OauthCodesFields_clientId_Create>;
+  delete?: Maybe<OauthCodesFields_clientId_Delete>;
+  read?: Maybe<OauthCodesFields_clientId_Read>;
+  update?: Maybe<OauthCodesFields_clientId_Update>;
+};
+
+export type OauthCodesFields_clientId_Create = {
+  __typename?: 'OauthCodesFields_clientId_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type OauthCodesFields_clientId_Delete = {
+  __typename?: 'OauthCodesFields_clientId_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type OauthCodesFields_clientId_Read = {
+  __typename?: 'OauthCodesFields_clientId_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type OauthCodesFields_clientId_Update = {
+  __typename?: 'OauthCodesFields_clientId_Update';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type OauthCodesFields_code = {
+  __typename?: 'OauthCodesFields_code';
+  create?: Maybe<OauthCodesFields_code_Create>;
+  delete?: Maybe<OauthCodesFields_code_Delete>;
+  read?: Maybe<OauthCodesFields_code_Read>;
+  update?: Maybe<OauthCodesFields_code_Update>;
+};
+
+export type OauthCodesFields_codeChallenge = {
+  __typename?: 'OauthCodesFields_codeChallenge';
+  create?: Maybe<OauthCodesFields_codeChallenge_Create>;
+  delete?: Maybe<OauthCodesFields_codeChallenge_Delete>;
+  read?: Maybe<OauthCodesFields_codeChallenge_Read>;
+  update?: Maybe<OauthCodesFields_codeChallenge_Update>;
+};
+
+export type OauthCodesFields_codeChallenge_Create = {
+  __typename?: 'OauthCodesFields_codeChallenge_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type OauthCodesFields_codeChallenge_Delete = {
+  __typename?: 'OauthCodesFields_codeChallenge_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type OauthCodesFields_codeChallenge_Read = {
+  __typename?: 'OauthCodesFields_codeChallenge_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type OauthCodesFields_codeChallenge_Update = {
+  __typename?: 'OauthCodesFields_codeChallenge_Update';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type OauthCodesFields_code_Create = {
+  __typename?: 'OauthCodesFields_code_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type OauthCodesFields_code_Delete = {
+  __typename?: 'OauthCodesFields_code_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type OauthCodesFields_code_Read = {
+  __typename?: 'OauthCodesFields_code_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type OauthCodesFields_code_Update = {
+  __typename?: 'OauthCodesFields_code_Update';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type OauthCodesFields_createdAt = {
+  __typename?: 'OauthCodesFields_createdAt';
+  create?: Maybe<OauthCodesFields_createdAt_Create>;
+  delete?: Maybe<OauthCodesFields_createdAt_Delete>;
+  read?: Maybe<OauthCodesFields_createdAt_Read>;
+  update?: Maybe<OauthCodesFields_createdAt_Update>;
+};
+
+export type OauthCodesFields_createdAt_Create = {
+  __typename?: 'OauthCodesFields_createdAt_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type OauthCodesFields_createdAt_Delete = {
+  __typename?: 'OauthCodesFields_createdAt_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type OauthCodesFields_createdAt_Read = {
+  __typename?: 'OauthCodesFields_createdAt_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type OauthCodesFields_createdAt_Update = {
+  __typename?: 'OauthCodesFields_createdAt_Update';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type OauthCodesFields_expiresAt = {
+  __typename?: 'OauthCodesFields_expiresAt';
+  create?: Maybe<OauthCodesFields_expiresAt_Create>;
+  delete?: Maybe<OauthCodesFields_expiresAt_Delete>;
+  read?: Maybe<OauthCodesFields_expiresAt_Read>;
+  update?: Maybe<OauthCodesFields_expiresAt_Update>;
+};
+
+export type OauthCodesFields_expiresAt_Create = {
+  __typename?: 'OauthCodesFields_expiresAt_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type OauthCodesFields_expiresAt_Delete = {
+  __typename?: 'OauthCodesFields_expiresAt_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type OauthCodesFields_expiresAt_Read = {
+  __typename?: 'OauthCodesFields_expiresAt_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type OauthCodesFields_expiresAt_Update = {
+  __typename?: 'OauthCodesFields_expiresAt_Update';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type OauthCodesFields_redirectUri = {
+  __typename?: 'OauthCodesFields_redirectUri';
+  create?: Maybe<OauthCodesFields_redirectUri_Create>;
+  delete?: Maybe<OauthCodesFields_redirectUri_Delete>;
+  read?: Maybe<OauthCodesFields_redirectUri_Read>;
+  update?: Maybe<OauthCodesFields_redirectUri_Update>;
+};
+
+export type OauthCodesFields_redirectUri_Create = {
+  __typename?: 'OauthCodesFields_redirectUri_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type OauthCodesFields_redirectUri_Delete = {
+  __typename?: 'OauthCodesFields_redirectUri_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type OauthCodesFields_redirectUri_Read = {
+  __typename?: 'OauthCodesFields_redirectUri_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type OauthCodesFields_redirectUri_Update = {
+  __typename?: 'OauthCodesFields_redirectUri_Update';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type OauthCodesFields_updatedAt = {
+  __typename?: 'OauthCodesFields_updatedAt';
+  create?: Maybe<OauthCodesFields_updatedAt_Create>;
+  delete?: Maybe<OauthCodesFields_updatedAt_Delete>;
+  read?: Maybe<OauthCodesFields_updatedAt_Read>;
+  update?: Maybe<OauthCodesFields_updatedAt_Update>;
+};
+
+export type OauthCodesFields_updatedAt_Create = {
+  __typename?: 'OauthCodesFields_updatedAt_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type OauthCodesFields_updatedAt_Delete = {
+  __typename?: 'OauthCodesFields_updatedAt_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type OauthCodesFields_updatedAt_Read = {
+  __typename?: 'OauthCodesFields_updatedAt_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type OauthCodesFields_updatedAt_Update = {
+  __typename?: 'OauthCodesFields_updatedAt_Update';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type OauthCodesFields_userId = {
+  __typename?: 'OauthCodesFields_userId';
+  create?: Maybe<OauthCodesFields_userId_Create>;
+  delete?: Maybe<OauthCodesFields_userId_Delete>;
+  read?: Maybe<OauthCodesFields_userId_Read>;
+  update?: Maybe<OauthCodesFields_userId_Update>;
+};
+
+export type OauthCodesFields_userId_Create = {
+  __typename?: 'OauthCodesFields_userId_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type OauthCodesFields_userId_Delete = {
+  __typename?: 'OauthCodesFields_userId_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type OauthCodesFields_userId_Read = {
+  __typename?: 'OauthCodesFields_userId_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type OauthCodesFields_userId_Update = {
+  __typename?: 'OauthCodesFields_userId_Update';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type OauthCodesReadAccess = {
+  __typename?: 'OauthCodesReadAccess';
+  permission: Scalars['Boolean']['output'];
+  where?: Maybe<Scalars['JSONObject']['output']>;
+};
+
+export type OauthCodesReadDocAccess = {
+  __typename?: 'OauthCodesReadDocAccess';
+  permission: Scalars['Boolean']['output'];
+  where?: Maybe<Scalars['JSONObject']['output']>;
+};
+
+export type OauthCodesUpdateAccess = {
+  __typename?: 'OauthCodesUpdateAccess';
+  permission: Scalars['Boolean']['output'];
+  where?: Maybe<Scalars['JSONObject']['output']>;
+};
+
+export type OauthCodesUpdateDocAccess = {
+  __typename?: 'OauthCodesUpdateDocAccess';
+  permission: Scalars['Boolean']['output'];
+  where?: Maybe<Scalars['JSONObject']['output']>;
+};
+
 export type PayloadKv = {
   __typename?: 'PayloadKv';
   data: Scalars['JSON']['output'];
@@ -6716,10 +7608,12 @@ export enum PayloadLockedDocumentUpdate_DocumentRelationshipInputRelationTo {
   categories = 'categories',
   media = 'media',
   oauth_accounts = 'oauth_accounts',
+  oauth_codes = 'oauth_codes',
   payload_mcp_api_keys = 'payload_mcp_api_keys',
   people = 'people',
   reminders = 'reminders',
   tags = 'tags',
+  transaction_links = 'transaction_links',
   transactions = 'transactions',
   user_settings = 'user_settings',
   users = 'users'
@@ -6735,7 +7629,7 @@ export enum PayloadLockedDocumentUpdate_UserRelationshipInputRelationTo {
   users = 'users'
 }
 
-export type PayloadLockedDocument_Document = Account | AiUsage | Category | Media | OauthAccount | PayloadMcpApiKey | Person | Reminder | Tag | Transaction | User | UserSetting;
+export type PayloadLockedDocument_Document = Account | AiUsage | Category | Media | OauthAccount | OauthCode | PayloadMcpApiKey | Person | Reminder | Tag | Transaction | TransactionLink | User | UserSetting;
 
 export type PayloadLockedDocument_DocumentRelationshipInput = {
   relationTo?: InputMaybe<PayloadLockedDocument_DocumentRelationshipInputRelationTo>;
@@ -6748,10 +7642,12 @@ export enum PayloadLockedDocument_DocumentRelationshipInputRelationTo {
   categories = 'categories',
   media = 'media',
   oauth_accounts = 'oauth_accounts',
+  oauth_codes = 'oauth_codes',
   payload_mcp_api_keys = 'payload_mcp_api_keys',
   people = 'people',
   reminders = 'reminders',
   tags = 'tags',
+  transaction_links = 'transaction_links',
   transactions = 'transactions',
   user_settings = 'user_settings',
   users = 'users'
@@ -6763,10 +7659,12 @@ export enum PayloadLockedDocument_Document_RelationTo {
   categories = 'categories',
   media = 'media',
   oauth_accounts = 'oauth_accounts',
+  oauth_codes = 'oauth_codes',
   payload_mcp_api_keys = 'payload_mcp_api_keys',
   people = 'people',
   reminders = 'reminders',
   tags = 'tags',
+  transaction_links = 'transaction_links',
   transactions = 'transactions',
   user_settings = 'user_settings',
   users = 'users'
@@ -6823,10 +7721,12 @@ export enum PayloadLockedDocument_document_Relation_RelationTo {
   categories = 'categories',
   media = 'media',
   oauth_accounts = 'oauth_accounts',
+  oauth_codes = 'oauth_codes',
   payload_mcp_api_keys = 'payload_mcp_api_keys',
   people = 'people',
   reminders = 'reminders',
   tags = 'tags',
+  transaction_links = 'transaction_links',
   transactions = 'transactions',
   user_settings = 'user_settings',
   users = 'users'
@@ -7286,6 +8186,7 @@ export type PayloadMcpApiKey = {
   people?: Maybe<PayloadMcpApiKey_People>;
   reminders?: Maybe<PayloadMcpApiKey_Reminders>;
   tags?: Maybe<PayloadMcpApiKey_Tags>;
+  transactionLinks?: Maybe<PayloadMcpApiKey_TransactionLinks>;
   transactions?: Maybe<PayloadMcpApiKey_Transactions>;
   updatedAt?: Maybe<Scalars['DateTime']['output']>;
   user: User;
@@ -7324,6 +8225,7 @@ export type PayloadMcpApiKey_PayloadMcpResource = {
 
 export type PayloadMcpApiKey_PayloadMcpTool = {
   __typename?: 'PayloadMcpApiKey_PayloadMcpTool';
+  getCurrentUser?: Maybe<Scalars['Boolean']['output']>;
   getDashboardSummary?: Maybe<Scalars['Boolean']['output']>;
   getMonthlyCategories?: Maybe<Scalars['Boolean']['output']>;
   getMonthlyPeople?: Maybe<Scalars['Boolean']['output']>;
@@ -7348,6 +8250,14 @@ export type PayloadMcpApiKey_Reminders = {
 
 export type PayloadMcpApiKey_Tags = {
   __typename?: 'PayloadMcpApiKey_Tags';
+  create?: Maybe<Scalars['Boolean']['output']>;
+  delete?: Maybe<Scalars['Boolean']['output']>;
+  find?: Maybe<Scalars['Boolean']['output']>;
+  update?: Maybe<Scalars['Boolean']['output']>;
+};
+
+export type PayloadMcpApiKey_TransactionLinks = {
+  __typename?: 'PayloadMcpApiKey_TransactionLinks';
   create?: Maybe<Scalars['Boolean']['output']>;
   delete?: Maybe<Scalars['Boolean']['output']>;
   find?: Maybe<Scalars['Boolean']['output']>;
@@ -7512,6 +8422,12 @@ export type PayloadMcpApiKey_payload_mcp_resource__timezones_operator = {
   not_equals?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
+export type PayloadMcpApiKey_payload_mcp_tool__getCurrentUser_operator = {
+  equals?: InputMaybe<Scalars['Boolean']['input']>;
+  exists?: InputMaybe<Scalars['Boolean']['input']>;
+  not_equals?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
 export type PayloadMcpApiKey_payload_mcp_tool__getDashboardSummary_operator = {
   equals?: InputMaybe<Scalars['Boolean']['input']>;
   exists?: InputMaybe<Scalars['Boolean']['input']>;
@@ -7608,6 +8524,30 @@ export type PayloadMcpApiKey_tags__update_operator = {
   not_equals?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
+export type PayloadMcpApiKey_transactionLinks__create_operator = {
+  equals?: InputMaybe<Scalars['Boolean']['input']>;
+  exists?: InputMaybe<Scalars['Boolean']['input']>;
+  not_equals?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+export type PayloadMcpApiKey_transactionLinks__delete_operator = {
+  equals?: InputMaybe<Scalars['Boolean']['input']>;
+  exists?: InputMaybe<Scalars['Boolean']['input']>;
+  not_equals?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+export type PayloadMcpApiKey_transactionLinks__find_operator = {
+  equals?: InputMaybe<Scalars['Boolean']['input']>;
+  exists?: InputMaybe<Scalars['Boolean']['input']>;
+  not_equals?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+export type PayloadMcpApiKey_transactionLinks__update_operator = {
+  equals?: InputMaybe<Scalars['Boolean']['input']>;
+  exists?: InputMaybe<Scalars['Boolean']['input']>;
+  not_equals?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
 export type PayloadMcpApiKey_transactions__create_operator = {
   equals?: InputMaybe<Scalars['Boolean']['input']>;
   exists?: InputMaybe<Scalars['Boolean']['input']>;
@@ -7691,6 +8631,7 @@ export type PayloadMcpApiKey_where = {
   payload_mcp_resource__currency?: InputMaybe<PayloadMcpApiKey_payload_mcp_resource__currency_operator>;
   payload_mcp_resource__timezone?: InputMaybe<PayloadMcpApiKey_payload_mcp_resource__timezone_operator>;
   payload_mcp_resource__timezones?: InputMaybe<PayloadMcpApiKey_payload_mcp_resource__timezones_operator>;
+  payload_mcp_tool__getCurrentUser?: InputMaybe<PayloadMcpApiKey_payload_mcp_tool__getCurrentUser_operator>;
   payload_mcp_tool__getDashboardSummary?: InputMaybe<PayloadMcpApiKey_payload_mcp_tool__getDashboardSummary_operator>;
   payload_mcp_tool__getMonthlyCategories?: InputMaybe<PayloadMcpApiKey_payload_mcp_tool__getMonthlyCategories_operator>;
   payload_mcp_tool__getMonthlyPeople?: InputMaybe<PayloadMcpApiKey_payload_mcp_tool__getMonthlyPeople_operator>;
@@ -7707,6 +8648,10 @@ export type PayloadMcpApiKey_where = {
   tags__delete?: InputMaybe<PayloadMcpApiKey_tags__delete_operator>;
   tags__find?: InputMaybe<PayloadMcpApiKey_tags__find_operator>;
   tags__update?: InputMaybe<PayloadMcpApiKey_tags__update_operator>;
+  transactionLinks__create?: InputMaybe<PayloadMcpApiKey_transactionLinks__create_operator>;
+  transactionLinks__delete?: InputMaybe<PayloadMcpApiKey_transactionLinks__delete_operator>;
+  transactionLinks__find?: InputMaybe<PayloadMcpApiKey_transactionLinks__find_operator>;
+  transactionLinks__update?: InputMaybe<PayloadMcpApiKey_transactionLinks__update_operator>;
   transactions__create?: InputMaybe<PayloadMcpApiKey_transactions__create_operator>;
   transactions__delete?: InputMaybe<PayloadMcpApiKey_transactions__delete_operator>;
   transactions__find?: InputMaybe<PayloadMcpApiKey_transactions__find_operator>;
@@ -7740,6 +8685,7 @@ export type PayloadMcpApiKey_where_and = {
   payload_mcp_resource__currency?: InputMaybe<PayloadMcpApiKey_payload_mcp_resource__currency_operator>;
   payload_mcp_resource__timezone?: InputMaybe<PayloadMcpApiKey_payload_mcp_resource__timezone_operator>;
   payload_mcp_resource__timezones?: InputMaybe<PayloadMcpApiKey_payload_mcp_resource__timezones_operator>;
+  payload_mcp_tool__getCurrentUser?: InputMaybe<PayloadMcpApiKey_payload_mcp_tool__getCurrentUser_operator>;
   payload_mcp_tool__getDashboardSummary?: InputMaybe<PayloadMcpApiKey_payload_mcp_tool__getDashboardSummary_operator>;
   payload_mcp_tool__getMonthlyCategories?: InputMaybe<PayloadMcpApiKey_payload_mcp_tool__getMonthlyCategories_operator>;
   payload_mcp_tool__getMonthlyPeople?: InputMaybe<PayloadMcpApiKey_payload_mcp_tool__getMonthlyPeople_operator>;
@@ -7756,6 +8702,10 @@ export type PayloadMcpApiKey_where_and = {
   tags__delete?: InputMaybe<PayloadMcpApiKey_tags__delete_operator>;
   tags__find?: InputMaybe<PayloadMcpApiKey_tags__find_operator>;
   tags__update?: InputMaybe<PayloadMcpApiKey_tags__update_operator>;
+  transactionLinks__create?: InputMaybe<PayloadMcpApiKey_transactionLinks__create_operator>;
+  transactionLinks__delete?: InputMaybe<PayloadMcpApiKey_transactionLinks__delete_operator>;
+  transactionLinks__find?: InputMaybe<PayloadMcpApiKey_transactionLinks__find_operator>;
+  transactionLinks__update?: InputMaybe<PayloadMcpApiKey_transactionLinks__update_operator>;
   transactions__create?: InputMaybe<PayloadMcpApiKey_transactions__create_operator>;
   transactions__delete?: InputMaybe<PayloadMcpApiKey_transactions__delete_operator>;
   transactions__find?: InputMaybe<PayloadMcpApiKey_transactions__find_operator>;
@@ -7789,6 +8739,7 @@ export type PayloadMcpApiKey_where_or = {
   payload_mcp_resource__currency?: InputMaybe<PayloadMcpApiKey_payload_mcp_resource__currency_operator>;
   payload_mcp_resource__timezone?: InputMaybe<PayloadMcpApiKey_payload_mcp_resource__timezone_operator>;
   payload_mcp_resource__timezones?: InputMaybe<PayloadMcpApiKey_payload_mcp_resource__timezones_operator>;
+  payload_mcp_tool__getCurrentUser?: InputMaybe<PayloadMcpApiKey_payload_mcp_tool__getCurrentUser_operator>;
   payload_mcp_tool__getDashboardSummary?: InputMaybe<PayloadMcpApiKey_payload_mcp_tool__getDashboardSummary_operator>;
   payload_mcp_tool__getMonthlyCategories?: InputMaybe<PayloadMcpApiKey_payload_mcp_tool__getMonthlyCategories_operator>;
   payload_mcp_tool__getMonthlyPeople?: InputMaybe<PayloadMcpApiKey_payload_mcp_tool__getMonthlyPeople_operator>;
@@ -7805,6 +8756,10 @@ export type PayloadMcpApiKey_where_or = {
   tags__delete?: InputMaybe<PayloadMcpApiKey_tags__delete_operator>;
   tags__find?: InputMaybe<PayloadMcpApiKey_tags__find_operator>;
   tags__update?: InputMaybe<PayloadMcpApiKey_tags__update_operator>;
+  transactionLinks__create?: InputMaybe<PayloadMcpApiKey_transactionLinks__create_operator>;
+  transactionLinks__delete?: InputMaybe<PayloadMcpApiKey_transactionLinks__delete_operator>;
+  transactionLinks__find?: InputMaybe<PayloadMcpApiKey_transactionLinks__find_operator>;
+  transactionLinks__update?: InputMaybe<PayloadMcpApiKey_transactionLinks__update_operator>;
   transactions__create?: InputMaybe<PayloadMcpApiKey_transactions__create_operator>;
   transactions__delete?: InputMaybe<PayloadMcpApiKey_transactions__delete_operator>;
   transactions__find?: InputMaybe<PayloadMcpApiKey_transactions__find_operator>;
@@ -7870,6 +8825,7 @@ export type PayloadMcpApiKeysDocAccessFields = {
   people?: Maybe<PayloadMcpApiKeysDocAccessFields_people>;
   reminders?: Maybe<PayloadMcpApiKeysDocAccessFields_reminders>;
   tags?: Maybe<PayloadMcpApiKeysDocAccessFields_tags>;
+  transactionLinks?: Maybe<PayloadMcpApiKeysDocAccessFields_transactionLinks>;
   transactions?: Maybe<PayloadMcpApiKeysDocAccessFields_transactions>;
   updatedAt?: Maybe<PayloadMcpApiKeysDocAccessFields_updatedAt>;
   user?: Maybe<PayloadMcpApiKeysDocAccessFields_user>;
@@ -8547,6 +9503,7 @@ export type PayloadMcpApiKeysDocAccessFields_payload_mcp_tool_Delete = {
 
 export type PayloadMcpApiKeysDocAccessFields_payload_mcp_tool_Fields = {
   __typename?: 'PayloadMcpApiKeysDocAccessFields_payload_mcp_tool_Fields';
+  getCurrentUser?: Maybe<PayloadMcpApiKeysDocAccessFields_payload_mcp_tool_getCurrentUser>;
   getDashboardSummary?: Maybe<PayloadMcpApiKeysDocAccessFields_payload_mcp_tool_getDashboardSummary>;
   getMonthlyCategories?: Maybe<PayloadMcpApiKeysDocAccessFields_payload_mcp_tool_getMonthlyCategories>;
   getMonthlyPeople?: Maybe<PayloadMcpApiKeysDocAccessFields_payload_mcp_tool_getMonthlyPeople>;
@@ -8560,6 +9517,34 @@ export type PayloadMcpApiKeysDocAccessFields_payload_mcp_tool_Read = {
 
 export type PayloadMcpApiKeysDocAccessFields_payload_mcp_tool_Update = {
   __typename?: 'PayloadMcpApiKeysDocAccessFields_payload_mcp_tool_Update';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type PayloadMcpApiKeysDocAccessFields_payload_mcp_tool_getCurrentUser = {
+  __typename?: 'PayloadMcpApiKeysDocAccessFields_payload_mcp_tool_getCurrentUser';
+  create?: Maybe<PayloadMcpApiKeysDocAccessFields_payload_mcp_tool_getCurrentUser_Create>;
+  delete?: Maybe<PayloadMcpApiKeysDocAccessFields_payload_mcp_tool_getCurrentUser_Delete>;
+  read?: Maybe<PayloadMcpApiKeysDocAccessFields_payload_mcp_tool_getCurrentUser_Read>;
+  update?: Maybe<PayloadMcpApiKeysDocAccessFields_payload_mcp_tool_getCurrentUser_Update>;
+};
+
+export type PayloadMcpApiKeysDocAccessFields_payload_mcp_tool_getCurrentUser_Create = {
+  __typename?: 'PayloadMcpApiKeysDocAccessFields_payload_mcp_tool_getCurrentUser_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type PayloadMcpApiKeysDocAccessFields_payload_mcp_tool_getCurrentUser_Delete = {
+  __typename?: 'PayloadMcpApiKeysDocAccessFields_payload_mcp_tool_getCurrentUser_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type PayloadMcpApiKeysDocAccessFields_payload_mcp_tool_getCurrentUser_Read = {
+  __typename?: 'PayloadMcpApiKeysDocAccessFields_payload_mcp_tool_getCurrentUser_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type PayloadMcpApiKeysDocAccessFields_payload_mcp_tool_getCurrentUser_Update = {
+  __typename?: 'PayloadMcpApiKeysDocAccessFields_payload_mcp_tool_getCurrentUser_Update';
   permission: Scalars['Boolean']['output'];
 };
 
@@ -9122,6 +10107,155 @@ export type PayloadMcpApiKeysDocAccessFields_tags_update_Update = {
   permission: Scalars['Boolean']['output'];
 };
 
+export type PayloadMcpApiKeysDocAccessFields_transactionLinks = {
+  __typename?: 'PayloadMcpApiKeysDocAccessFields_transactionLinks';
+  create?: Maybe<PayloadMcpApiKeysDocAccessFields_transactionLinks_Create>;
+  delete?: Maybe<PayloadMcpApiKeysDocAccessFields_transactionLinks_Delete>;
+  fields?: Maybe<PayloadMcpApiKeysDocAccessFields_transactionLinks_Fields>;
+  read?: Maybe<PayloadMcpApiKeysDocAccessFields_transactionLinks_Read>;
+  update?: Maybe<PayloadMcpApiKeysDocAccessFields_transactionLinks_Update>;
+};
+
+export type PayloadMcpApiKeysDocAccessFields_transactionLinks_Create = {
+  __typename?: 'PayloadMcpApiKeysDocAccessFields_transactionLinks_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type PayloadMcpApiKeysDocAccessFields_transactionLinks_Delete = {
+  __typename?: 'PayloadMcpApiKeysDocAccessFields_transactionLinks_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type PayloadMcpApiKeysDocAccessFields_transactionLinks_Fields = {
+  __typename?: 'PayloadMcpApiKeysDocAccessFields_transactionLinks_Fields';
+  create?: Maybe<PayloadMcpApiKeysDocAccessFields_transactionLinks_create>;
+  delete?: Maybe<PayloadMcpApiKeysDocAccessFields_transactionLinks_delete>;
+  find?: Maybe<PayloadMcpApiKeysDocAccessFields_transactionLinks_find>;
+  update?: Maybe<PayloadMcpApiKeysDocAccessFields_transactionLinks_update>;
+};
+
+export type PayloadMcpApiKeysDocAccessFields_transactionLinks_Read = {
+  __typename?: 'PayloadMcpApiKeysDocAccessFields_transactionLinks_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type PayloadMcpApiKeysDocAccessFields_transactionLinks_Update = {
+  __typename?: 'PayloadMcpApiKeysDocAccessFields_transactionLinks_Update';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type PayloadMcpApiKeysDocAccessFields_transactionLinks_create = {
+  __typename?: 'PayloadMcpApiKeysDocAccessFields_transactionLinks_create';
+  create?: Maybe<PayloadMcpApiKeysDocAccessFields_transactionLinks_create_Create>;
+  delete?: Maybe<PayloadMcpApiKeysDocAccessFields_transactionLinks_create_Delete>;
+  read?: Maybe<PayloadMcpApiKeysDocAccessFields_transactionLinks_create_Read>;
+  update?: Maybe<PayloadMcpApiKeysDocAccessFields_transactionLinks_create_Update>;
+};
+
+export type PayloadMcpApiKeysDocAccessFields_transactionLinks_create_Create = {
+  __typename?: 'PayloadMcpApiKeysDocAccessFields_transactionLinks_create_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type PayloadMcpApiKeysDocAccessFields_transactionLinks_create_Delete = {
+  __typename?: 'PayloadMcpApiKeysDocAccessFields_transactionLinks_create_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type PayloadMcpApiKeysDocAccessFields_transactionLinks_create_Read = {
+  __typename?: 'PayloadMcpApiKeysDocAccessFields_transactionLinks_create_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type PayloadMcpApiKeysDocAccessFields_transactionLinks_create_Update = {
+  __typename?: 'PayloadMcpApiKeysDocAccessFields_transactionLinks_create_Update';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type PayloadMcpApiKeysDocAccessFields_transactionLinks_delete = {
+  __typename?: 'PayloadMcpApiKeysDocAccessFields_transactionLinks_delete';
+  create?: Maybe<PayloadMcpApiKeysDocAccessFields_transactionLinks_delete_Create>;
+  delete?: Maybe<PayloadMcpApiKeysDocAccessFields_transactionLinks_delete_Delete>;
+  read?: Maybe<PayloadMcpApiKeysDocAccessFields_transactionLinks_delete_Read>;
+  update?: Maybe<PayloadMcpApiKeysDocAccessFields_transactionLinks_delete_Update>;
+};
+
+export type PayloadMcpApiKeysDocAccessFields_transactionLinks_delete_Create = {
+  __typename?: 'PayloadMcpApiKeysDocAccessFields_transactionLinks_delete_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type PayloadMcpApiKeysDocAccessFields_transactionLinks_delete_Delete = {
+  __typename?: 'PayloadMcpApiKeysDocAccessFields_transactionLinks_delete_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type PayloadMcpApiKeysDocAccessFields_transactionLinks_delete_Read = {
+  __typename?: 'PayloadMcpApiKeysDocAccessFields_transactionLinks_delete_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type PayloadMcpApiKeysDocAccessFields_transactionLinks_delete_Update = {
+  __typename?: 'PayloadMcpApiKeysDocAccessFields_transactionLinks_delete_Update';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type PayloadMcpApiKeysDocAccessFields_transactionLinks_find = {
+  __typename?: 'PayloadMcpApiKeysDocAccessFields_transactionLinks_find';
+  create?: Maybe<PayloadMcpApiKeysDocAccessFields_transactionLinks_find_Create>;
+  delete?: Maybe<PayloadMcpApiKeysDocAccessFields_transactionLinks_find_Delete>;
+  read?: Maybe<PayloadMcpApiKeysDocAccessFields_transactionLinks_find_Read>;
+  update?: Maybe<PayloadMcpApiKeysDocAccessFields_transactionLinks_find_Update>;
+};
+
+export type PayloadMcpApiKeysDocAccessFields_transactionLinks_find_Create = {
+  __typename?: 'PayloadMcpApiKeysDocAccessFields_transactionLinks_find_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type PayloadMcpApiKeysDocAccessFields_transactionLinks_find_Delete = {
+  __typename?: 'PayloadMcpApiKeysDocAccessFields_transactionLinks_find_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type PayloadMcpApiKeysDocAccessFields_transactionLinks_find_Read = {
+  __typename?: 'PayloadMcpApiKeysDocAccessFields_transactionLinks_find_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type PayloadMcpApiKeysDocAccessFields_transactionLinks_find_Update = {
+  __typename?: 'PayloadMcpApiKeysDocAccessFields_transactionLinks_find_Update';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type PayloadMcpApiKeysDocAccessFields_transactionLinks_update = {
+  __typename?: 'PayloadMcpApiKeysDocAccessFields_transactionLinks_update';
+  create?: Maybe<PayloadMcpApiKeysDocAccessFields_transactionLinks_update_Create>;
+  delete?: Maybe<PayloadMcpApiKeysDocAccessFields_transactionLinks_update_Delete>;
+  read?: Maybe<PayloadMcpApiKeysDocAccessFields_transactionLinks_update_Read>;
+  update?: Maybe<PayloadMcpApiKeysDocAccessFields_transactionLinks_update_Update>;
+};
+
+export type PayloadMcpApiKeysDocAccessFields_transactionLinks_update_Create = {
+  __typename?: 'PayloadMcpApiKeysDocAccessFields_transactionLinks_update_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type PayloadMcpApiKeysDocAccessFields_transactionLinks_update_Delete = {
+  __typename?: 'PayloadMcpApiKeysDocAccessFields_transactionLinks_update_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type PayloadMcpApiKeysDocAccessFields_transactionLinks_update_Read = {
+  __typename?: 'PayloadMcpApiKeysDocAccessFields_transactionLinks_update_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type PayloadMcpApiKeysDocAccessFields_transactionLinks_update_Update = {
+  __typename?: 'PayloadMcpApiKeysDocAccessFields_transactionLinks_update_Update';
+  permission: Scalars['Boolean']['output'];
+};
+
 export type PayloadMcpApiKeysDocAccessFields_transactions = {
   __typename?: 'PayloadMcpApiKeysDocAccessFields_transactions';
   create?: Maybe<PayloadMcpApiKeysDocAccessFields_transactions_Create>;
@@ -9495,6 +10629,7 @@ export type PayloadMcpApiKeysFields = {
   people?: Maybe<PayloadMcpApiKeysFields_people>;
   reminders?: Maybe<PayloadMcpApiKeysFields_reminders>;
   tags?: Maybe<PayloadMcpApiKeysFields_tags>;
+  transactionLinks?: Maybe<PayloadMcpApiKeysFields_transactionLinks>;
   transactions?: Maybe<PayloadMcpApiKeysFields_transactions>;
   updatedAt?: Maybe<PayloadMcpApiKeysFields_updatedAt>;
   user?: Maybe<PayloadMcpApiKeysFields_user>;
@@ -10172,6 +11307,7 @@ export type PayloadMcpApiKeysFields_payload_mcp_tool_Delete = {
 
 export type PayloadMcpApiKeysFields_payload_mcp_tool_Fields = {
   __typename?: 'PayloadMcpApiKeysFields_payload_mcp_tool_Fields';
+  getCurrentUser?: Maybe<PayloadMcpApiKeysFields_payload_mcp_tool_getCurrentUser>;
   getDashboardSummary?: Maybe<PayloadMcpApiKeysFields_payload_mcp_tool_getDashboardSummary>;
   getMonthlyCategories?: Maybe<PayloadMcpApiKeysFields_payload_mcp_tool_getMonthlyCategories>;
   getMonthlyPeople?: Maybe<PayloadMcpApiKeysFields_payload_mcp_tool_getMonthlyPeople>;
@@ -10185,6 +11321,34 @@ export type PayloadMcpApiKeysFields_payload_mcp_tool_Read = {
 
 export type PayloadMcpApiKeysFields_payload_mcp_tool_Update = {
   __typename?: 'PayloadMcpApiKeysFields_payload_mcp_tool_Update';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type PayloadMcpApiKeysFields_payload_mcp_tool_getCurrentUser = {
+  __typename?: 'PayloadMcpApiKeysFields_payload_mcp_tool_getCurrentUser';
+  create?: Maybe<PayloadMcpApiKeysFields_payload_mcp_tool_getCurrentUser_Create>;
+  delete?: Maybe<PayloadMcpApiKeysFields_payload_mcp_tool_getCurrentUser_Delete>;
+  read?: Maybe<PayloadMcpApiKeysFields_payload_mcp_tool_getCurrentUser_Read>;
+  update?: Maybe<PayloadMcpApiKeysFields_payload_mcp_tool_getCurrentUser_Update>;
+};
+
+export type PayloadMcpApiKeysFields_payload_mcp_tool_getCurrentUser_Create = {
+  __typename?: 'PayloadMcpApiKeysFields_payload_mcp_tool_getCurrentUser_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type PayloadMcpApiKeysFields_payload_mcp_tool_getCurrentUser_Delete = {
+  __typename?: 'PayloadMcpApiKeysFields_payload_mcp_tool_getCurrentUser_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type PayloadMcpApiKeysFields_payload_mcp_tool_getCurrentUser_Read = {
+  __typename?: 'PayloadMcpApiKeysFields_payload_mcp_tool_getCurrentUser_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type PayloadMcpApiKeysFields_payload_mcp_tool_getCurrentUser_Update = {
+  __typename?: 'PayloadMcpApiKeysFields_payload_mcp_tool_getCurrentUser_Update';
   permission: Scalars['Boolean']['output'];
 };
 
@@ -10744,6 +11908,155 @@ export type PayloadMcpApiKeysFields_tags_update_Read = {
 
 export type PayloadMcpApiKeysFields_tags_update_Update = {
   __typename?: 'PayloadMcpApiKeysFields_tags_update_Update';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type PayloadMcpApiKeysFields_transactionLinks = {
+  __typename?: 'PayloadMcpApiKeysFields_transactionLinks';
+  create?: Maybe<PayloadMcpApiKeysFields_transactionLinks_Create>;
+  delete?: Maybe<PayloadMcpApiKeysFields_transactionLinks_Delete>;
+  fields?: Maybe<PayloadMcpApiKeysFields_transactionLinks_Fields>;
+  read?: Maybe<PayloadMcpApiKeysFields_transactionLinks_Read>;
+  update?: Maybe<PayloadMcpApiKeysFields_transactionLinks_Update>;
+};
+
+export type PayloadMcpApiKeysFields_transactionLinks_Create = {
+  __typename?: 'PayloadMcpApiKeysFields_transactionLinks_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type PayloadMcpApiKeysFields_transactionLinks_Delete = {
+  __typename?: 'PayloadMcpApiKeysFields_transactionLinks_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type PayloadMcpApiKeysFields_transactionLinks_Fields = {
+  __typename?: 'PayloadMcpApiKeysFields_transactionLinks_Fields';
+  create?: Maybe<PayloadMcpApiKeysFields_transactionLinks_create>;
+  delete?: Maybe<PayloadMcpApiKeysFields_transactionLinks_delete>;
+  find?: Maybe<PayloadMcpApiKeysFields_transactionLinks_find>;
+  update?: Maybe<PayloadMcpApiKeysFields_transactionLinks_update>;
+};
+
+export type PayloadMcpApiKeysFields_transactionLinks_Read = {
+  __typename?: 'PayloadMcpApiKeysFields_transactionLinks_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type PayloadMcpApiKeysFields_transactionLinks_Update = {
+  __typename?: 'PayloadMcpApiKeysFields_transactionLinks_Update';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type PayloadMcpApiKeysFields_transactionLinks_create = {
+  __typename?: 'PayloadMcpApiKeysFields_transactionLinks_create';
+  create?: Maybe<PayloadMcpApiKeysFields_transactionLinks_create_Create>;
+  delete?: Maybe<PayloadMcpApiKeysFields_transactionLinks_create_Delete>;
+  read?: Maybe<PayloadMcpApiKeysFields_transactionLinks_create_Read>;
+  update?: Maybe<PayloadMcpApiKeysFields_transactionLinks_create_Update>;
+};
+
+export type PayloadMcpApiKeysFields_transactionLinks_create_Create = {
+  __typename?: 'PayloadMcpApiKeysFields_transactionLinks_create_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type PayloadMcpApiKeysFields_transactionLinks_create_Delete = {
+  __typename?: 'PayloadMcpApiKeysFields_transactionLinks_create_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type PayloadMcpApiKeysFields_transactionLinks_create_Read = {
+  __typename?: 'PayloadMcpApiKeysFields_transactionLinks_create_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type PayloadMcpApiKeysFields_transactionLinks_create_Update = {
+  __typename?: 'PayloadMcpApiKeysFields_transactionLinks_create_Update';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type PayloadMcpApiKeysFields_transactionLinks_delete = {
+  __typename?: 'PayloadMcpApiKeysFields_transactionLinks_delete';
+  create?: Maybe<PayloadMcpApiKeysFields_transactionLinks_delete_Create>;
+  delete?: Maybe<PayloadMcpApiKeysFields_transactionLinks_delete_Delete>;
+  read?: Maybe<PayloadMcpApiKeysFields_transactionLinks_delete_Read>;
+  update?: Maybe<PayloadMcpApiKeysFields_transactionLinks_delete_Update>;
+};
+
+export type PayloadMcpApiKeysFields_transactionLinks_delete_Create = {
+  __typename?: 'PayloadMcpApiKeysFields_transactionLinks_delete_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type PayloadMcpApiKeysFields_transactionLinks_delete_Delete = {
+  __typename?: 'PayloadMcpApiKeysFields_transactionLinks_delete_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type PayloadMcpApiKeysFields_transactionLinks_delete_Read = {
+  __typename?: 'PayloadMcpApiKeysFields_transactionLinks_delete_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type PayloadMcpApiKeysFields_transactionLinks_delete_Update = {
+  __typename?: 'PayloadMcpApiKeysFields_transactionLinks_delete_Update';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type PayloadMcpApiKeysFields_transactionLinks_find = {
+  __typename?: 'PayloadMcpApiKeysFields_transactionLinks_find';
+  create?: Maybe<PayloadMcpApiKeysFields_transactionLinks_find_Create>;
+  delete?: Maybe<PayloadMcpApiKeysFields_transactionLinks_find_Delete>;
+  read?: Maybe<PayloadMcpApiKeysFields_transactionLinks_find_Read>;
+  update?: Maybe<PayloadMcpApiKeysFields_transactionLinks_find_Update>;
+};
+
+export type PayloadMcpApiKeysFields_transactionLinks_find_Create = {
+  __typename?: 'PayloadMcpApiKeysFields_transactionLinks_find_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type PayloadMcpApiKeysFields_transactionLinks_find_Delete = {
+  __typename?: 'PayloadMcpApiKeysFields_transactionLinks_find_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type PayloadMcpApiKeysFields_transactionLinks_find_Read = {
+  __typename?: 'PayloadMcpApiKeysFields_transactionLinks_find_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type PayloadMcpApiKeysFields_transactionLinks_find_Update = {
+  __typename?: 'PayloadMcpApiKeysFields_transactionLinks_find_Update';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type PayloadMcpApiKeysFields_transactionLinks_update = {
+  __typename?: 'PayloadMcpApiKeysFields_transactionLinks_update';
+  create?: Maybe<PayloadMcpApiKeysFields_transactionLinks_update_Create>;
+  delete?: Maybe<PayloadMcpApiKeysFields_transactionLinks_update_Delete>;
+  read?: Maybe<PayloadMcpApiKeysFields_transactionLinks_update_Read>;
+  update?: Maybe<PayloadMcpApiKeysFields_transactionLinks_update_Update>;
+};
+
+export type PayloadMcpApiKeysFields_transactionLinks_update_Create = {
+  __typename?: 'PayloadMcpApiKeysFields_transactionLinks_update_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type PayloadMcpApiKeysFields_transactionLinks_update_Delete = {
+  __typename?: 'PayloadMcpApiKeysFields_transactionLinks_update_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type PayloadMcpApiKeysFields_transactionLinks_update_Read = {
+  __typename?: 'PayloadMcpApiKeysFields_transactionLinks_update_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type PayloadMcpApiKeysFields_transactionLinks_update_Update = {
+  __typename?: 'PayloadMcpApiKeysFields_transactionLinks_update_Update';
   permission: Scalars['Boolean']['output'];
 };
 
@@ -12712,6 +14025,8 @@ export type Query = {
   Media?: Maybe<Media>;
   OauthAccount?: Maybe<OauthAccount>;
   OauthAccounts?: Maybe<OauthAccounts>;
+  OauthCode?: Maybe<OauthCode>;
+  OauthCodes?: Maybe<OauthCodes>;
   PayloadKv?: Maybe<PayloadKv>;
   PayloadKvs?: Maybe<PayloadKvs>;
   PayloadLockedDocument?: Maybe<PayloadLockedDocument>;
@@ -12727,6 +14042,8 @@ export type Query = {
   Tag?: Maybe<Tag>;
   Tags?: Maybe<Tags>;
   Transaction?: Maybe<Transaction>;
+  TransactionLink?: Maybe<TransactionLink>;
+  TransactionLinks?: Maybe<TransactionLinks>;
   Transactions?: Maybe<Transactions>;
   User?: Maybe<User>;
   UserSetting?: Maybe<UserSetting>;
@@ -12737,6 +14054,7 @@ export type Query = {
   countAiUsages?: Maybe<countAiUsages>;
   countCategories?: Maybe<countCategories>;
   countOauthAccounts?: Maybe<countOauthAccounts>;
+  countOauthCodes?: Maybe<countOauthCodes>;
   countPayloadKvs?: Maybe<countPayloadKvs>;
   countPayloadLockedDocuments?: Maybe<countPayloadLockedDocuments>;
   countPayloadMcpApiKeys?: Maybe<countPayloadMcpApiKeys>;
@@ -12744,6 +14062,7 @@ export type Query = {
   countPeople?: Maybe<countPeople>;
   countReminders?: Maybe<countReminders>;
   countTags?: Maybe<countTags>;
+  countTransactionLinks?: Maybe<countTransactionLinks>;
   countTransactions?: Maybe<countTransactions>;
   countUserSettings?: Maybe<countUserSettings>;
   countUsers?: Maybe<countUsers>;
@@ -12757,6 +14076,7 @@ export type Query = {
   docAccessCategory?: Maybe<categoriesDocAccess>;
   docAccessMedia?: Maybe<mediaDocAccess>;
   docAccessOauthAccount?: Maybe<oauth_accountsDocAccess>;
+  docAccessOauthCode?: Maybe<oauth_codesDocAccess>;
   docAccessPayloadKv?: Maybe<payload_kvDocAccess>;
   docAccessPayloadLockedDocument?: Maybe<payload_locked_documentsDocAccess>;
   docAccessPayloadMcpApiKey?: Maybe<payload_mcp_api_keysDocAccess>;
@@ -12765,6 +14085,7 @@ export type Query = {
   docAccessReminder?: Maybe<remindersDocAccess>;
   docAccessTag?: Maybe<tagsDocAccess>;
   docAccessTransaction?: Maybe<transactionsDocAccess>;
+  docAccessTransactionLink?: Maybe<transaction_linksDocAccess>;
   docAccessUser?: Maybe<usersDocAccess>;
   docAccessUserSetting?: Maybe<user_settingsDocAccess>;
   initializedPayloadMcpApiKey?: Maybe<Scalars['Boolean']['output']>;
@@ -12872,6 +14193,26 @@ export type QueryOauthAccountsArgs = {
   sort?: InputMaybe<Scalars['String']['input']>;
   trash?: InputMaybe<Scalars['Boolean']['input']>;
   where?: InputMaybe<OauthAccount_where>;
+};
+
+
+export type QueryOauthCodeArgs = {
+  draft?: InputMaybe<Scalars['Boolean']['input']>;
+  id: Scalars['String']['input'];
+  select?: InputMaybe<Scalars['Boolean']['input']>;
+  trash?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+
+export type QueryOauthCodesArgs = {
+  draft?: InputMaybe<Scalars['Boolean']['input']>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  page?: InputMaybe<Scalars['Int']['input']>;
+  pagination?: InputMaybe<Scalars['Boolean']['input']>;
+  select?: InputMaybe<Scalars['Boolean']['input']>;
+  sort?: InputMaybe<Scalars['String']['input']>;
+  trash?: InputMaybe<Scalars['Boolean']['input']>;
+  where?: InputMaybe<OauthCode_where>;
 };
 
 
@@ -13023,6 +14364,26 @@ export type QueryTransactionArgs = {
 };
 
 
+export type QueryTransactionLinkArgs = {
+  draft?: InputMaybe<Scalars['Boolean']['input']>;
+  id: Scalars['String']['input'];
+  select?: InputMaybe<Scalars['Boolean']['input']>;
+  trash?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+
+export type QueryTransactionLinksArgs = {
+  draft?: InputMaybe<Scalars['Boolean']['input']>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  page?: InputMaybe<Scalars['Int']['input']>;
+  pagination?: InputMaybe<Scalars['Boolean']['input']>;
+  select?: InputMaybe<Scalars['Boolean']['input']>;
+  sort?: InputMaybe<Scalars['String']['input']>;
+  trash?: InputMaybe<Scalars['Boolean']['input']>;
+  where?: InputMaybe<TransactionLink_where>;
+};
+
+
 export type QueryTransactionsArgs = {
   draft?: InputMaybe<Scalars['Boolean']['input']>;
   limit?: InputMaybe<Scalars['Int']['input']>;
@@ -13115,6 +14476,13 @@ export type QuerycountOauthAccountsArgs = {
 };
 
 
+export type QuerycountOauthCodesArgs = {
+  draft?: InputMaybe<Scalars['Boolean']['input']>;
+  trash?: InputMaybe<Scalars['Boolean']['input']>;
+  where?: InputMaybe<OauthCode_where>;
+};
+
+
 export type QuerycountPayloadKvsArgs = {
   draft?: InputMaybe<Scalars['Boolean']['input']>;
   trash?: InputMaybe<Scalars['Boolean']['input']>;
@@ -13161,6 +14529,13 @@ export type QuerycountTagsArgs = {
   draft?: InputMaybe<Scalars['Boolean']['input']>;
   trash?: InputMaybe<Scalars['Boolean']['input']>;
   where?: InputMaybe<Tag_where>;
+};
+
+
+export type QuerycountTransactionLinksArgs = {
+  draft?: InputMaybe<Scalars['Boolean']['input']>;
+  trash?: InputMaybe<Scalars['Boolean']['input']>;
+  where?: InputMaybe<TransactionLink_where>;
 };
 
 
@@ -13222,6 +14597,11 @@ export type QuerydocAccessOauthAccountArgs = {
 };
 
 
+export type QuerydocAccessOauthCodeArgs = {
+  id: Scalars['String']['input'];
+};
+
+
 export type QuerydocAccessPayloadKvArgs = {
   id: Scalars['String']['input'];
 };
@@ -13258,6 +14638,11 @@ export type QuerydocAccessTagArgs = {
 
 
 export type QuerydocAccessTransactionArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+export type QuerydocAccessTransactionLinkArgs = {
   id: Scalars['String']['input'];
 };
 
@@ -15680,13 +17065,15 @@ export type Transaction = {
   account: Account;
   amount: Scalars['String']['output'];
   attachments?: Maybe<Array<Media>>;
-  category?: Maybe<Category>;
+  category: Category;
   createdAt?: Maybe<Scalars['DateTime']['output']>;
   date: Scalars['DateTime']['output'];
   deletedAt?: Maybe<Scalars['DateTime']['output']>;
   id: Scalars['String']['output'];
+  incomingLinks?: Maybe<Transaction_IncomingLinks>;
   isActive?: Maybe<Scalars['Boolean']['output']>;
   note?: Maybe<Scalars['String']['output']>;
+  outgoingLinks?: Maybe<Transaction_OutgoingLinks>;
   person?: Maybe<Person>;
   tags?: Maybe<Array<Tag>>;
   title: Scalars['String']['output'];
@@ -15696,11 +17083,672 @@ export type Transaction = {
   user: User;
 };
 
+
+export type TransactionincomingLinksArgs = {
+  count?: InputMaybe<Scalars['Boolean']['input']>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  page?: InputMaybe<Scalars['Int']['input']>;
+  sort?: InputMaybe<Scalars['String']['input']>;
+  where?: InputMaybe<TransactionLink_where>;
+};
+
+
+export type TransactionoutgoingLinksArgs = {
+  count?: InputMaybe<Scalars['Boolean']['input']>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  page?: InputMaybe<Scalars['Int']['input']>;
+  sort?: InputMaybe<Scalars['String']['input']>;
+  where?: InputMaybe<TransactionLink_where>;
+};
+
+export type TransactionLink = {
+  __typename?: 'TransactionLink';
+  createdAt?: Maybe<Scalars['DateTime']['output']>;
+  from: Transaction;
+  id: Scalars['String']['output'];
+  note?: Maybe<Scalars['String']['output']>;
+  to: Transaction;
+  type: TransactionLink_type;
+  updatedAt?: Maybe<Scalars['DateTime']['output']>;
+  user: User;
+};
+
+export enum TransactionLinkUpdate_type_MutationInput {
+  correction = 'correction',
+  duplicate = 'duplicate',
+  repaid = 'repaid',
+  returned = 'returned'
+}
+
+export type TransactionLink_createdAt_operator = {
+  equals?: InputMaybe<Scalars['DateTime']['input']>;
+  exists?: InputMaybe<Scalars['Boolean']['input']>;
+  greater_than?: InputMaybe<Scalars['DateTime']['input']>;
+  greater_than_equal?: InputMaybe<Scalars['DateTime']['input']>;
+  less_than?: InputMaybe<Scalars['DateTime']['input']>;
+  less_than_equal?: InputMaybe<Scalars['DateTime']['input']>;
+  like?: InputMaybe<Scalars['DateTime']['input']>;
+  not_equals?: InputMaybe<Scalars['DateTime']['input']>;
+};
+
+export type TransactionLink_from_operator = {
+  all?: InputMaybe<Array<InputMaybe<Scalars['JSON']['input']>>>;
+  equals?: InputMaybe<Scalars['JSON']['input']>;
+  in?: InputMaybe<Array<InputMaybe<Scalars['JSON']['input']>>>;
+  not_equals?: InputMaybe<Scalars['JSON']['input']>;
+  not_in?: InputMaybe<Array<InputMaybe<Scalars['JSON']['input']>>>;
+};
+
+export type TransactionLink_id_operator = {
+  all?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  contains?: InputMaybe<Scalars['String']['input']>;
+  equals?: InputMaybe<Scalars['String']['input']>;
+  exists?: InputMaybe<Scalars['Boolean']['input']>;
+  in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  like?: InputMaybe<Scalars['String']['input']>;
+  not_equals?: InputMaybe<Scalars['String']['input']>;
+  not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+};
+
+export type TransactionLink_note_operator = {
+  contains?: InputMaybe<Scalars['String']['input']>;
+  equals?: InputMaybe<Scalars['String']['input']>;
+  exists?: InputMaybe<Scalars['Boolean']['input']>;
+  like?: InputMaybe<Scalars['String']['input']>;
+  not_equals?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type TransactionLink_to_operator = {
+  all?: InputMaybe<Array<InputMaybe<Scalars['JSON']['input']>>>;
+  equals?: InputMaybe<Scalars['JSON']['input']>;
+  in?: InputMaybe<Array<InputMaybe<Scalars['JSON']['input']>>>;
+  not_equals?: InputMaybe<Scalars['JSON']['input']>;
+  not_in?: InputMaybe<Array<InputMaybe<Scalars['JSON']['input']>>>;
+};
+
+export enum TransactionLink_type {
+  correction = 'correction',
+  duplicate = 'duplicate',
+  repaid = 'repaid',
+  returned = 'returned'
+}
+
+export enum TransactionLink_type_Input {
+  correction = 'correction',
+  duplicate = 'duplicate',
+  repaid = 'repaid',
+  returned = 'returned'
+}
+
+export enum TransactionLink_type_MutationInput {
+  correction = 'correction',
+  duplicate = 'duplicate',
+  repaid = 'repaid',
+  returned = 'returned'
+}
+
+export type TransactionLink_type_operator = {
+  all?: InputMaybe<Array<InputMaybe<TransactionLink_type_Input>>>;
+  equals?: InputMaybe<TransactionLink_type_Input>;
+  in?: InputMaybe<Array<InputMaybe<TransactionLink_type_Input>>>;
+  not_equals?: InputMaybe<TransactionLink_type_Input>;
+  not_in?: InputMaybe<Array<InputMaybe<TransactionLink_type_Input>>>;
+};
+
+export type TransactionLink_updatedAt_operator = {
+  equals?: InputMaybe<Scalars['DateTime']['input']>;
+  exists?: InputMaybe<Scalars['Boolean']['input']>;
+  greater_than?: InputMaybe<Scalars['DateTime']['input']>;
+  greater_than_equal?: InputMaybe<Scalars['DateTime']['input']>;
+  less_than?: InputMaybe<Scalars['DateTime']['input']>;
+  less_than_equal?: InputMaybe<Scalars['DateTime']['input']>;
+  like?: InputMaybe<Scalars['DateTime']['input']>;
+  not_equals?: InputMaybe<Scalars['DateTime']['input']>;
+};
+
+export type TransactionLink_user_operator = {
+  all?: InputMaybe<Array<InputMaybe<Scalars['JSON']['input']>>>;
+  equals?: InputMaybe<Scalars['JSON']['input']>;
+  in?: InputMaybe<Array<InputMaybe<Scalars['JSON']['input']>>>;
+  not_equals?: InputMaybe<Scalars['JSON']['input']>;
+  not_in?: InputMaybe<Array<InputMaybe<Scalars['JSON']['input']>>>;
+};
+
+export type TransactionLink_where = {
+  AND?: InputMaybe<Array<InputMaybe<TransactionLink_where_and>>>;
+  OR?: InputMaybe<Array<InputMaybe<TransactionLink_where_or>>>;
+  createdAt?: InputMaybe<TransactionLink_createdAt_operator>;
+  from?: InputMaybe<TransactionLink_from_operator>;
+  id?: InputMaybe<TransactionLink_id_operator>;
+  note?: InputMaybe<TransactionLink_note_operator>;
+  to?: InputMaybe<TransactionLink_to_operator>;
+  type?: InputMaybe<TransactionLink_type_operator>;
+  updatedAt?: InputMaybe<TransactionLink_updatedAt_operator>;
+  user?: InputMaybe<TransactionLink_user_operator>;
+};
+
+export type TransactionLink_where_and = {
+  AND?: InputMaybe<Array<InputMaybe<TransactionLink_where_and>>>;
+  OR?: InputMaybe<Array<InputMaybe<TransactionLink_where_or>>>;
+  createdAt?: InputMaybe<TransactionLink_createdAt_operator>;
+  from?: InputMaybe<TransactionLink_from_operator>;
+  id?: InputMaybe<TransactionLink_id_operator>;
+  note?: InputMaybe<TransactionLink_note_operator>;
+  to?: InputMaybe<TransactionLink_to_operator>;
+  type?: InputMaybe<TransactionLink_type_operator>;
+  updatedAt?: InputMaybe<TransactionLink_updatedAt_operator>;
+  user?: InputMaybe<TransactionLink_user_operator>;
+};
+
+export type TransactionLink_where_or = {
+  AND?: InputMaybe<Array<InputMaybe<TransactionLink_where_and>>>;
+  OR?: InputMaybe<Array<InputMaybe<TransactionLink_where_or>>>;
+  createdAt?: InputMaybe<TransactionLink_createdAt_operator>;
+  from?: InputMaybe<TransactionLink_from_operator>;
+  id?: InputMaybe<TransactionLink_id_operator>;
+  note?: InputMaybe<TransactionLink_note_operator>;
+  to?: InputMaybe<TransactionLink_to_operator>;
+  type?: InputMaybe<TransactionLink_type_operator>;
+  updatedAt?: InputMaybe<TransactionLink_updatedAt_operator>;
+  user?: InputMaybe<TransactionLink_user_operator>;
+};
+
+export type TransactionLinks = {
+  __typename?: 'TransactionLinks';
+  docs: Array<TransactionLink>;
+  hasNextPage: Scalars['Boolean']['output'];
+  hasPrevPage: Scalars['Boolean']['output'];
+  limit: Scalars['Int']['output'];
+  nextPage?: Maybe<Scalars['Int']['output']>;
+  offset?: Maybe<Scalars['Int']['output']>;
+  page: Scalars['Int']['output'];
+  pagingCounter: Scalars['Int']['output'];
+  prevPage?: Maybe<Scalars['Int']['output']>;
+  totalDocs: Scalars['Int']['output'];
+  totalPages: Scalars['Int']['output'];
+};
+
+export type TransactionLinksCreateAccess = {
+  __typename?: 'TransactionLinksCreateAccess';
+  permission: Scalars['Boolean']['output'];
+  where?: Maybe<Scalars['JSONObject']['output']>;
+};
+
+export type TransactionLinksCreateDocAccess = {
+  __typename?: 'TransactionLinksCreateDocAccess';
+  permission: Scalars['Boolean']['output'];
+  where?: Maybe<Scalars['JSONObject']['output']>;
+};
+
+export type TransactionLinksDeleteAccess = {
+  __typename?: 'TransactionLinksDeleteAccess';
+  permission: Scalars['Boolean']['output'];
+  where?: Maybe<Scalars['JSONObject']['output']>;
+};
+
+export type TransactionLinksDeleteDocAccess = {
+  __typename?: 'TransactionLinksDeleteDocAccess';
+  permission: Scalars['Boolean']['output'];
+  where?: Maybe<Scalars['JSONObject']['output']>;
+};
+
+export type TransactionLinksDocAccessFields = {
+  __typename?: 'TransactionLinksDocAccessFields';
+  createdAt?: Maybe<TransactionLinksDocAccessFields_createdAt>;
+  from?: Maybe<TransactionLinksDocAccessFields_from>;
+  note?: Maybe<TransactionLinksDocAccessFields_note>;
+  to?: Maybe<TransactionLinksDocAccessFields_to>;
+  type?: Maybe<TransactionLinksDocAccessFields_type>;
+  updatedAt?: Maybe<TransactionLinksDocAccessFields_updatedAt>;
+  user?: Maybe<TransactionLinksDocAccessFields_user>;
+};
+
+export type TransactionLinksDocAccessFields_createdAt = {
+  __typename?: 'TransactionLinksDocAccessFields_createdAt';
+  create?: Maybe<TransactionLinksDocAccessFields_createdAt_Create>;
+  delete?: Maybe<TransactionLinksDocAccessFields_createdAt_Delete>;
+  read?: Maybe<TransactionLinksDocAccessFields_createdAt_Read>;
+  update?: Maybe<TransactionLinksDocAccessFields_createdAt_Update>;
+};
+
+export type TransactionLinksDocAccessFields_createdAt_Create = {
+  __typename?: 'TransactionLinksDocAccessFields_createdAt_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type TransactionLinksDocAccessFields_createdAt_Delete = {
+  __typename?: 'TransactionLinksDocAccessFields_createdAt_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type TransactionLinksDocAccessFields_createdAt_Read = {
+  __typename?: 'TransactionLinksDocAccessFields_createdAt_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type TransactionLinksDocAccessFields_createdAt_Update = {
+  __typename?: 'TransactionLinksDocAccessFields_createdAt_Update';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type TransactionLinksDocAccessFields_from = {
+  __typename?: 'TransactionLinksDocAccessFields_from';
+  create?: Maybe<TransactionLinksDocAccessFields_from_Create>;
+  delete?: Maybe<TransactionLinksDocAccessFields_from_Delete>;
+  read?: Maybe<TransactionLinksDocAccessFields_from_Read>;
+  update?: Maybe<TransactionLinksDocAccessFields_from_Update>;
+};
+
+export type TransactionLinksDocAccessFields_from_Create = {
+  __typename?: 'TransactionLinksDocAccessFields_from_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type TransactionLinksDocAccessFields_from_Delete = {
+  __typename?: 'TransactionLinksDocAccessFields_from_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type TransactionLinksDocAccessFields_from_Read = {
+  __typename?: 'TransactionLinksDocAccessFields_from_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type TransactionLinksDocAccessFields_from_Update = {
+  __typename?: 'TransactionLinksDocAccessFields_from_Update';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type TransactionLinksDocAccessFields_note = {
+  __typename?: 'TransactionLinksDocAccessFields_note';
+  create?: Maybe<TransactionLinksDocAccessFields_note_Create>;
+  delete?: Maybe<TransactionLinksDocAccessFields_note_Delete>;
+  read?: Maybe<TransactionLinksDocAccessFields_note_Read>;
+  update?: Maybe<TransactionLinksDocAccessFields_note_Update>;
+};
+
+export type TransactionLinksDocAccessFields_note_Create = {
+  __typename?: 'TransactionLinksDocAccessFields_note_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type TransactionLinksDocAccessFields_note_Delete = {
+  __typename?: 'TransactionLinksDocAccessFields_note_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type TransactionLinksDocAccessFields_note_Read = {
+  __typename?: 'TransactionLinksDocAccessFields_note_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type TransactionLinksDocAccessFields_note_Update = {
+  __typename?: 'TransactionLinksDocAccessFields_note_Update';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type TransactionLinksDocAccessFields_to = {
+  __typename?: 'TransactionLinksDocAccessFields_to';
+  create?: Maybe<TransactionLinksDocAccessFields_to_Create>;
+  delete?: Maybe<TransactionLinksDocAccessFields_to_Delete>;
+  read?: Maybe<TransactionLinksDocAccessFields_to_Read>;
+  update?: Maybe<TransactionLinksDocAccessFields_to_Update>;
+};
+
+export type TransactionLinksDocAccessFields_to_Create = {
+  __typename?: 'TransactionLinksDocAccessFields_to_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type TransactionLinksDocAccessFields_to_Delete = {
+  __typename?: 'TransactionLinksDocAccessFields_to_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type TransactionLinksDocAccessFields_to_Read = {
+  __typename?: 'TransactionLinksDocAccessFields_to_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type TransactionLinksDocAccessFields_to_Update = {
+  __typename?: 'TransactionLinksDocAccessFields_to_Update';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type TransactionLinksDocAccessFields_type = {
+  __typename?: 'TransactionLinksDocAccessFields_type';
+  create?: Maybe<TransactionLinksDocAccessFields_type_Create>;
+  delete?: Maybe<TransactionLinksDocAccessFields_type_Delete>;
+  read?: Maybe<TransactionLinksDocAccessFields_type_Read>;
+  update?: Maybe<TransactionLinksDocAccessFields_type_Update>;
+};
+
+export type TransactionLinksDocAccessFields_type_Create = {
+  __typename?: 'TransactionLinksDocAccessFields_type_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type TransactionLinksDocAccessFields_type_Delete = {
+  __typename?: 'TransactionLinksDocAccessFields_type_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type TransactionLinksDocAccessFields_type_Read = {
+  __typename?: 'TransactionLinksDocAccessFields_type_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type TransactionLinksDocAccessFields_type_Update = {
+  __typename?: 'TransactionLinksDocAccessFields_type_Update';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type TransactionLinksDocAccessFields_updatedAt = {
+  __typename?: 'TransactionLinksDocAccessFields_updatedAt';
+  create?: Maybe<TransactionLinksDocAccessFields_updatedAt_Create>;
+  delete?: Maybe<TransactionLinksDocAccessFields_updatedAt_Delete>;
+  read?: Maybe<TransactionLinksDocAccessFields_updatedAt_Read>;
+  update?: Maybe<TransactionLinksDocAccessFields_updatedAt_Update>;
+};
+
+export type TransactionLinksDocAccessFields_updatedAt_Create = {
+  __typename?: 'TransactionLinksDocAccessFields_updatedAt_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type TransactionLinksDocAccessFields_updatedAt_Delete = {
+  __typename?: 'TransactionLinksDocAccessFields_updatedAt_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type TransactionLinksDocAccessFields_updatedAt_Read = {
+  __typename?: 'TransactionLinksDocAccessFields_updatedAt_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type TransactionLinksDocAccessFields_updatedAt_Update = {
+  __typename?: 'TransactionLinksDocAccessFields_updatedAt_Update';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type TransactionLinksDocAccessFields_user = {
+  __typename?: 'TransactionLinksDocAccessFields_user';
+  create?: Maybe<TransactionLinksDocAccessFields_user_Create>;
+  delete?: Maybe<TransactionLinksDocAccessFields_user_Delete>;
+  read?: Maybe<TransactionLinksDocAccessFields_user_Read>;
+  update?: Maybe<TransactionLinksDocAccessFields_user_Update>;
+};
+
+export type TransactionLinksDocAccessFields_user_Create = {
+  __typename?: 'TransactionLinksDocAccessFields_user_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type TransactionLinksDocAccessFields_user_Delete = {
+  __typename?: 'TransactionLinksDocAccessFields_user_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type TransactionLinksDocAccessFields_user_Read = {
+  __typename?: 'TransactionLinksDocAccessFields_user_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type TransactionLinksDocAccessFields_user_Update = {
+  __typename?: 'TransactionLinksDocAccessFields_user_Update';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type TransactionLinksFields = {
+  __typename?: 'TransactionLinksFields';
+  createdAt?: Maybe<TransactionLinksFields_createdAt>;
+  from?: Maybe<TransactionLinksFields_from>;
+  note?: Maybe<TransactionLinksFields_note>;
+  to?: Maybe<TransactionLinksFields_to>;
+  type?: Maybe<TransactionLinksFields_type>;
+  updatedAt?: Maybe<TransactionLinksFields_updatedAt>;
+  user?: Maybe<TransactionLinksFields_user>;
+};
+
+export type TransactionLinksFields_createdAt = {
+  __typename?: 'TransactionLinksFields_createdAt';
+  create?: Maybe<TransactionLinksFields_createdAt_Create>;
+  delete?: Maybe<TransactionLinksFields_createdAt_Delete>;
+  read?: Maybe<TransactionLinksFields_createdAt_Read>;
+  update?: Maybe<TransactionLinksFields_createdAt_Update>;
+};
+
+export type TransactionLinksFields_createdAt_Create = {
+  __typename?: 'TransactionLinksFields_createdAt_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type TransactionLinksFields_createdAt_Delete = {
+  __typename?: 'TransactionLinksFields_createdAt_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type TransactionLinksFields_createdAt_Read = {
+  __typename?: 'TransactionLinksFields_createdAt_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type TransactionLinksFields_createdAt_Update = {
+  __typename?: 'TransactionLinksFields_createdAt_Update';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type TransactionLinksFields_from = {
+  __typename?: 'TransactionLinksFields_from';
+  create?: Maybe<TransactionLinksFields_from_Create>;
+  delete?: Maybe<TransactionLinksFields_from_Delete>;
+  read?: Maybe<TransactionLinksFields_from_Read>;
+  update?: Maybe<TransactionLinksFields_from_Update>;
+};
+
+export type TransactionLinksFields_from_Create = {
+  __typename?: 'TransactionLinksFields_from_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type TransactionLinksFields_from_Delete = {
+  __typename?: 'TransactionLinksFields_from_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type TransactionLinksFields_from_Read = {
+  __typename?: 'TransactionLinksFields_from_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type TransactionLinksFields_from_Update = {
+  __typename?: 'TransactionLinksFields_from_Update';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type TransactionLinksFields_note = {
+  __typename?: 'TransactionLinksFields_note';
+  create?: Maybe<TransactionLinksFields_note_Create>;
+  delete?: Maybe<TransactionLinksFields_note_Delete>;
+  read?: Maybe<TransactionLinksFields_note_Read>;
+  update?: Maybe<TransactionLinksFields_note_Update>;
+};
+
+export type TransactionLinksFields_note_Create = {
+  __typename?: 'TransactionLinksFields_note_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type TransactionLinksFields_note_Delete = {
+  __typename?: 'TransactionLinksFields_note_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type TransactionLinksFields_note_Read = {
+  __typename?: 'TransactionLinksFields_note_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type TransactionLinksFields_note_Update = {
+  __typename?: 'TransactionLinksFields_note_Update';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type TransactionLinksFields_to = {
+  __typename?: 'TransactionLinksFields_to';
+  create?: Maybe<TransactionLinksFields_to_Create>;
+  delete?: Maybe<TransactionLinksFields_to_Delete>;
+  read?: Maybe<TransactionLinksFields_to_Read>;
+  update?: Maybe<TransactionLinksFields_to_Update>;
+};
+
+export type TransactionLinksFields_to_Create = {
+  __typename?: 'TransactionLinksFields_to_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type TransactionLinksFields_to_Delete = {
+  __typename?: 'TransactionLinksFields_to_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type TransactionLinksFields_to_Read = {
+  __typename?: 'TransactionLinksFields_to_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type TransactionLinksFields_to_Update = {
+  __typename?: 'TransactionLinksFields_to_Update';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type TransactionLinksFields_type = {
+  __typename?: 'TransactionLinksFields_type';
+  create?: Maybe<TransactionLinksFields_type_Create>;
+  delete?: Maybe<TransactionLinksFields_type_Delete>;
+  read?: Maybe<TransactionLinksFields_type_Read>;
+  update?: Maybe<TransactionLinksFields_type_Update>;
+};
+
+export type TransactionLinksFields_type_Create = {
+  __typename?: 'TransactionLinksFields_type_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type TransactionLinksFields_type_Delete = {
+  __typename?: 'TransactionLinksFields_type_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type TransactionLinksFields_type_Read = {
+  __typename?: 'TransactionLinksFields_type_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type TransactionLinksFields_type_Update = {
+  __typename?: 'TransactionLinksFields_type_Update';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type TransactionLinksFields_updatedAt = {
+  __typename?: 'TransactionLinksFields_updatedAt';
+  create?: Maybe<TransactionLinksFields_updatedAt_Create>;
+  delete?: Maybe<TransactionLinksFields_updatedAt_Delete>;
+  read?: Maybe<TransactionLinksFields_updatedAt_Read>;
+  update?: Maybe<TransactionLinksFields_updatedAt_Update>;
+};
+
+export type TransactionLinksFields_updatedAt_Create = {
+  __typename?: 'TransactionLinksFields_updatedAt_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type TransactionLinksFields_updatedAt_Delete = {
+  __typename?: 'TransactionLinksFields_updatedAt_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type TransactionLinksFields_updatedAt_Read = {
+  __typename?: 'TransactionLinksFields_updatedAt_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type TransactionLinksFields_updatedAt_Update = {
+  __typename?: 'TransactionLinksFields_updatedAt_Update';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type TransactionLinksFields_user = {
+  __typename?: 'TransactionLinksFields_user';
+  create?: Maybe<TransactionLinksFields_user_Create>;
+  delete?: Maybe<TransactionLinksFields_user_Delete>;
+  read?: Maybe<TransactionLinksFields_user_Read>;
+  update?: Maybe<TransactionLinksFields_user_Update>;
+};
+
+export type TransactionLinksFields_user_Create = {
+  __typename?: 'TransactionLinksFields_user_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type TransactionLinksFields_user_Delete = {
+  __typename?: 'TransactionLinksFields_user_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type TransactionLinksFields_user_Read = {
+  __typename?: 'TransactionLinksFields_user_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type TransactionLinksFields_user_Update = {
+  __typename?: 'TransactionLinksFields_user_Update';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type TransactionLinksReadAccess = {
+  __typename?: 'TransactionLinksReadAccess';
+  permission: Scalars['Boolean']['output'];
+  where?: Maybe<Scalars['JSONObject']['output']>;
+};
+
+export type TransactionLinksReadDocAccess = {
+  __typename?: 'TransactionLinksReadDocAccess';
+  permission: Scalars['Boolean']['output'];
+  where?: Maybe<Scalars['JSONObject']['output']>;
+};
+
+export type TransactionLinksUpdateAccess = {
+  __typename?: 'TransactionLinksUpdateAccess';
+  permission: Scalars['Boolean']['output'];
+  where?: Maybe<Scalars['JSONObject']['output']>;
+};
+
+export type TransactionLinksUpdateDocAccess = {
+  __typename?: 'TransactionLinksUpdateDocAccess';
+  permission: Scalars['Boolean']['output'];
+  where?: Maybe<Scalars['JSONObject']['output']>;
+};
+
 export enum TransactionUpdate_type_MutationInput {
   expense = 'expense',
   income = 'income',
   transfer = 'transfer'
 }
+
+export type Transaction_IncomingLinks = {
+  __typename?: 'Transaction_IncomingLinks';
+  docs: Array<TransactionLink>;
+  hasNextPage: Scalars['Boolean']['output'];
+  totalDocs?: Maybe<Scalars['Int']['output']>;
+};
+
+export type Transaction_OutgoingLinks = {
+  __typename?: 'Transaction_OutgoingLinks';
+  docs: Array<TransactionLink>;
+  hasNextPage: Scalars['Boolean']['output'];
+  totalDocs?: Maybe<Scalars['Int']['output']>;
+};
 
 export type Transaction_account_operator = {
   all?: InputMaybe<Array<InputMaybe<Scalars['JSON']['input']>>>;
@@ -15732,7 +17780,6 @@ export type Transaction_attachments_operator = {
 export type Transaction_category_operator = {
   all?: InputMaybe<Array<InputMaybe<Scalars['JSON']['input']>>>;
   equals?: InputMaybe<Scalars['JSON']['input']>;
-  exists?: InputMaybe<Scalars['Boolean']['input']>;
   in?: InputMaybe<Array<InputMaybe<Scalars['JSON']['input']>>>;
   not_equals?: InputMaybe<Scalars['JSON']['input']>;
   not_in?: InputMaybe<Array<InputMaybe<Scalars['JSON']['input']>>>;
@@ -15991,8 +18038,10 @@ export type TransactionsDocAccessFields = {
   createdAt?: Maybe<TransactionsDocAccessFields_createdAt>;
   date?: Maybe<TransactionsDocAccessFields_date>;
   deletedAt?: Maybe<TransactionsDocAccessFields_deletedAt>;
+  incomingLinks?: Maybe<TransactionsDocAccessFields_incomingLinks>;
   isActive?: Maybe<TransactionsDocAccessFields_isActive>;
   note?: Maybe<TransactionsDocAccessFields_note>;
+  outgoingLinks?: Maybe<TransactionsDocAccessFields_outgoingLinks>;
   person?: Maybe<TransactionsDocAccessFields_person>;
   tags?: Maybe<TransactionsDocAccessFields_tags>;
   title?: Maybe<TransactionsDocAccessFields_title>;
@@ -16198,6 +18247,34 @@ export type TransactionsDocAccessFields_deletedAt_Update = {
   permission: Scalars['Boolean']['output'];
 };
 
+export type TransactionsDocAccessFields_incomingLinks = {
+  __typename?: 'TransactionsDocAccessFields_incomingLinks';
+  create?: Maybe<TransactionsDocAccessFields_incomingLinks_Create>;
+  delete?: Maybe<TransactionsDocAccessFields_incomingLinks_Delete>;
+  read?: Maybe<TransactionsDocAccessFields_incomingLinks_Read>;
+  update?: Maybe<TransactionsDocAccessFields_incomingLinks_Update>;
+};
+
+export type TransactionsDocAccessFields_incomingLinks_Create = {
+  __typename?: 'TransactionsDocAccessFields_incomingLinks_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type TransactionsDocAccessFields_incomingLinks_Delete = {
+  __typename?: 'TransactionsDocAccessFields_incomingLinks_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type TransactionsDocAccessFields_incomingLinks_Read = {
+  __typename?: 'TransactionsDocAccessFields_incomingLinks_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type TransactionsDocAccessFields_incomingLinks_Update = {
+  __typename?: 'TransactionsDocAccessFields_incomingLinks_Update';
+  permission: Scalars['Boolean']['output'];
+};
+
 export type TransactionsDocAccessFields_isActive = {
   __typename?: 'TransactionsDocAccessFields_isActive';
   create?: Maybe<TransactionsDocAccessFields_isActive_Create>;
@@ -16251,6 +18328,34 @@ export type TransactionsDocAccessFields_note_Read = {
 
 export type TransactionsDocAccessFields_note_Update = {
   __typename?: 'TransactionsDocAccessFields_note_Update';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type TransactionsDocAccessFields_outgoingLinks = {
+  __typename?: 'TransactionsDocAccessFields_outgoingLinks';
+  create?: Maybe<TransactionsDocAccessFields_outgoingLinks_Create>;
+  delete?: Maybe<TransactionsDocAccessFields_outgoingLinks_Delete>;
+  read?: Maybe<TransactionsDocAccessFields_outgoingLinks_Read>;
+  update?: Maybe<TransactionsDocAccessFields_outgoingLinks_Update>;
+};
+
+export type TransactionsDocAccessFields_outgoingLinks_Create = {
+  __typename?: 'TransactionsDocAccessFields_outgoingLinks_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type TransactionsDocAccessFields_outgoingLinks_Delete = {
+  __typename?: 'TransactionsDocAccessFields_outgoingLinks_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type TransactionsDocAccessFields_outgoingLinks_Read = {
+  __typename?: 'TransactionsDocAccessFields_outgoingLinks_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type TransactionsDocAccessFields_outgoingLinks_Update = {
+  __typename?: 'TransactionsDocAccessFields_outgoingLinks_Update';
   permission: Scalars['Boolean']['output'];
 };
 
@@ -16459,8 +18564,10 @@ export type TransactionsFields = {
   createdAt?: Maybe<TransactionsFields_createdAt>;
   date?: Maybe<TransactionsFields_date>;
   deletedAt?: Maybe<TransactionsFields_deletedAt>;
+  incomingLinks?: Maybe<TransactionsFields_incomingLinks>;
   isActive?: Maybe<TransactionsFields_isActive>;
   note?: Maybe<TransactionsFields_note>;
+  outgoingLinks?: Maybe<TransactionsFields_outgoingLinks>;
   person?: Maybe<TransactionsFields_person>;
   tags?: Maybe<TransactionsFields_tags>;
   title?: Maybe<TransactionsFields_title>;
@@ -16666,6 +18773,34 @@ export type TransactionsFields_deletedAt_Update = {
   permission: Scalars['Boolean']['output'];
 };
 
+export type TransactionsFields_incomingLinks = {
+  __typename?: 'TransactionsFields_incomingLinks';
+  create?: Maybe<TransactionsFields_incomingLinks_Create>;
+  delete?: Maybe<TransactionsFields_incomingLinks_Delete>;
+  read?: Maybe<TransactionsFields_incomingLinks_Read>;
+  update?: Maybe<TransactionsFields_incomingLinks_Update>;
+};
+
+export type TransactionsFields_incomingLinks_Create = {
+  __typename?: 'TransactionsFields_incomingLinks_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type TransactionsFields_incomingLinks_Delete = {
+  __typename?: 'TransactionsFields_incomingLinks_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type TransactionsFields_incomingLinks_Read = {
+  __typename?: 'TransactionsFields_incomingLinks_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type TransactionsFields_incomingLinks_Update = {
+  __typename?: 'TransactionsFields_incomingLinks_Update';
+  permission: Scalars['Boolean']['output'];
+};
+
 export type TransactionsFields_isActive = {
   __typename?: 'TransactionsFields_isActive';
   create?: Maybe<TransactionsFields_isActive_Create>;
@@ -16719,6 +18854,34 @@ export type TransactionsFields_note_Read = {
 
 export type TransactionsFields_note_Update = {
   __typename?: 'TransactionsFields_note_Update';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type TransactionsFields_outgoingLinks = {
+  __typename?: 'TransactionsFields_outgoingLinks';
+  create?: Maybe<TransactionsFields_outgoingLinks_Create>;
+  delete?: Maybe<TransactionsFields_outgoingLinks_Delete>;
+  read?: Maybe<TransactionsFields_outgoingLinks_Read>;
+  update?: Maybe<TransactionsFields_outgoingLinks_Update>;
+};
+
+export type TransactionsFields_outgoingLinks_Create = {
+  __typename?: 'TransactionsFields_outgoingLinks_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type TransactionsFields_outgoingLinks_Delete = {
+  __typename?: 'TransactionsFields_outgoingLinks_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type TransactionsFields_outgoingLinks_Read = {
+  __typename?: 'TransactionsFields_outgoingLinks_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type TransactionsFields_outgoingLinks_Update = {
+  __typename?: 'TransactionsFields_outgoingLinks_Update';
   permission: Scalars['Boolean']['output'];
 };
 
@@ -16957,7 +19120,17 @@ export type User = {
   role?: Maybe<User_role>;
   salt?: Maybe<Scalars['String']['output']>;
   sessions?: Maybe<Array<User_Sessions>>;
+  settings?: Maybe<User_Settings>;
   updatedAt?: Maybe<Scalars['DateTime']['output']>;
+};
+
+
+export type UsersettingsArgs = {
+  count?: InputMaybe<Scalars['Boolean']['input']>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  page?: InputMaybe<Scalars['Int']['input']>;
+  sort?: InputMaybe<Scalars['String']['input']>;
+  where?: InputMaybe<UserSetting_where>;
 };
 
 export type UserSetting = {
@@ -17824,6 +19997,13 @@ export type User_Sessions = {
   id?: Maybe<Scalars['String']['output']>;
 };
 
+export type User_Settings = {
+  __typename?: 'User_Settings';
+  docs: Array<UserSetting>;
+  hasNextPage: Scalars['Boolean']['output'];
+  totalDocs?: Maybe<Scalars['Int']['output']>;
+};
+
 export type User_avatar_operator = {
   all?: InputMaybe<Array<InputMaybe<Scalars['JSON']['input']>>>;
   equals?: InputMaybe<Scalars['JSON']['input']>;
@@ -18036,6 +20216,7 @@ export type UsersDocAccessFields = {
   name?: Maybe<UsersDocAccessFields_name>;
   role?: Maybe<UsersDocAccessFields_role>;
   sessions?: Maybe<UsersDocAccessFields_sessions>;
+  settings?: Maybe<UsersDocAccessFields_settings>;
   updatedAt?: Maybe<UsersDocAccessFields_updatedAt>;
 };
 
@@ -18299,6 +20480,34 @@ export type UsersDocAccessFields_sessions_id_Update = {
   permission: Scalars['Boolean']['output'];
 };
 
+export type UsersDocAccessFields_settings = {
+  __typename?: 'UsersDocAccessFields_settings';
+  create?: Maybe<UsersDocAccessFields_settings_Create>;
+  delete?: Maybe<UsersDocAccessFields_settings_Delete>;
+  read?: Maybe<UsersDocAccessFields_settings_Read>;
+  update?: Maybe<UsersDocAccessFields_settings_Update>;
+};
+
+export type UsersDocAccessFields_settings_Create = {
+  __typename?: 'UsersDocAccessFields_settings_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type UsersDocAccessFields_settings_Delete = {
+  __typename?: 'UsersDocAccessFields_settings_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type UsersDocAccessFields_settings_Read = {
+  __typename?: 'UsersDocAccessFields_settings_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type UsersDocAccessFields_settings_Update = {
+  __typename?: 'UsersDocAccessFields_settings_Update';
+  permission: Scalars['Boolean']['output'];
+};
+
 export type UsersDocAccessFields_updatedAt = {
   __typename?: 'UsersDocAccessFields_updatedAt';
   create?: Maybe<UsersDocAccessFields_updatedAt_Create>;
@@ -18335,6 +20544,7 @@ export type UsersFields = {
   name?: Maybe<UsersFields_name>;
   role?: Maybe<UsersFields_role>;
   sessions?: Maybe<UsersFields_sessions>;
+  settings?: Maybe<UsersFields_settings>;
   updatedAt?: Maybe<UsersFields_updatedAt>;
 };
 
@@ -18598,6 +20808,34 @@ export type UsersFields_sessions_id_Update = {
   permission: Scalars['Boolean']['output'];
 };
 
+export type UsersFields_settings = {
+  __typename?: 'UsersFields_settings';
+  create?: Maybe<UsersFields_settings_Create>;
+  delete?: Maybe<UsersFields_settings_Delete>;
+  read?: Maybe<UsersFields_settings_Read>;
+  update?: Maybe<UsersFields_settings_Update>;
+};
+
+export type UsersFields_settings_Create = {
+  __typename?: 'UsersFields_settings_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type UsersFields_settings_Delete = {
+  __typename?: 'UsersFields_settings_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type UsersFields_settings_Read = {
+  __typename?: 'UsersFields_settings_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type UsersFields_settings_Update = {
+  __typename?: 'UsersFields_settings_Update';
+  permission: Scalars['Boolean']['output'];
+};
+
 export type UsersFields_updatedAt = {
   __typename?: 'UsersFields_updatedAt';
   create?: Maybe<UsersFields_updatedAt_Create>;
@@ -18790,6 +21028,11 @@ export type countOauthAccounts = {
   totalDocs?: Maybe<Scalars['Int']['output']>;
 };
 
+export type countOauthCodes = {
+  __typename?: 'countOauthCodes';
+  totalDocs?: Maybe<Scalars['Int']['output']>;
+};
+
 export type countPayloadKvs = {
   __typename?: 'countPayloadKvs';
   totalDocs?: Maybe<Scalars['Int']['output']>;
@@ -18822,6 +21065,11 @@ export type countReminders = {
 
 export type countTags = {
   __typename?: 'countTags';
+  totalDocs?: Maybe<Scalars['Int']['output']>;
+};
+
+export type countTransactionLinks = {
+  __typename?: 'countTransactionLinks';
   totalDocs?: Maybe<Scalars['Int']['output']>;
 };
 
@@ -19034,6 +21282,32 @@ export type mutationOauthAccountUpdateInput = {
   user?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type mutationOauthCodeInput = {
+  apiKeyId: Scalars['String']['input'];
+  apiKeyValue: Scalars['String']['input'];
+  clientId: Scalars['String']['input'];
+  code: Scalars['String']['input'];
+  codeChallenge?: InputMaybe<Scalars['String']['input']>;
+  createdAt?: InputMaybe<Scalars['String']['input']>;
+  expiresAt: Scalars['String']['input'];
+  redirectUri: Scalars['String']['input'];
+  updatedAt?: InputMaybe<Scalars['String']['input']>;
+  userId: Scalars['String']['input'];
+};
+
+export type mutationOauthCodeUpdateInput = {
+  apiKeyId?: InputMaybe<Scalars['String']['input']>;
+  apiKeyValue?: InputMaybe<Scalars['String']['input']>;
+  clientId?: InputMaybe<Scalars['String']['input']>;
+  code?: InputMaybe<Scalars['String']['input']>;
+  codeChallenge?: InputMaybe<Scalars['String']['input']>;
+  createdAt?: InputMaybe<Scalars['String']['input']>;
+  expiresAt?: InputMaybe<Scalars['String']['input']>;
+  redirectUri?: InputMaybe<Scalars['String']['input']>;
+  updatedAt?: InputMaybe<Scalars['String']['input']>;
+  userId?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type mutationPayloadKvInput = {
   data: Scalars['JSON']['input'];
   key: Scalars['String']['input'];
@@ -19075,6 +21349,7 @@ export type mutationPayloadMcpApiKeyInput = {
   people?: InputMaybe<mutationPayloadMcpApiKey_PeopleInput>;
   reminders?: InputMaybe<mutationPayloadMcpApiKey_RemindersInput>;
   tags?: InputMaybe<mutationPayloadMcpApiKey_TagsInput>;
+  transactionLinks?: InputMaybe<mutationPayloadMcpApiKey_TransactionLinksInput>;
   transactions?: InputMaybe<mutationPayloadMcpApiKey_TransactionsInput>;
   updatedAt?: InputMaybe<Scalars['String']['input']>;
   user?: InputMaybe<Scalars['String']['input']>;
@@ -19097,6 +21372,7 @@ export type mutationPayloadMcpApiKeyUpdateInput = {
   people?: InputMaybe<mutationPayloadMcpApiKeyUpdate_PeopleInput>;
   reminders?: InputMaybe<mutationPayloadMcpApiKeyUpdate_RemindersInput>;
   tags?: InputMaybe<mutationPayloadMcpApiKeyUpdate_TagsInput>;
+  transactionLinks?: InputMaybe<mutationPayloadMcpApiKeyUpdate_TransactionLinksInput>;
   transactions?: InputMaybe<mutationPayloadMcpApiKeyUpdate_TransactionsInput>;
   updatedAt?: InputMaybe<Scalars['String']['input']>;
   user?: InputMaybe<Scalars['String']['input']>;
@@ -19130,6 +21406,7 @@ export type mutationPayloadMcpApiKeyUpdate_PayloadMcpResourceInput = {
 };
 
 export type mutationPayloadMcpApiKeyUpdate_PayloadMcpToolInput = {
+  getCurrentUser?: InputMaybe<Scalars['Boolean']['input']>;
   getDashboardSummary?: InputMaybe<Scalars['Boolean']['input']>;
   getMonthlyCategories?: InputMaybe<Scalars['Boolean']['input']>;
   getMonthlyPeople?: InputMaybe<Scalars['Boolean']['input']>;
@@ -19151,6 +21428,13 @@ export type mutationPayloadMcpApiKeyUpdate_RemindersInput = {
 };
 
 export type mutationPayloadMcpApiKeyUpdate_TagsInput = {
+  create?: InputMaybe<Scalars['Boolean']['input']>;
+  delete?: InputMaybe<Scalars['Boolean']['input']>;
+  find?: InputMaybe<Scalars['Boolean']['input']>;
+  update?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+export type mutationPayloadMcpApiKeyUpdate_TransactionLinksInput = {
   create?: InputMaybe<Scalars['Boolean']['input']>;
   delete?: InputMaybe<Scalars['Boolean']['input']>;
   find?: InputMaybe<Scalars['Boolean']['input']>;
@@ -19199,6 +21483,7 @@ export type mutationPayloadMcpApiKey_PayloadMcpResourceInput = {
 };
 
 export type mutationPayloadMcpApiKey_PayloadMcpToolInput = {
+  getCurrentUser?: InputMaybe<Scalars['Boolean']['input']>;
   getDashboardSummary?: InputMaybe<Scalars['Boolean']['input']>;
   getMonthlyCategories?: InputMaybe<Scalars['Boolean']['input']>;
   getMonthlyPeople?: InputMaybe<Scalars['Boolean']['input']>;
@@ -19220,6 +21505,13 @@ export type mutationPayloadMcpApiKey_RemindersInput = {
 };
 
 export type mutationPayloadMcpApiKey_TagsInput = {
+  create?: InputMaybe<Scalars['Boolean']['input']>;
+  delete?: InputMaybe<Scalars['Boolean']['input']>;
+  find?: InputMaybe<Scalars['Boolean']['input']>;
+  update?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+export type mutationPayloadMcpApiKey_TransactionLinksInput = {
   create?: InputMaybe<Scalars['Boolean']['input']>;
   delete?: InputMaybe<Scalars['Boolean']['input']>;
   find?: InputMaybe<Scalars['Boolean']['input']>;
@@ -19385,6 +21677,26 @@ export type mutationTransactionInput = {
   user?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type mutationTransactionLinkInput = {
+  createdAt?: InputMaybe<Scalars['String']['input']>;
+  from?: InputMaybe<Scalars['String']['input']>;
+  note?: InputMaybe<Scalars['String']['input']>;
+  to?: InputMaybe<Scalars['String']['input']>;
+  type: TransactionLink_type_MutationInput;
+  updatedAt?: InputMaybe<Scalars['String']['input']>;
+  user?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type mutationTransactionLinkUpdateInput = {
+  createdAt?: InputMaybe<Scalars['String']['input']>;
+  from?: InputMaybe<Scalars['String']['input']>;
+  note?: InputMaybe<Scalars['String']['input']>;
+  to?: InputMaybe<Scalars['String']['input']>;
+  type?: InputMaybe<TransactionLinkUpdate_type_MutationInput>;
+  updatedAt?: InputMaybe<Scalars['String']['input']>;
+  user?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type mutationTransactionUpdateInput = {
   account?: InputMaybe<Scalars['String']['input']>;
   amount?: InputMaybe<Scalars['String']['input']>;
@@ -19492,6 +21804,24 @@ export type oauth_accountsDocAccess = {
   fields?: Maybe<OauthAccountsDocAccessFields>;
   read?: Maybe<OauthAccountsReadDocAccess>;
   update?: Maybe<OauthAccountsUpdateDocAccess>;
+};
+
+export type oauth_codesAccess = {
+  __typename?: 'oauth_codesAccess';
+  create?: Maybe<OauthCodesCreateAccess>;
+  delete?: Maybe<OauthCodesDeleteAccess>;
+  fields?: Maybe<OauthCodesFields>;
+  read?: Maybe<OauthCodesReadAccess>;
+  update?: Maybe<OauthCodesUpdateAccess>;
+};
+
+export type oauth_codesDocAccess = {
+  __typename?: 'oauth_codesDocAccess';
+  create?: Maybe<OauthCodesCreateDocAccess>;
+  delete?: Maybe<OauthCodesDeleteDocAccess>;
+  fields?: Maybe<OauthCodesDocAccessFields>;
+  read?: Maybe<OauthCodesReadDocAccess>;
+  update?: Maybe<OauthCodesUpdateDocAccess>;
 };
 
 export type payload_kvAccess = {
@@ -19642,6 +21972,24 @@ export type tagsDocAccess = {
   fields?: Maybe<TagsDocAccessFields>;
   read?: Maybe<TagsReadDocAccess>;
   update?: Maybe<TagsUpdateDocAccess>;
+};
+
+export type transaction_linksAccess = {
+  __typename?: 'transaction_linksAccess';
+  create?: Maybe<TransactionLinksCreateAccess>;
+  delete?: Maybe<TransactionLinksDeleteAccess>;
+  fields?: Maybe<TransactionLinksFields>;
+  read?: Maybe<TransactionLinksReadAccess>;
+  update?: Maybe<TransactionLinksUpdateAccess>;
+};
+
+export type transaction_linksDocAccess = {
+  __typename?: 'transaction_linksDocAccess';
+  create?: Maybe<TransactionLinksCreateDocAccess>;
+  delete?: Maybe<TransactionLinksDeleteDocAccess>;
+  fields?: Maybe<TransactionLinksDocAccessFields>;
+  read?: Maybe<TransactionLinksReadDocAccess>;
+  update?: Maybe<TransactionLinksUpdateDocAccess>;
 };
 
 export type transactionsAccess = {
@@ -20014,6 +22362,32 @@ export type GetTimezonesQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type GetTimezonesQuery = { __typename?: 'Query', timezones?: { __typename?: 'TimezonesResult', totalDocs?: number | null, docs?: Array<{ __typename?: 'Timezone', id: string, region: string, city: string, offset: string, label: string } | null> | null } | null };
 
+export type TransactionLinkTransactionFieldsFragment = { __typename?: 'Transaction', id: string, title: string, amount: string, type: Transaction_type, date: any, category: { __typename?: 'Category', id: string, name: string, icon: string, color?: string | null, bgColor?: string | null }, account: { __typename?: 'Account', id: string, name: string, icon: string, bgColor?: string | null, color?: string | null } };
+
+export type TransactionLinkFieldsFragment = { __typename?: 'TransactionLink', id: string, type: TransactionLink_type, note?: string | null, from: { __typename?: 'Transaction', id: string, title: string, amount: string, type: Transaction_type, date: any, category: { __typename?: 'Category', id: string, name: string, icon: string, color?: string | null, bgColor?: string | null }, account: { __typename?: 'Account', id: string, name: string, icon: string, bgColor?: string | null, color?: string | null } }, to: { __typename?: 'Transaction', id: string, title: string, amount: string, type: Transaction_type, date: any, category: { __typename?: 'Category', id: string, name: string, icon: string, color?: string | null, bgColor?: string | null }, account: { __typename?: 'Account', id: string, name: string, icon: string, bgColor?: string | null, color?: string | null } } };
+
+export type GetTransactionLinksQueryVariables = Exact<{
+  where?: InputMaybe<TransactionLink_where>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+}>;
+
+
+export type GetTransactionLinksQuery = { __typename?: 'Query', TransactionLinks?: { __typename?: 'TransactionLinks', totalDocs: number, docs: Array<{ __typename?: 'TransactionLink', id: string, type: TransactionLink_type, note?: string | null, from: { __typename?: 'Transaction', id: string, title: string, amount: string, type: Transaction_type, date: any, category: { __typename?: 'Category', id: string, name: string, icon: string, color?: string | null, bgColor?: string | null }, account: { __typename?: 'Account', id: string, name: string, icon: string, bgColor?: string | null, color?: string | null } }, to: { __typename?: 'Transaction', id: string, title: string, amount: string, type: Transaction_type, date: any, category: { __typename?: 'Category', id: string, name: string, icon: string, color?: string | null, bgColor?: string | null }, account: { __typename?: 'Account', id: string, name: string, icon: string, bgColor?: string | null, color?: string | null } } }> } | null };
+
+export type CreateTransactionLinkMutationVariables = Exact<{
+  data: mutationTransactionLinkInput;
+}>;
+
+
+export type CreateTransactionLinkMutation = { __typename?: 'Mutation', createTransactionLink?: { __typename?: 'TransactionLink', id: string, type: TransactionLink_type, note?: string | null, from: { __typename?: 'Transaction', id: string, title: string, amount: string, type: Transaction_type, date: any, category: { __typename?: 'Category', id: string, name: string, icon: string, color?: string | null, bgColor?: string | null }, account: { __typename?: 'Account', id: string, name: string, icon: string, bgColor?: string | null, color?: string | null } }, to: { __typename?: 'Transaction', id: string, title: string, amount: string, type: Transaction_type, date: any, category: { __typename?: 'Category', id: string, name: string, icon: string, color?: string | null, bgColor?: string | null }, account: { __typename?: 'Account', id: string, name: string, icon: string, bgColor?: string | null, color?: string | null } } } | null };
+
+export type DeleteTransactionLinkMutationVariables = Exact<{
+  id: Scalars['String']['input'];
+}>;
+
+
+export type DeleteTransactionLinkMutation = { __typename?: 'Mutation', deleteTransactionLink?: { __typename?: 'TransactionLink', id: string } | null };
+
 export type TransactionCategoryFieldsFragment = { __typename?: 'Category', id: string, name: string, icon: string, color?: string | null, bgColor?: string | null, type: Category_type };
 
 export type TransactionAccountFieldsFragment = { __typename?: 'Account', id: string, name: string, icon: string, bgColor?: string | null, color?: string | null, avatar?: { __typename?: 'Media', id: string, url?: string | null, thumbnailURL?: string | null } | null };
@@ -20024,7 +22398,7 @@ export type TransactionTagFieldsFragment = { __typename?: 'Tag', id: string, nam
 
 export type TransactionAttachmentFieldsFragment = { __typename?: 'Media', id: string, url?: string | null, thumbnailURL?: string | null, mimeType?: string | null, filesize?: number | null, filename?: string | null, width?: number | null, height?: number | null };
 
-export type TransactionFieldsFragment = { __typename?: 'Transaction', id: string, title: string, amount: string, date: any, type: Transaction_type, note?: string | null, isActive?: boolean | null, createdAt?: any | null, updatedAt?: any | null, category?: { __typename?: 'Category', id: string, name: string, icon: string, color?: string | null, bgColor?: string | null, type: Category_type } | null, account: { __typename?: 'Account', id: string, name: string, icon: string, bgColor?: string | null, color?: string | null, avatar?: { __typename?: 'Media', id: string, url?: string | null, thumbnailURL?: string | null } | null }, toAccount?: { __typename?: 'Account', id: string, name: string, icon: string, bgColor?: string | null, color?: string | null, avatar?: { __typename?: 'Media', id: string, url?: string | null, thumbnailURL?: string | null } | null } | null, person?: { __typename?: 'Person', id: string, name: string, email?: any | null, phone?: string | null, avatar?: { __typename?: 'Media', id: string, url?: string | null, thumbnailURL?: string | null } | null } | null, tags?: Array<{ __typename?: 'Tag', id: string, name: string, icon: string, color?: string | null, bgColor?: string | null }> | null, attachments?: Array<{ __typename?: 'Media', id: string, url?: string | null, thumbnailURL?: string | null, mimeType?: string | null, filesize?: number | null, filename?: string | null, width?: number | null, height?: number | null }> | null };
+export type TransactionFieldsFragment = { __typename?: 'Transaction', id: string, title: string, amount: string, date: any, type: Transaction_type, note?: string | null, isActive?: boolean | null, createdAt?: any | null, updatedAt?: any | null, category: { __typename?: 'Category', id: string, name: string, icon: string, color?: string | null, bgColor?: string | null, type: Category_type }, account: { __typename?: 'Account', id: string, name: string, icon: string, bgColor?: string | null, color?: string | null, avatar?: { __typename?: 'Media', id: string, url?: string | null, thumbnailURL?: string | null } | null }, toAccount?: { __typename?: 'Account', id: string, name: string, icon: string, bgColor?: string | null, color?: string | null, avatar?: { __typename?: 'Media', id: string, url?: string | null, thumbnailURL?: string | null } | null } | null, person?: { __typename?: 'Person', id: string, name: string, email?: any | null, phone?: string | null, avatar?: { __typename?: 'Media', id: string, url?: string | null, thumbnailURL?: string | null } | null } | null, tags?: Array<{ __typename?: 'Tag', id: string, name: string, icon: string, color?: string | null, bgColor?: string | null }> | null, attachments?: Array<{ __typename?: 'Media', id: string, url?: string | null, thumbnailURL?: string | null, mimeType?: string | null, filesize?: number | null, filename?: string | null, width?: number | null, height?: number | null }> | null };
 
 export type GetTransactionsQueryVariables = Exact<{
   page?: InputMaybe<Scalars['Int']['input']>;
@@ -20034,21 +22408,21 @@ export type GetTransactionsQueryVariables = Exact<{
 }>;
 
 
-export type GetTransactionsQuery = { __typename?: 'Query', Transactions?: { __typename?: 'Transactions', totalDocs: number, page: number, totalPages: number, hasNextPage: boolean, hasPrevPage: boolean, docs: Array<{ __typename?: 'Transaction', id: string, title: string, amount: string, date: any, type: Transaction_type, note?: string | null, isActive?: boolean | null, createdAt?: any | null, updatedAt?: any | null, category?: { __typename?: 'Category', id: string, name: string, icon: string, color?: string | null, bgColor?: string | null, type: Category_type } | null, account: { __typename?: 'Account', id: string, name: string, icon: string, bgColor?: string | null, color?: string | null, avatar?: { __typename?: 'Media', id: string, url?: string | null, thumbnailURL?: string | null } | null }, toAccount?: { __typename?: 'Account', id: string, name: string, icon: string, bgColor?: string | null, color?: string | null, avatar?: { __typename?: 'Media', id: string, url?: string | null, thumbnailURL?: string | null } | null } | null, person?: { __typename?: 'Person', id: string, name: string, email?: any | null, phone?: string | null, avatar?: { __typename?: 'Media', id: string, url?: string | null, thumbnailURL?: string | null } | null } | null, tags?: Array<{ __typename?: 'Tag', id: string, name: string, icon: string, color?: string | null, bgColor?: string | null }> | null, attachments?: Array<{ __typename?: 'Media', id: string, url?: string | null, thumbnailURL?: string | null, mimeType?: string | null, filesize?: number | null, filename?: string | null, width?: number | null, height?: number | null }> | null }> } | null };
+export type GetTransactionsQuery = { __typename?: 'Query', Transactions?: { __typename?: 'Transactions', totalDocs: number, page: number, totalPages: number, hasNextPage: boolean, hasPrevPage: boolean, docs: Array<{ __typename?: 'Transaction', id: string, title: string, amount: string, date: any, type: Transaction_type, note?: string | null, isActive?: boolean | null, createdAt?: any | null, updatedAt?: any | null, category: { __typename?: 'Category', id: string, name: string, icon: string, color?: string | null, bgColor?: string | null, type: Category_type }, account: { __typename?: 'Account', id: string, name: string, icon: string, bgColor?: string | null, color?: string | null, avatar?: { __typename?: 'Media', id: string, url?: string | null, thumbnailURL?: string | null } | null }, toAccount?: { __typename?: 'Account', id: string, name: string, icon: string, bgColor?: string | null, color?: string | null, avatar?: { __typename?: 'Media', id: string, url?: string | null, thumbnailURL?: string | null } | null } | null, person?: { __typename?: 'Person', id: string, name: string, email?: any | null, phone?: string | null, avatar?: { __typename?: 'Media', id: string, url?: string | null, thumbnailURL?: string | null } | null } | null, tags?: Array<{ __typename?: 'Tag', id: string, name: string, icon: string, color?: string | null, bgColor?: string | null }> | null, attachments?: Array<{ __typename?: 'Media', id: string, url?: string | null, thumbnailURL?: string | null, mimeType?: string | null, filesize?: number | null, filename?: string | null, width?: number | null, height?: number | null }> | null }> } | null };
 
 export type GetTransactionQueryVariables = Exact<{
   id: Scalars['String']['input'];
 }>;
 
 
-export type GetTransactionQuery = { __typename?: 'Query', Transaction?: { __typename?: 'Transaction', id: string, title: string, amount: string, date: any, type: Transaction_type, note?: string | null, isActive?: boolean | null, createdAt?: any | null, updatedAt?: any | null, category?: { __typename?: 'Category', id: string, name: string, icon: string, color?: string | null, bgColor?: string | null, type: Category_type } | null, account: { __typename?: 'Account', id: string, name: string, icon: string, bgColor?: string | null, color?: string | null, avatar?: { __typename?: 'Media', id: string, url?: string | null, thumbnailURL?: string | null } | null }, toAccount?: { __typename?: 'Account', id: string, name: string, icon: string, bgColor?: string | null, color?: string | null, avatar?: { __typename?: 'Media', id: string, url?: string | null, thumbnailURL?: string | null } | null } | null, person?: { __typename?: 'Person', id: string, name: string, email?: any | null, phone?: string | null, avatar?: { __typename?: 'Media', id: string, url?: string | null, thumbnailURL?: string | null } | null } | null, tags?: Array<{ __typename?: 'Tag', id: string, name: string, icon: string, color?: string | null, bgColor?: string | null }> | null, attachments?: Array<{ __typename?: 'Media', id: string, url?: string | null, thumbnailURL?: string | null, mimeType?: string | null, filesize?: number | null, filename?: string | null, width?: number | null, height?: number | null }> | null } | null };
+export type GetTransactionQuery = { __typename?: 'Query', Transaction?: { __typename?: 'Transaction', id: string, title: string, amount: string, date: any, type: Transaction_type, note?: string | null, isActive?: boolean | null, createdAt?: any | null, updatedAt?: any | null, category: { __typename?: 'Category', id: string, name: string, icon: string, color?: string | null, bgColor?: string | null, type: Category_type }, account: { __typename?: 'Account', id: string, name: string, icon: string, bgColor?: string | null, color?: string | null, avatar?: { __typename?: 'Media', id: string, url?: string | null, thumbnailURL?: string | null } | null }, toAccount?: { __typename?: 'Account', id: string, name: string, icon: string, bgColor?: string | null, color?: string | null, avatar?: { __typename?: 'Media', id: string, url?: string | null, thumbnailURL?: string | null } | null } | null, person?: { __typename?: 'Person', id: string, name: string, email?: any | null, phone?: string | null, avatar?: { __typename?: 'Media', id: string, url?: string | null, thumbnailURL?: string | null } | null } | null, tags?: Array<{ __typename?: 'Tag', id: string, name: string, icon: string, color?: string | null, bgColor?: string | null }> | null, attachments?: Array<{ __typename?: 'Media', id: string, url?: string | null, thumbnailURL?: string | null, mimeType?: string | null, filesize?: number | null, filename?: string | null, width?: number | null, height?: number | null }> | null } | null };
 
 export type CreateTransactionMutationVariables = Exact<{
   data: mutationTransactionInput;
 }>;
 
 
-export type CreateTransactionMutation = { __typename?: 'Mutation', createTransaction?: { __typename?: 'Transaction', id: string, title: string, amount: string, date: any, type: Transaction_type, note?: string | null, isActive?: boolean | null, createdAt?: any | null, updatedAt?: any | null, category?: { __typename?: 'Category', id: string, name: string, icon: string, color?: string | null, bgColor?: string | null, type: Category_type } | null, account: { __typename?: 'Account', id: string, name: string, icon: string, bgColor?: string | null, color?: string | null, avatar?: { __typename?: 'Media', id: string, url?: string | null, thumbnailURL?: string | null } | null }, toAccount?: { __typename?: 'Account', id: string, name: string, icon: string, bgColor?: string | null, color?: string | null, avatar?: { __typename?: 'Media', id: string, url?: string | null, thumbnailURL?: string | null } | null } | null, person?: { __typename?: 'Person', id: string, name: string, email?: any | null, phone?: string | null, avatar?: { __typename?: 'Media', id: string, url?: string | null, thumbnailURL?: string | null } | null } | null, tags?: Array<{ __typename?: 'Tag', id: string, name: string, icon: string, color?: string | null, bgColor?: string | null }> | null, attachments?: Array<{ __typename?: 'Media', id: string, url?: string | null, thumbnailURL?: string | null, mimeType?: string | null, filesize?: number | null, filename?: string | null, width?: number | null, height?: number | null }> | null } | null };
+export type CreateTransactionMutation = { __typename?: 'Mutation', createTransaction?: { __typename?: 'Transaction', id: string, title: string, amount: string, date: any, type: Transaction_type, note?: string | null, isActive?: boolean | null, createdAt?: any | null, updatedAt?: any | null, category: { __typename?: 'Category', id: string, name: string, icon: string, color?: string | null, bgColor?: string | null, type: Category_type }, account: { __typename?: 'Account', id: string, name: string, icon: string, bgColor?: string | null, color?: string | null, avatar?: { __typename?: 'Media', id: string, url?: string | null, thumbnailURL?: string | null } | null }, toAccount?: { __typename?: 'Account', id: string, name: string, icon: string, bgColor?: string | null, color?: string | null, avatar?: { __typename?: 'Media', id: string, url?: string | null, thumbnailURL?: string | null } | null } | null, person?: { __typename?: 'Person', id: string, name: string, email?: any | null, phone?: string | null, avatar?: { __typename?: 'Media', id: string, url?: string | null, thumbnailURL?: string | null } | null } | null, tags?: Array<{ __typename?: 'Tag', id: string, name: string, icon: string, color?: string | null, bgColor?: string | null }> | null, attachments?: Array<{ __typename?: 'Media', id: string, url?: string | null, thumbnailURL?: string | null, mimeType?: string | null, filesize?: number | null, filename?: string | null, width?: number | null, height?: number | null }> | null } | null };
 
 export type UpdateTransactionMutationVariables = Exact<{
   id: Scalars['String']['input'];
@@ -20056,7 +22430,7 @@ export type UpdateTransactionMutationVariables = Exact<{
 }>;
 
 
-export type UpdateTransactionMutation = { __typename?: 'Mutation', updateTransaction?: { __typename?: 'Transaction', id: string, title: string, amount: string, date: any, type: Transaction_type, note?: string | null, isActive?: boolean | null, createdAt?: any | null, updatedAt?: any | null, category?: { __typename?: 'Category', id: string, name: string, icon: string, color?: string | null, bgColor?: string | null, type: Category_type } | null, account: { __typename?: 'Account', id: string, name: string, icon: string, bgColor?: string | null, color?: string | null, avatar?: { __typename?: 'Media', id: string, url?: string | null, thumbnailURL?: string | null } | null }, toAccount?: { __typename?: 'Account', id: string, name: string, icon: string, bgColor?: string | null, color?: string | null, avatar?: { __typename?: 'Media', id: string, url?: string | null, thumbnailURL?: string | null } | null } | null, person?: { __typename?: 'Person', id: string, name: string, email?: any | null, phone?: string | null, avatar?: { __typename?: 'Media', id: string, url?: string | null, thumbnailURL?: string | null } | null } | null, tags?: Array<{ __typename?: 'Tag', id: string, name: string, icon: string, color?: string | null, bgColor?: string | null }> | null, attachments?: Array<{ __typename?: 'Media', id: string, url?: string | null, thumbnailURL?: string | null, mimeType?: string | null, filesize?: number | null, filename?: string | null, width?: number | null, height?: number | null }> | null } | null };
+export type UpdateTransactionMutation = { __typename?: 'Mutation', updateTransaction?: { __typename?: 'Transaction', id: string, title: string, amount: string, date: any, type: Transaction_type, note?: string | null, isActive?: boolean | null, createdAt?: any | null, updatedAt?: any | null, category: { __typename?: 'Category', id: string, name: string, icon: string, color?: string | null, bgColor?: string | null, type: Category_type }, account: { __typename?: 'Account', id: string, name: string, icon: string, bgColor?: string | null, color?: string | null, avatar?: { __typename?: 'Media', id: string, url?: string | null, thumbnailURL?: string | null } | null }, toAccount?: { __typename?: 'Account', id: string, name: string, icon: string, bgColor?: string | null, color?: string | null, avatar?: { __typename?: 'Media', id: string, url?: string | null, thumbnailURL?: string | null } | null } | null, person?: { __typename?: 'Person', id: string, name: string, email?: any | null, phone?: string | null, avatar?: { __typename?: 'Media', id: string, url?: string | null, thumbnailURL?: string | null } | null } | null, tags?: Array<{ __typename?: 'Tag', id: string, name: string, icon: string, color?: string | null, bgColor?: string | null }> | null, attachments?: Array<{ __typename?: 'Media', id: string, url?: string | null, thumbnailURL?: string | null, mimeType?: string | null, filesize?: number | null, filename?: string | null, width?: number | null, height?: number | null }> | null } | null };
 
 export type DeleteTransactionMutationVariables = Exact<{
   id: Scalars['String']['input'];
@@ -20095,6 +22469,8 @@ export const CategoryFieldsFragmentDoc = {"kind":"Document","definitions":[{"kin
 export const PersonFieldsFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PersonFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Person"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"phone"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"thumbnailURL"}}]}},{"kind":"Field","name":{"kind":"Name","value":"balance"}},{"kind":"Field","name":{"kind":"Name","value":"totalTransactions"}},{"kind":"Field","name":{"kind":"Name","value":"lastTransactionAt"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode<PersonFieldsFragment, unknown>;
 export const ReminderFieldsFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ReminderFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Reminder"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"amount"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"date"}},{"kind":"Field","name":{"kind":"Name","value":"isRecurring"}},{"kind":"Field","name":{"kind":"Name","value":"recurrencePeriod"}},{"kind":"Field","name":{"kind":"Name","value":"recurrenceType"}},{"kind":"Field","name":{"kind":"Name","value":"lastTriggeredAt"}},{"kind":"Field","name":{"kind":"Name","value":"nextDueDate"}},{"kind":"Field","name":{"kind":"Name","value":"archived"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"category"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}},{"kind":"Field","name":{"kind":"Name","value":"color"}}]}},{"kind":"Field","name":{"kind":"Name","value":"account"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}}]}},{"kind":"Field","name":{"kind":"Name","value":"member"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"tags"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}},{"kind":"Field","name":{"kind":"Name","value":"color"}}]}},{"kind":"Field","name":{"kind":"Name","value":"completedDates"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"date"}}]}}]}}]} as unknown as DocumentNode<ReminderFieldsFragment, unknown>;
 export const TagFieldsFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"TagFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Tag"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}},{"kind":"Field","name":{"kind":"Name","value":"color"}},{"kind":"Field","name":{"kind":"Name","value":"bgColor"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"user"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]} as unknown as DocumentNode<TagFieldsFragment, unknown>;
+export const TransactionLinkTransactionFieldsFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"TransactionLinkTransactionFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Transaction"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"amount"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"date"}},{"kind":"Field","name":{"kind":"Name","value":"category"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}},{"kind":"Field","name":{"kind":"Name","value":"color"}},{"kind":"Field","name":{"kind":"Name","value":"bgColor"}}]}},{"kind":"Field","name":{"kind":"Name","value":"account"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}},{"kind":"Field","name":{"kind":"Name","value":"bgColor"}},{"kind":"Field","name":{"kind":"Name","value":"color"}}]}}]}}]} as unknown as DocumentNode<TransactionLinkTransactionFieldsFragment, unknown>;
+export const TransactionLinkFieldsFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"TransactionLinkFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TransactionLink"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"note"}},{"kind":"Field","name":{"kind":"Name","value":"from"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"TransactionLinkTransactionFields"}}]}},{"kind":"Field","name":{"kind":"Name","value":"to"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"TransactionLinkTransactionFields"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"TransactionLinkTransactionFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Transaction"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"amount"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"date"}},{"kind":"Field","name":{"kind":"Name","value":"category"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}},{"kind":"Field","name":{"kind":"Name","value":"color"}},{"kind":"Field","name":{"kind":"Name","value":"bgColor"}}]}},{"kind":"Field","name":{"kind":"Name","value":"account"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}},{"kind":"Field","name":{"kind":"Name","value":"bgColor"}},{"kind":"Field","name":{"kind":"Name","value":"color"}}]}}]}}]} as unknown as DocumentNode<TransactionLinkFieldsFragment, unknown>;
 export const TransactionCategoryFieldsFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"TransactionCategoryFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Category"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}},{"kind":"Field","name":{"kind":"Name","value":"color"}},{"kind":"Field","name":{"kind":"Name","value":"bgColor"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]} as unknown as DocumentNode<TransactionCategoryFieldsFragment, unknown>;
 export const TransactionAccountFieldsFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"TransactionAccountFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Account"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}},{"kind":"Field","name":{"kind":"Name","value":"bgColor"}},{"kind":"Field","name":{"kind":"Name","value":"color"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"thumbnailURL"}}]}}]}}]} as unknown as DocumentNode<TransactionAccountFieldsFragment, unknown>;
 export const TransactionPersonFieldsFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"TransactionPersonFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Person"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"phone"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"thumbnailURL"}}]}}]}}]} as unknown as DocumentNode<TransactionPersonFieldsFragment, unknown>;
@@ -20137,6 +22513,9 @@ export const CreateTagDocument = {"kind":"Document","definitions":[{"kind":"Oper
 export const UpdateTagDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateTag"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"data"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"mutationTagUpdateInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateTag"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}},{"kind":"Argument","name":{"kind":"Name","value":"data"},"value":{"kind":"Variable","name":{"kind":"Name","value":"data"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"TagFields"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"TagFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Tag"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}},{"kind":"Field","name":{"kind":"Name","value":"color"}},{"kind":"Field","name":{"kind":"Name","value":"bgColor"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"user"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]} as unknown as DocumentNode<UpdateTagMutation, UpdateTagMutationVariables>;
 export const DeleteTagDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"DeleteTag"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deleteTag"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]} as unknown as DocumentNode<DeleteTagMutation, DeleteTagMutationVariables>;
 export const GetTimezonesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetTimezones"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"timezones"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"docs"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"region"}},{"kind":"Field","name":{"kind":"Name","value":"city"}},{"kind":"Field","name":{"kind":"Name","value":"offset"}},{"kind":"Field","name":{"kind":"Name","value":"label"}}]}},{"kind":"Field","name":{"kind":"Name","value":"totalDocs"}}]}}]}}]} as unknown as DocumentNode<GetTimezonesQuery, GetTimezonesQueryVariables>;
+export const GetTransactionLinksDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetTransactionLinks"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"where"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"TransactionLink_where"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"limit"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"TransactionLinks"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"Variable","name":{"kind":"Name","value":"where"}}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"Variable","name":{"kind":"Name","value":"limit"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"docs"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"TransactionLinkFields"}}]}},{"kind":"Field","name":{"kind":"Name","value":"totalDocs"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"TransactionLinkTransactionFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Transaction"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"amount"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"date"}},{"kind":"Field","name":{"kind":"Name","value":"category"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}},{"kind":"Field","name":{"kind":"Name","value":"color"}},{"kind":"Field","name":{"kind":"Name","value":"bgColor"}}]}},{"kind":"Field","name":{"kind":"Name","value":"account"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}},{"kind":"Field","name":{"kind":"Name","value":"bgColor"}},{"kind":"Field","name":{"kind":"Name","value":"color"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"TransactionLinkFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TransactionLink"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"note"}},{"kind":"Field","name":{"kind":"Name","value":"from"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"TransactionLinkTransactionFields"}}]}},{"kind":"Field","name":{"kind":"Name","value":"to"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"TransactionLinkTransactionFields"}}]}}]}}]} as unknown as DocumentNode<GetTransactionLinksQuery, GetTransactionLinksQueryVariables>;
+export const CreateTransactionLinkDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateTransactionLink"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"data"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"mutationTransactionLinkInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createTransactionLink"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"data"},"value":{"kind":"Variable","name":{"kind":"Name","value":"data"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"TransactionLinkFields"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"TransactionLinkTransactionFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Transaction"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"amount"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"date"}},{"kind":"Field","name":{"kind":"Name","value":"category"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}},{"kind":"Field","name":{"kind":"Name","value":"color"}},{"kind":"Field","name":{"kind":"Name","value":"bgColor"}}]}},{"kind":"Field","name":{"kind":"Name","value":"account"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}},{"kind":"Field","name":{"kind":"Name","value":"bgColor"}},{"kind":"Field","name":{"kind":"Name","value":"color"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"TransactionLinkFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TransactionLink"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"note"}},{"kind":"Field","name":{"kind":"Name","value":"from"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"TransactionLinkTransactionFields"}}]}},{"kind":"Field","name":{"kind":"Name","value":"to"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"TransactionLinkTransactionFields"}}]}}]}}]} as unknown as DocumentNode<CreateTransactionLinkMutation, CreateTransactionLinkMutationVariables>;
+export const DeleteTransactionLinkDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"DeleteTransactionLink"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deleteTransactionLink"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]} as unknown as DocumentNode<DeleteTransactionLinkMutation, DeleteTransactionLinkMutationVariables>;
 export const GetTransactionsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetTransactions"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"page"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"limit"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"sort"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"where"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Transaction_where"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"Transactions"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"page"},"value":{"kind":"Variable","name":{"kind":"Name","value":"page"}}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"Variable","name":{"kind":"Name","value":"limit"}}},{"kind":"Argument","name":{"kind":"Name","value":"sort"},"value":{"kind":"Variable","name":{"kind":"Name","value":"sort"}}},{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"Variable","name":{"kind":"Name","value":"where"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"docs"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"TransactionFields"}}]}},{"kind":"Field","name":{"kind":"Name","value":"totalDocs"}},{"kind":"Field","name":{"kind":"Name","value":"page"}},{"kind":"Field","name":{"kind":"Name","value":"totalPages"}},{"kind":"Field","name":{"kind":"Name","value":"hasNextPage"}},{"kind":"Field","name":{"kind":"Name","value":"hasPrevPage"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"TransactionCategoryFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Category"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}},{"kind":"Field","name":{"kind":"Name","value":"color"}},{"kind":"Field","name":{"kind":"Name","value":"bgColor"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"TransactionAccountFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Account"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}},{"kind":"Field","name":{"kind":"Name","value":"bgColor"}},{"kind":"Field","name":{"kind":"Name","value":"color"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"thumbnailURL"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"TransactionPersonFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Person"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"phone"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"thumbnailURL"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"TransactionTagFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Tag"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}},{"kind":"Field","name":{"kind":"Name","value":"color"}},{"kind":"Field","name":{"kind":"Name","value":"bgColor"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"TransactionAttachmentFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Media"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"thumbnailURL"}},{"kind":"Field","name":{"kind":"Name","value":"mimeType"}},{"kind":"Field","name":{"kind":"Name","value":"filesize"}},{"kind":"Field","name":{"kind":"Name","value":"filename"}},{"kind":"Field","name":{"kind":"Name","value":"width"}},{"kind":"Field","name":{"kind":"Name","value":"height"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"TransactionFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Transaction"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"amount"}},{"kind":"Field","name":{"kind":"Name","value":"date"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"note"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"category"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"TransactionCategoryFields"}}]}},{"kind":"Field","name":{"kind":"Name","value":"account"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"TransactionAccountFields"}}]}},{"kind":"Field","name":{"kind":"Name","value":"toAccount"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"TransactionAccountFields"}}]}},{"kind":"Field","name":{"kind":"Name","value":"person"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"TransactionPersonFields"}}]}},{"kind":"Field","name":{"kind":"Name","value":"tags"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"TransactionTagFields"}}]}},{"kind":"Field","name":{"kind":"Name","value":"attachments"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"TransactionAttachmentFields"}}]}}]}}]} as unknown as DocumentNode<GetTransactionsQuery, GetTransactionsQueryVariables>;
 export const GetTransactionDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetTransaction"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"Transaction"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"TransactionFields"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"TransactionCategoryFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Category"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}},{"kind":"Field","name":{"kind":"Name","value":"color"}},{"kind":"Field","name":{"kind":"Name","value":"bgColor"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"TransactionAccountFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Account"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}},{"kind":"Field","name":{"kind":"Name","value":"bgColor"}},{"kind":"Field","name":{"kind":"Name","value":"color"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"thumbnailURL"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"TransactionPersonFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Person"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"phone"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"thumbnailURL"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"TransactionTagFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Tag"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}},{"kind":"Field","name":{"kind":"Name","value":"color"}},{"kind":"Field","name":{"kind":"Name","value":"bgColor"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"TransactionAttachmentFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Media"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"thumbnailURL"}},{"kind":"Field","name":{"kind":"Name","value":"mimeType"}},{"kind":"Field","name":{"kind":"Name","value":"filesize"}},{"kind":"Field","name":{"kind":"Name","value":"filename"}},{"kind":"Field","name":{"kind":"Name","value":"width"}},{"kind":"Field","name":{"kind":"Name","value":"height"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"TransactionFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Transaction"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"amount"}},{"kind":"Field","name":{"kind":"Name","value":"date"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"note"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"category"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"TransactionCategoryFields"}}]}},{"kind":"Field","name":{"kind":"Name","value":"account"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"TransactionAccountFields"}}]}},{"kind":"Field","name":{"kind":"Name","value":"toAccount"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"TransactionAccountFields"}}]}},{"kind":"Field","name":{"kind":"Name","value":"person"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"TransactionPersonFields"}}]}},{"kind":"Field","name":{"kind":"Name","value":"tags"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"TransactionTagFields"}}]}},{"kind":"Field","name":{"kind":"Name","value":"attachments"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"TransactionAttachmentFields"}}]}}]}}]} as unknown as DocumentNode<GetTransactionQuery, GetTransactionQueryVariables>;
 export const CreateTransactionDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateTransaction"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"data"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"mutationTransactionInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createTransaction"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"data"},"value":{"kind":"Variable","name":{"kind":"Name","value":"data"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"TransactionFields"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"TransactionCategoryFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Category"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}},{"kind":"Field","name":{"kind":"Name","value":"color"}},{"kind":"Field","name":{"kind":"Name","value":"bgColor"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"TransactionAccountFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Account"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}},{"kind":"Field","name":{"kind":"Name","value":"bgColor"}},{"kind":"Field","name":{"kind":"Name","value":"color"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"thumbnailURL"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"TransactionPersonFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Person"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"phone"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"thumbnailURL"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"TransactionTagFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Tag"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}},{"kind":"Field","name":{"kind":"Name","value":"color"}},{"kind":"Field","name":{"kind":"Name","value":"bgColor"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"TransactionAttachmentFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Media"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"thumbnailURL"}},{"kind":"Field","name":{"kind":"Name","value":"mimeType"}},{"kind":"Field","name":{"kind":"Name","value":"filesize"}},{"kind":"Field","name":{"kind":"Name","value":"filename"}},{"kind":"Field","name":{"kind":"Name","value":"width"}},{"kind":"Field","name":{"kind":"Name","value":"height"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"TransactionFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Transaction"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"amount"}},{"kind":"Field","name":{"kind":"Name","value":"date"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"note"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"category"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"TransactionCategoryFields"}}]}},{"kind":"Field","name":{"kind":"Name","value":"account"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"TransactionAccountFields"}}]}},{"kind":"Field","name":{"kind":"Name","value":"toAccount"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"TransactionAccountFields"}}]}},{"kind":"Field","name":{"kind":"Name","value":"person"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"TransactionPersonFields"}}]}},{"kind":"Field","name":{"kind":"Name","value":"tags"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"TransactionTagFields"}}]}},{"kind":"Field","name":{"kind":"Name","value":"attachments"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"TransactionAttachmentFields"}}]}}]}}]} as unknown as DocumentNode<CreateTransactionMutation, CreateTransactionMutationVariables>;

@@ -1,0 +1,54 @@
+fragment TransactionLinkTransactionFields on Transaction {
+  id
+  title
+  amount
+  type
+  date
+  category {
+    id
+    name
+    icon
+    color
+    bgColor
+  }
+  account {
+    id
+    name
+    icon
+    bgColor
+    color
+  }
+}
+
+fragment TransactionLinkFields on TransactionLink {
+  id
+  type
+  note
+  from {
+    ...TransactionLinkTransactionFields
+  }
+  to {
+    ...TransactionLinkTransactionFields
+  }
+}
+
+query GetTransactionLinks($where: TransactionLink_where, $limit: Int) {
+  TransactionLinks(where: $where, limit: $limit) {
+    docs {
+      ...TransactionLinkFields
+    }
+    totalDocs
+  }
+}
+
+mutation CreateTransactionLink($data: mutationTransactionLinkInput!) {
+  createTransactionLink(data: $data) {
+    ...TransactionLinkFields
+  }
+}
+
+mutation DeleteTransactionLink($id: String!) {
+  deleteTransactionLink(id: $id) {
+    id
+  }
+}

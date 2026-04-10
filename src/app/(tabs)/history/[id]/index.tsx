@@ -29,6 +29,7 @@ import {
   type TransactionAttachmentFieldsFragment,
 } from "../../../../services/gql/types/graphql";
 import { useColors } from "../../../../theme/colors";
+import { LinkedTransactionsCard } from "../../../../components/transaction/LinkedTransactionsCard";
 
 const { width: SCREEN_W } = Dimensions.get("window");
 
@@ -435,6 +436,9 @@ export default function TransactionDetailScreen() {
 
           {/* ── Attachments ── */}
           {attachments.length > 0 && <AttachmentsCard attachments={attachments} />}
+
+          {/* ── Linked Transactions ── */}
+          <LinkedTransactionsCard transactionId={id} />
 
           {/* ── Timestamps ── */}
           <View className="rounded-2xl overflow-hidden" style={{ backgroundColor: C.surfaceMid }}>
