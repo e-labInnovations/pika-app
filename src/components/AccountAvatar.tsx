@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Image, Text, View } from "react-native";
 import { resolveMediaUrl } from "../lib/media-upload";
 import { DynamicIcon } from "./Icon";
@@ -29,59 +29,63 @@ export function AccountAvatar({
   name,
   size = 44,
 }: Props) {
+  const [imageError, setImageError] = useState(false);
+
   const bg = bgColor ?? DEFAULT_BG;
   const ic = iconColor ?? DEFAULT_ICON_COLOR;
-  const radius = Math.round(size * 0.27); // ~12px for size=44
-  const iconSize = Math.round(size * 0.43); // ~19px for size=44
-
+  const radius = Math.round(size * 0.27);
+  const iconSize = Math.round(size * 0.43);
   const resolvedUrl = resolveMediaUrl(avatarUrl);
 
-  if (resolvedUrl) {
-    return (
-      <Image
-        source={{ uri: resolvedUrl }}
-        style={{
-          width: size,
-          height: size,
-          borderRadius: radius,
-        }}
-        resizeMode="cover"
-      />
-    );
-  }
+  const baseStyle = { width: size, height: size, borderRadius: radius };
 
-  if (icon) {
-    return (
-      <View
-        style={{
-          width: size,
-          height: size,
-          borderRadius: radius,
-          backgroundColor: bg,
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        <DynamicIcon name={icon} size={iconSize} color={ic} />
-      </View>
-    );
-  }
-
-  // Last resort: first letter of name
-  const letter = name?.charAt(0)?.toUpperCase() ?? "?";
-  const fontSize = Math.round(size * 0.4);
-  return (
+  // Fallback layer: icon → first letter
+  const Fallback = icon ? (
     <View
       style={{
-        width: size,
-        height: size,
-        borderRadius: radius,
+        ...baseStyle,
         backgroundColor: bg,
-        alignItems: "center",
-        justifyContent: "center",
+        alignItems: "center" as const,
+        justifyContent: "center" as const,
+        position: "absolute" as const,
       }}
     >
-      <Text style={{ fontSize, fontWeight: "800", color: ic }}>{letter}</Text>
+      <DynamicIcon name={icon} size={iconSize} color={ic} />
+    </View>
+  ) : (
+    <View
+      style={{
+        ...baseStyle,
+        backgroundColor: bg,
+        alignItems: "center" as const,
+        justifyContent: "center" as const,
+        position: "absolute" as const,
+      }}
+    >
+      <Text
+        style={{
+          fontSize: Math.round(size * 0.4),
+          fontWeight: "800",
+          color: ic,
+        }}
+      >
+        {name?.charAt(0)?.toUpperCase() ?? "?"}
+      </Text>
+    </View>
+  );
+
+  return (
+    <View style={baseStyle}>
+      {Fallback}
+
+      {resolvedUrl && !imageError && (
+        <Image
+          source={{ uri: resolvedUrl }}
+          style={baseStyle}
+          resizeMode="cover"
+          onError={() => setImageError(true)}
+        />
+      )}
     </View>
   );
 }

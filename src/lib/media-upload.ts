@@ -6,14 +6,18 @@ import { storage } from "./storage";
  * On a physical device/emulator, localhost points to the device itself, not the server.
  * This replaces the URL's origin with the app's API_URL so images load correctly.
  */
-export function resolveMediaUrl(payloadUrl: string | null | undefined): string | null {
+export function resolveMediaUrl(
+  payloadUrl: string | null | undefined,
+): string | null {
   if (!payloadUrl) return null;
   // Local file URIs (from image picker) — return as-is
   if (!payloadUrl.startsWith("http")) return payloadUrl;
+
   try {
-    const { pathname } = new URL(payloadUrl);
+    const parsedUrl = new URL(payloadUrl);
     const { origin } = new URL(API_URL);
-    return `${origin}${pathname}`;
+    // Use pathname + search to preserve the ?token= query string
+    return `${origin}${parsedUrl.pathname}${parsedUrl.search}`;
   } catch {
     return payloadUrl;
   }
@@ -63,7 +67,9 @@ export async function uploadMedia(
 
   if (!res.ok) {
     const body = await res.json().catch(() => ({}));
-    throw new Error(body?.errors?.[0]?.message ?? body?.message ?? "Upload failed");
+    throw new Error(
+      body?.errors?.[0]?.message ?? body?.message ?? "Upload failed",
+    );
   }
 
   const data = await res.json();
