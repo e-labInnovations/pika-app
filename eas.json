@@ -14,7 +14,8 @@
         "simulator": false
       },
       "env": {
-        "EXPO_PUBLIC_API_URL": "http://10.15.27.176:3333"
+        "EXPO_PUBLIC_API_URL": "https://pika.elabins.com",
+        "APP_ENV": "development"
       }
     },
     "development-simulator": {
