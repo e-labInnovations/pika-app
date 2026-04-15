@@ -1,7 +1,7 @@
 import "../global.css";
 
 import { ApolloProvider } from "@apollo/client/react";
-import { router, Slot } from "expo-router";
+import { router, Slot, Stack } from "expo-router";
 import { readAsStringAsync, EncodingType } from "expo-file-system/legacy";
 import { ShareIntentProvider, useShareIntent } from "expo-share-intent";
 import * as SplashScreen from "expo-splash-screen";
@@ -56,16 +56,25 @@ function ShareIntentListener() {
   return null;
 }
 
-function RootSlot() {
-  const { isLoading } = useAuth();
+function Routes() {
+  const { isAuthenticated, isLoading } = useAuth();
 
   useEffect(() => {
-    if (!isLoading) {
-      SplashScreen.hideAsync();
-    }
+    if (!isLoading) SplashScreen.hideAsync();
   }, [isLoading]);
 
-  return <Slot />;
+  if (isLoading) return null; // Splash screen is still visible, safe to return null
+
+  return (
+    <Stack screenOptions={{ headerShown: false }}>
+      <Stack.Protected guard={isAuthenticated}>
+        <Stack.Screen name="(protected)" />
+      </Stack.Protected>
+      <Stack.Protected guard={!isAuthenticated}>
+        <Stack.Screen name="(public)" />
+      </Stack.Protected>
+    </Stack>
+  );
 }
 
 export default function Layout() {
@@ -76,7 +85,7 @@ export default function Layout() {
           <ApolloProvider client={apolloClient}>
             <AuthProvider>
               <ShareIntentListener />
-              <RootSlot />
+              <Routes />
               <AlertProvider />
             </AuthProvider>
           </ApolloProvider>

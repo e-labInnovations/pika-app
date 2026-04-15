@@ -1,5 +1,6 @@
 import { router } from "expo-router";
 import * as Linking from "expo-linking";
+import * as SplashScreen from "expo-splash-screen";
 import * as WebBrowser from "expo-web-browser";
 import React, {
   createContext,
@@ -8,30 +9,45 @@ import React, {
   useEffect,
   useState,
 } from "react";
-import { authApi, type PayloadUser, type PayloadUserSettings } from "../lib/auth-api";
+import {
+  authApi,
+  type PayloadUser,
+  type PayloadUserSettings,
+} from "../lib/auth-api";
 import { API_URL } from "../lib/constants";
-import { apolloClient, setUnauthenticatedHandler } from "../services/gql/client";
+import {
+  apolloClient,
+  setUnauthenticatedHandler,
+} from "../services/gql/client";
 import { storage } from "../lib/storage";
 import { tokenManager } from "../lib/token-manager";
+
+// Prevent splash from auto-hiding before rehydration completes
+SplashScreen.preventAutoHideAsync();
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
 type AuthContextType = {
-  /** Currently authenticated user, or null. */
   user: PayloadUser | null;
-  /** User settings loaded after authentication. */
+  /** Derived from user — never out of sync */
   settings: PayloadUserSettings | null;
-  /** True while the initial session rehydration (+ settings fetch) is in progress. */
+  /** True only during initial session rehydration */
   isLoading: boolean;
+  /** True during login / logout / token exchange operations */
+  isAuthenticating: boolean;
   isAuthenticated: boolean;
   login: (email: string, password: string) => Promise<void>;
   loginWithGoogle: () => Promise<boolean>;
-  /** Complete sign-in from a raw JWT (used by the /auth deep-link callback route). */
   loginWithToken: (token: string, exp?: number) => Promise<void>;
   logout: () => Promise<void>;
-  /** Re-fetch the current user from /api/users/me and update stored state. */
   refreshUser: () => Promise<void>;
 };
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+
+function extractSettings(user: PayloadUser): PayloadUserSettings | null {
+  return user.settings?.docs?.[0] ?? null;
+}
 
 // ── Context ──────────────────────────────────────────────────────────────────
 
@@ -41,128 +57,138 @@ const AuthContext = createContext<AuthContextType | null>(null);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<PayloadUser | null>(null);
-  const [settings, setSettings] = useState<PayloadUserSettings | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isAuthenticating, setIsAuthenticating] = useState(false);
 
-  function extractSettings(user: PayloadUser): PayloadUserSettings | null {
-    return user.settings?.docs?.[0] ?? null;
-  }
+  // Derived — always in sync with user, no separate setState needed
+  const settings = user ? extractSettings(user) : null;
 
-  // ── Logout ─────────────────────────────────────────────────────────────────
-  const logout = useCallback(async () => {
-    authApi.logout(); // fire-and-forget
+  // ── Helpers ────────────────────────────────────────────────────────────────
+
+  const applyUser = useCallback((u: PayloadUser) => {
+    setUser(u);
+  }, []);
+
+  const clearSession = useCallback(async () => {
     await storage.clear();
     apolloClient.clearStore();
     setUser(null);
-    setSettings(null);
-    router.replace("/sign-in");
   }, []);
 
-  // Register with Apollo error link so 401s trigger a logout
+  // ── Logout ─────────────────────────────────────────────────────────────────
+
+  const logout = useCallback(async () => {
+    setIsAuthenticating(true);
+    try {
+      authApi.logout(); // fire-and-forget
+      await clearSession();
+      router.replace("/sign-in");
+    } finally {
+      setIsAuthenticating(false);
+    }
+  }, [clearSession]);
+
+  // Register with Apollo so 401s trigger logout
   useEffect(() => {
     setUnauthenticatedHandler(logout);
   }, [logout]);
 
-  // ── Session rehydration on launch ──────────────────────────────────────────
+  // ── Session rehydration ────────────────────────────────────────────────────
+
   useEffect(() => {
     let cancelled = false;
 
     async function rehydrate() {
       try {
         const savedUser = await storage.getUser<PayloadUser>();
-        if (!savedUser) return; // No stored session → go to sign-in
+        if (!savedUser) return;
 
         const token = await storage.getToken();
         if (!token) {
-          await storage.clear();
-          return; // No token at all — must log in
+          await clearSession();
+          return;
         }
 
-        // Try to refresh if needed. getValidToken falls back to the existing
-        // token on network errors so we don't log the user out just because
-        // the device hasn't reconnected yet after waking from sleep.
         const validToken = await tokenManager.getValidToken();
         if (!validToken) {
-          // Server explicitly rejected the token (revoked / bad signature)
-          await storage.clear();
+          await clearSession();
           return;
         }
 
-        // Verify the token is still accepted server-side.
-        // A 'network_error' is tolerated so offline users stay logged in.
         const tokenStatus = await authApi.checkToken();
         if (tokenStatus === "invalid") {
-          await storage.clear();
+          await clearSession();
           return;
         }
 
-        if (!cancelled) {
-          setUser(savedUser);
-          setSettings(extractSettings(savedUser));
-        }
+        if (!cancelled) applyUser(savedUser);
       } catch {
-        // Don't clear storage for unexpected errors (network down on startup, etc.)
-        // The user stays logged in; individual screens will surface errors normally.
+        // Network down on startup — keep user logged in, screens surface errors
       } finally {
         if (!cancelled) setIsLoading(false);
       }
     }
 
     rehydrate();
-    return () => { cancelled = true; };
-  }, []);
+    return () => {
+      cancelled = true;
+    };
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // ── Login ──────────────────────────────────────────────────────────────────
-  const login = useCallback(async (email: string, password: string) => {
-    const data = await authApi.login(email, password);
 
-    await storage.setToken(data.token);
-    await storage.setExp(data.exp);
-    await storage.setUser(data.user);
+  const login = useCallback(
+    async (email: string, password: string) => {
+      setIsAuthenticating(true);
+      try {
+        const data = await authApi.login(email, password);
+        await storage.setToken(data.token);
+        await storage.setExp(data.exp);
+        await storage.setUser(data.user);
+        applyUser(data.user);
+      } finally {
+        setIsAuthenticating(false);
+      }
+    },
+    [applyUser],
+  );
 
-    setSettings(extractSettings(data.user));
-    setUser(data.user);
-    // Navigation is handled by the sign-in screen after this resolves
-  }, []);
+  // ── Shared OAuth token completion ──────────────────────────────────────────
 
-  // ── Shared OAuth token completion ─────────────────────────────────────────
-  const loginWithToken = useCallback(async (token: string, exp?: number) => {
-    await storage.setToken(token);
-    if (exp) await storage.setExp(exp);
+  const loginWithToken = useCallback(
+    async (token: string, exp?: number) => {
+      setIsAuthenticating(true);
+      try {
+        await storage.setToken(token);
+        if (exp) await storage.setExp(exp);
 
-    const fetchedUser = await authApi.me(token); // pass token directly, skip storage round-trip
-    if (!fetchedUser) {
-      await storage.clear();
-      throw new Error("Sign-in failed: could not load profile.");
-    }
+        const fetchedUser = await authApi.me(token);
+        if (!fetchedUser) {
+          await clearSession();
+          throw new Error("Sign-in failed: could not load profile.");
+        }
 
-    await storage.setUser(fetchedUser);
-    setSettings(extractSettings(fetchedUser));
-    setUser(fetchedUser);
-    // Navigation is handled by the caller
-  }, []);
+        await storage.setUser(fetchedUser);
+        applyUser(fetchedUser);
+      } finally {
+        setIsAuthenticating(false);
+      }
+    },
+    [applyUser, clearSession],
+  );
 
   // ── Google OAuth ───────────────────────────────────────────────────────────
+
   const loginWithGoogle = useCallback(async (): Promise<boolean> => {
-    // openAuthSessionAsync handles both platforms:
-    //   iOS  — ASWebAuthenticationSession intercepts pika:// and returns { type:'success', url }
-    //   Android — uses an internal Linking watcher; if the OS dispatches the
-    //             Intent to Expo Router before expo-web-browser sees it, the
-    //             result is { type:'cancel' } and auth.tsx handles the code.
     const result = await WebBrowser.openAuthSessionAsync(
       `${API_URL}/api/auth/client-init?callback=pika://auth`,
       "pika://auth",
     );
 
-    if (result.type !== "success") {
-      // User cancelled, or Android dispatched pika:// to Expo Router first.
-      // auth.tsx will process the code if the deep link was real.
-      return false;
-    }
+    if (result.type !== "success") return false;
 
     const parsed = Linking.parse(result.url);
     const code = parsed.queryParams?.code as string | undefined;
-
     if (!code) throw new Error("Google sign-in failed: no code received.");
 
     const res = await fetch(`${API_URL}/api/auth/exchange`, {
@@ -171,20 +197,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       body: JSON.stringify({ code }),
     });
     if (!res.ok) throw new Error("Google sign-in failed: code exchange error.");
-    const { token, exp } = await res.json();
 
+    const { token, exp } = await res.json();
     await loginWithToken(token, exp);
     return true;
   }, [loginWithToken]);
 
   // ── Refresh user ───────────────────────────────────────────────────────────
+
   const refreshUser = useCallback(async () => {
     const fetchedUser = await authApi.me();
     if (!fetchedUser) return;
     await storage.setUser(fetchedUser);
-    setUser(fetchedUser);
-    setSettings(extractSettings(fetchedUser));
-  }, []);
+    applyUser(fetchedUser);
+  }, [applyUser]);
 
   return (
     <AuthContext.Provider
@@ -192,6 +218,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         user,
         settings,
         isLoading,
+        isAuthenticating,
         isAuthenticated: !!user,
         login,
         loginWithGoogle,

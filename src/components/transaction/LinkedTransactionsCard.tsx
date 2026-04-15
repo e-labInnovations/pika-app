@@ -1,12 +1,7 @@
 // cspell:ignore Swipeable
 import { router } from "expo-router";
 import React, { useRef, useState } from "react";
-import {
-  ActivityIndicator,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { ActivityIndicator, Text, TouchableOpacity, View } from "react-native";
 import ReanimatedSwipeable, {
   type SwipeableMethods,
 } from "react-native-gesture-handler/ReanimatedSwipeable";
@@ -38,11 +33,13 @@ import {
 // ── Link type metadata (colors / icons) ───────────────────────────────────────
 
 function getLinkTypeMeta(type: TransactionLink_type) {
-  return LINK_TYPE_META[type as unknown as keyof typeof LINK_TYPE_META] ?? {
-    label: type,
-    color: "#64748b",
-    icon: "link",
-  };
+  return (
+    LINK_TYPE_META[type as unknown as keyof typeof LINK_TYPE_META] ?? {
+      label: type,
+      color: "#64748b",
+      icon: "link",
+    }
+  );
 }
 
 // ── Swipe unlink action ────────────────────────────────────────────────────────
@@ -104,7 +101,8 @@ function LinkedRow({
   const isIncome = other.type === Transaction_type.income;
   const isTransfer = other.type === Transaction_type.transfer;
   const amountColor = isIncome ? "#10b981" : isTransfer ? "#6366f1" : "#ef4444";
-  const catBg = other.category?.bgColor ?? `${other.category?.color ?? "#f59e0b"}22`;
+  const catBg =
+    other.category?.bgColor ?? `${other.category?.color ?? "#f59e0b"}22`;
   const catColor = other.category?.color ?? "#f59e0b";
 
   const { label, color, icon } = getLinkTypeMeta(link.type);
@@ -124,12 +122,15 @@ function LinkedRow({
       renderRightActions={(progress) => (
         <UnlinkAction
           progress={progress}
-          onUnlink={() => { swipeRef.current?.close(); onRemove(); }}
+          onUnlink={() => {
+            swipeRef.current?.close();
+            onRemove();
+          }}
         />
       )}
     >
       <TouchableOpacity
-        onPress={() => router.push(`/history/${other.id}`)}
+        onPress={() => router.push(`/transactions/${other.id}`)}
         activeOpacity={0.75}
         style={{
           flexDirection: "row",
@@ -248,7 +249,10 @@ export function LinkedTransactionsCard({ transactionId }: Props) {
             } catch (err: any) {
               showAlert({
                 title: "Error",
-                message: err?.graphQLErrors?.[0]?.message ?? err?.message ?? "Could not remove link.",
+                message:
+                  err?.graphQLErrors?.[0]?.message ??
+                  err?.message ??
+                  "Could not remove link.",
               });
             }
           },
@@ -312,9 +316,7 @@ export function LinkedTransactionsCard({ transactionId }: Props) {
             ) : (
               <DynamicIcon name="link" size={13} color={C.primary} />
             )}
-            <Text
-              style={{ fontSize: 12, fontWeight: "700", color: C.primary }}
-            >
+            <Text style={{ fontSize: 12, fontWeight: "700", color: C.primary }}>
               Link
             </Text>
           </TouchableOpacity>

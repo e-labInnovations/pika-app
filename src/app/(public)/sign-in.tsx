@@ -52,7 +52,7 @@ export default function SignInScreen() {
   // Safety net: if auth state becomes true while on this screen (set by
   // auth.tsx deep-link handler or a concurrent loginWithGoogle call), navigate.
   useEffect(() => {
-    if (isAuthenticated) router.replace("/(tabs)");
+    if (isAuthenticated) router.replace("/");
   }, [isAuthenticated]);
 
   const [email, setEmail] = useState("");
@@ -68,7 +68,7 @@ export default function SignInScreen() {
     setGoogleLoading(true);
     try {
       const ok = await loginWithGoogle();
-      if (ok) router.replace("/(tabs)");
+      if (ok) router.replace("/");
     } catch (e) {
       setError(e instanceof Error ? e.message : "Google sign-in failed.");
     } finally {
@@ -82,7 +82,7 @@ export default function SignInScreen() {
     setIsLoading(true);
     try {
       await login(email.trim(), password);
-      router.replace("/(tabs)");
+      router.replace("/");
     } catch (e) {
       setError(e instanceof Error ? e.message : "Sign in failed.");
     } finally {

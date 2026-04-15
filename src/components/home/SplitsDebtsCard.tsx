@@ -245,7 +245,7 @@ function PersonDetailContent({
   const handleViewAll = () => {
     onClose();
     router.push({
-      pathname: "/(tabs)/history",
+      pathname: "/transactions",
       params: { personId: person.id, dateFrom, dateTo },
     });
   };
@@ -483,7 +483,7 @@ export function SplitsDebtsCard() {
             <TouchableOpacity
               onPress={() =>
                 router.push({
-                  pathname: "/(tabs)/history",
+                  pathname: "/transactions",
                   params: { dateFrom, dateTo },
                 })
               }

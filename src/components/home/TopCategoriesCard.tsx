@@ -215,7 +215,7 @@ function CategoryDetailContent({
   const handleViewAll = () => {
     onClose();
     router.push({
-      pathname: "/(tabs)/history",
+      pathname: "/transactions",
       params: { categoryId: categoryIds.join(","), dateFrom, dateTo },
     });
   };
@@ -530,7 +530,7 @@ export function TopCategoriesCard() {
           <TouchableOpacity
             onPress={() =>
               router.push({
-                pathname: "/(tabs)/history",
+                pathname: "/transactions",
                 params: { dateFrom, dateTo },
               })
             }

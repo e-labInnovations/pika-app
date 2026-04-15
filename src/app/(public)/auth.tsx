@@ -24,7 +24,7 @@ export default function AuthCallbackScreen() {
 
   useEffect(() => {
     if (isAuthenticated) {
-      router.replace("/(tabs)");
+      router.replace("/");
       return;
     }
 
@@ -45,7 +45,7 @@ export default function AuthCallbackScreen() {
       .then(({ token, exp }: { token: string; exp: number | null }) =>
         loginWithToken(token, exp ?? undefined),
       )
-      .then(() => router.replace("/(tabs)"))
+      .then(() => router.replace("/"))
       .catch((e: unknown) => {
         const msg = e instanceof Error ? e.message : String(e);
         setError(msg);

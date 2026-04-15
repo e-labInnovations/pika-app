@@ -1,37 +1,43 @@
 import type { BottomTabBarProps } from "@react-navigation/bottom-tabs";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import React from "react";
-import { Platform, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import {
+  Platform,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useColors } from "../theme/colors";
 
 const BOTTOM_INSET_FALLBACK = Platform.OS === "ios" ? 20 : 0;
 
-type TabRouteName = "index" | "history" | "add" | "people" | "settings";
+type TabRouteName = "index" | "transactions" | "add" | "people" | "settings";
 
 type IoniconName = React.ComponentProps<typeof Ionicons>["name"];
 
 const ACTIVE_ICONS: Record<TabRouteName, IoniconName> = {
-  index:    "home",
-  history:  "wallet",
-  add:      "add-circle",
-  people:   "people",
+  index: "home",
+  transactions: "wallet",
+  add: "add-circle",
+  people: "people",
   settings: "settings",
 };
 
 const INACTIVE_ICONS: Record<TabRouteName, IoniconName> = {
-  index:    "home-outline",
-  history:  "wallet-outline",
-  add:      "add-circle-outline",
-  people:   "people-outline",
+  index: "home-outline",
+  transactions: "wallet-outline",
+  add: "add-circle-outline",
+  people: "people-outline",
   settings: "settings-outline",
 };
 
 const TAB_LABELS: Record<TabRouteName, string> = {
-  index:    "HOME",
-  history:  "HISTORY",
-  add:      "ADD",
-  people:   "PEOPLE",
+  index: "HOME",
+  transactions: "HISTORY",
+  add: "ADD",
+  people: "PEOPLE",
   settings: "SETTINGS",
 };
 
@@ -41,7 +47,12 @@ export function TabBar({ state, navigation }: BottomTabBarProps) {
   const bottomPad = (insets.bottom || BOTTOM_INSET_FALLBACK) + 8;
 
   return (
-    <View style={[s.container, { backgroundColor: C.surfaceLow, paddingBottom: bottomPad }]}>
+    <View
+      style={[
+        s.container,
+        { backgroundColor: C.surfaceLow, paddingBottom: bottomPad },
+      ]}
+    >
       {state.routes.map((route, index) => {
         const isFocused = state.index === index;
         const routeName = route.name as TabRouteName;
@@ -69,7 +80,15 @@ export function TabBar({ state, navigation }: BottomTabBarProps) {
               accessibilityLabel="Add"
             >
               {isFocused ? (
-                <View style={[s.addCircle, { backgroundColor: C.primaryBright, borderColor: C.primaryBright }]}>
+                <View
+                  style={[
+                    s.addCircle,
+                    {
+                      backgroundColor: C.primaryBright,
+                      borderColor: C.primaryBright,
+                    },
+                  ]}
+                >
                   <Ionicons name="add" size={24} color="#ffffff" />
                 </View>
               ) : (
@@ -91,8 +110,14 @@ export function TabBar({ state, navigation }: BottomTabBarProps) {
               style={s.tab}
               accessibilityLabel={TAB_LABELS[routeName]}
             >
-              <View style={[s.activeSquare, { backgroundColor: C.primaryBright }]}>
-                <Ionicons name={ACTIVE_ICONS[routeName]} size={22} color="#ffffff" />
+              <View
+                style={[s.activeSquare, { backgroundColor: C.primaryBright }]}
+              >
+                <Ionicons
+                  name={ACTIVE_ICONS[routeName]}
+                  size={22}
+                  color="#ffffff"
+                />
               </View>
             </TouchableOpacity>
           );
@@ -107,7 +132,11 @@ export function TabBar({ state, navigation }: BottomTabBarProps) {
             style={s.tab}
             accessibilityLabel={TAB_LABELS[routeName]}
           >
-            <Ionicons name={INACTIVE_ICONS[routeName]} size={22} color={C.onSurfaceVariant} />
+            <Ionicons
+              name={INACTIVE_ICONS[routeName]}
+              size={22}
+              color={C.onSurfaceVariant}
+            />
             <Text style={[s.label, { color: C.onSurfaceVariant }]}>
               {TAB_LABELS[routeName]}
             </Text>

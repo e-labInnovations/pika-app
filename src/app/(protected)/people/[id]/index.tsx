@@ -375,7 +375,7 @@ export default function PersonDetailScreen() {
             <TouchableOpacity
               onPress={() =>
                 router.push({
-                  pathname: "/(tabs)/add",
+                  pathname: "/add",
                   params: { personId: id, type: "expense" },
                 })
               }
@@ -392,7 +392,7 @@ export default function PersonDetailScreen() {
               onPress={() => {
                 if (balance === 0) return;
                 router.push({
-                  pathname: "/(tabs)/add",
+                  pathname: "/add",
                   params: {
                     personId: id,
                     type: balance > 0 ? "expense" : "income",
@@ -483,7 +483,7 @@ export default function PersonDetailScreen() {
               <TouchableOpacity
                 onPress={() =>
                   router.push({
-                    pathname: "/(tabs)/history",
+                    pathname: "/transactions",
                     params: { personId: id },
                   })
                 }
@@ -534,7 +534,7 @@ export default function PersonDetailScreen() {
                     {idx > 0 && <Divider />}
                     <RecentTxRow
                       t={t}
-                      onPress={() => router.push(`/history/${t.id}`)}
+                      onPress={() => router.push(`/transactions/${t.id}`)}
                     />
                   </React.Fragment>
                 ))}
@@ -544,7 +544,7 @@ export default function PersonDetailScreen() {
                     <TouchableOpacity
                       onPress={() =>
                         router.push({
-                          pathname: "/(tabs)/history",
+                          pathname: "/transactions",
                           params: { personId: id },
                         })
                       }

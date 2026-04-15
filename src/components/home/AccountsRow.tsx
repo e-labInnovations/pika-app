@@ -70,11 +70,15 @@ function AccountCard({
           <View className="flex-row items-center gap-1.5">
             {(account.totalTransactions ?? 0) > 0 && (
               <Text className="text-[11px] font-semibold text-on-surface-variant">
-                {account.totalTransactions} txn{account.totalTransactions === 1 ? "" : "s"}
+                {account.totalTransactions} txn
+                {account.totalTransactions === 1 ? "" : "s"}
               </Text>
             )}
             {account.isActive === false && (
-              <View className="rounded-full px-1.5 py-0.5" style={{ backgroundColor: `${C.outlineVariant}33` }}>
+              <View
+                className="rounded-full px-1.5 py-0.5"
+                style={{ backgroundColor: `${C.outlineVariant}33` }}
+              >
                 <Text className="text-[9px] font-bold uppercase tracking-[0.5px] text-on-surface-variant">
                   Inactive
                 </Text>
@@ -85,13 +89,19 @@ function AccountCard({
       </View>
 
       {/* Row 2: Name */}
-      <Text className="text-[14px] font-extrabold text-on-surface tracking-tight" numberOfLines={1}>
+      <Text
+        className="text-[14px] font-extrabold text-on-surface tracking-tight"
+        numberOfLines={1}
+      >
         {account.name}
       </Text>
 
       {/* Row 3: Description */}
       {account.description ? (
-        <Text className="text-[11px] text-on-surface-variant -mt-2" numberOfLines={1}>
+        <Text
+          className="text-[11px] text-on-surface-variant -mt-2"
+          numberOfLines={1}
+        >
           {account.description}
         </Text>
       ) : null}
@@ -103,7 +113,10 @@ function AccountCard({
 
 function AccountCardSkeleton() {
   return (
-    <View style={{ width: CARD_WIDTH }} className="rounded-2xl bg-surface-mid p-4 gap-3">
+    <View
+      style={{ width: CARD_WIDTH }}
+      className="rounded-2xl bg-surface-mid p-4 gap-3"
+    >
       <View className="flex-row items-center gap-3">
         <Skeleton width={48} height={48} radius={13} />
         <View className="flex-1 gap-1.5">
@@ -134,7 +147,12 @@ function AccountActionsSheet({
   const insets = useSafeAreaInsets();
 
   return (
-    <Modal visible={!!account} transparent animationType="slide" onRequestClose={onClose}>
+    <Modal
+      visible={!!account}
+      transparent
+      animationType="slide"
+      onRequestClose={onClose}
+    >
       <TouchableOpacity
         className="flex-1"
         style={{ backgroundColor: "rgba(0,0,0,0.45)" }}
@@ -162,11 +180,17 @@ function AccountActionsSheet({
               size={44}
             />
             <View className="flex-1 min-w-0">
-              <Text className="text-base font-extrabold text-on-surface" numberOfLines={1}>
+              <Text
+                className="text-base font-extrabold text-on-surface"
+                numberOfLines={1}
+              >
                 {account.name}
               </Text>
               {account.description ? (
-                <Text className="text-[12px] text-on-surface-variant" numberOfLines={1}>
+                <Text
+                  className="text-[12px] text-on-surface-variant"
+                  numberOfLines={1}
+                >
                   {account.description}
                 </Text>
               ) : null}
@@ -174,7 +198,10 @@ function AccountActionsSheet({
           </View>
         )}
 
-        <View className="mx-5 mb-3" style={{ height: 1, backgroundColor: `${C.outlineVariant}33` }} />
+        <View
+          className="mx-5 mb-3"
+          style={{ height: 1, backgroundColor: `${C.outlineVariant}33` }}
+        />
 
         <View className="px-4 gap-2">
           <TouchableOpacity
@@ -182,14 +209,25 @@ function AccountActionsSheet({
             activeOpacity={0.75}
             className="flex-row items-center gap-3.5 p-4 rounded-2xl bg-surface-mid"
           >
-            <View className="w-10 h-10 rounded-xl items-center justify-center" style={{ backgroundColor: "#6366f120" }}>
+            <View
+              className="w-10 h-10 rounded-xl items-center justify-center"
+              style={{ backgroundColor: "#6366f120" }}
+            >
               <DynamicIcon name="clock" size={18} color="#6366f1" />
             </View>
             <View className="flex-1">
-              <Text className="text-[14px] font-bold text-on-surface">View Transactions</Text>
-              <Text className="text-[12px] text-on-surface-variant">All transactions for this account</Text>
+              <Text className="text-[14px] font-bold text-on-surface">
+                View Transactions
+              </Text>
+              <Text className="text-[12px] text-on-surface-variant">
+                All transactions for this account
+              </Text>
             </View>
-            <DynamicIcon name="chevron-right" size={16} color={C.outlineVariant} />
+            <DynamicIcon
+              name="chevron-right"
+              size={16}
+              color={C.outlineVariant}
+            />
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -197,14 +235,25 @@ function AccountActionsSheet({
             activeOpacity={0.75}
             className="flex-row items-center gap-3.5 p-4 rounded-2xl bg-surface-mid"
           >
-            <View className="w-10 h-10 rounded-xl items-center justify-center" style={{ backgroundColor: `${C.primary}20` }}>
+            <View
+              className="w-10 h-10 rounded-xl items-center justify-center"
+              style={{ backgroundColor: `${C.primary}20` }}
+            >
               <DynamicIcon name="pencil" size={18} color={C.primary} />
             </View>
             <View className="flex-1">
-              <Text className="text-[14px] font-bold text-on-surface">Edit Account</Text>
-              <Text className="text-[12px] text-on-surface-variant">Update account details</Text>
+              <Text className="text-[14px] font-bold text-on-surface">
+                Edit Account
+              </Text>
+              <Text className="text-[12px] text-on-surface-variant">
+                Update account details
+              </Text>
             </View>
-            <DynamicIcon name="chevron-right" size={16} color={C.outlineVariant} />
+            <DynamicIcon
+              name="chevron-right"
+              size={16}
+              color={C.outlineVariant}
+            />
           </TouchableOpacity>
         </View>
 
@@ -214,7 +263,9 @@ function AccountActionsSheet({
             activeOpacity={0.75}
             className="p-4 rounded-2xl items-center bg-surface-mid"
           >
-            <Text className="text-[14px] font-bold text-on-surface">Cancel</Text>
+            <Text className="text-[14px] font-bold text-on-surface">
+              Cancel
+            </Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -246,9 +297,16 @@ export function AccountsRow({ showBalance, accounts, loading }: Props) {
   return (
     <>
       <View className="flex-row items-center justify-between">
-        <Text className="text-base font-extrabold text-on-surface tracking-tight">Accounts</Text>
-        <TouchableOpacity onPress={() => router.push("/settings/accounts")} activeOpacity={0.75}>
-          <Text className="text-[13px] font-semibold text-primary-bright">See All</Text>
+        <Text className="text-base font-extrabold text-on-surface tracking-tight">
+          Accounts
+        </Text>
+        <TouchableOpacity
+          onPress={() => router.push("/settings/accounts")}
+          activeOpacity={0.75}
+        >
+          <Text className="text-[13px] font-semibold text-primary-bright">
+            See All
+          </Text>
         </TouchableOpacity>
       </View>
 
@@ -277,7 +335,10 @@ export function AccountsRow({ showBalance, accounts, loading }: Props) {
         onViewHistory={() => {
           const id = selected!.id;
           setSelected(null);
-          router.push({ pathname: "/(tabs)/history", params: { accountId: id } });
+          router.push({
+            pathname: "/transactions",
+            params: { accountId: id },
+          });
         }}
         onEdit={() => {
           const id = selected!.id;

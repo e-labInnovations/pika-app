@@ -711,7 +711,10 @@ export default function HistoryScreen() {
           sort: backendSortStr,
           where,
         },
-        updateQuery(prev: GetTransactionsQuery, { fetchMoreResult }: { fetchMoreResult?: GetTransactionsQuery }) {
+        updateQuery(
+          prev: GetTransactionsQuery,
+          { fetchMoreResult }: { fetchMoreResult?: GetTransactionsQuery },
+        ) {
           if (!fetchMoreResult?.Transactions) return prev;
           return {
             Transactions: {
@@ -1025,8 +1028,8 @@ export default function HistoryScreen() {
                   <TransactionRow
                     transaction={t}
                     openRef={openSwipeable}
-                    onPress={() => router.push(`/history/${t.id}`)}
-                    onEdit={() => router.push(`/history/${t.id}/edit`)}
+                    onPress={() => router.push(`/transactions/${t.id}`)}
+                    onEdit={() => router.push(`/transactions/${t.id}/edit`)}
                     onDelete={() => handleDelete(t)}
                     showDate={item.showDate}
                   />
@@ -1061,8 +1064,8 @@ export default function HistoryScreen() {
                 <TransactionRow
                   transaction={t}
                   openRef={openSwipeable}
-                  onPress={() => router.push(`/history/${t.id}`)}
-                  onEdit={() => router.push(`/history/${t.id}/edit`)}
+                  onPress={() => router.push(`/transactions/${t.id}`)}
+                  onEdit={() => router.push(`/transactions/${t.id}/edit`)}
                   onDelete={() => handleDelete(t)}
                 />
               </View>

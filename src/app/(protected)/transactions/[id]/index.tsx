@@ -417,7 +417,7 @@ export default function TransactionDetailScreen() {
           </Text>
           {tx && (
             <TouchableOpacity
-              onPress={() => router.push(`/history/${id}/edit`)}
+              onPress={() => router.push(`/transactions/${id}/edit`)}
               activeOpacity={0.7}
               className="w-9 h-9 rounded-full items-center justify-center bg-surface-mid"
             >
