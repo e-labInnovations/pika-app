@@ -8,18 +8,20 @@ import {
   type TransactionFieldsFragment,
   type GetTransactionsQuery,
   type GetTransactionsQueryVariables,
+  type GetTransactionQuery,
+  type GetTransactionQueryVariables,
   type CreateTransactionMutationVariables,
   type UpdateTransactionMutationVariables,
 } from '../types/graphql';
 
 export const useGetTransactions = (variables?: GetTransactionsQueryVariables) => {
-  const { data, loading, error, refetch, fetchMore } = useQuery(
-    GetTransactionsDocument,
-    {
-      variables,
-      fetchPolicy: 'cache-and-network',
-    },
-  );
+  const { data, loading, error, refetch, fetchMore } = useQuery<
+    GetTransactionsQuery,
+    GetTransactionsQueryVariables
+  >(GetTransactionsDocument, {
+    variables,
+    fetchPolicy: 'cache-and-network',
+  });
 
   return {
     data: data?.Transactions as GetTransactionsQuery['Transactions'] | undefined,
@@ -32,7 +34,10 @@ export const useGetTransactions = (variables?: GetTransactionsQueryVariables) =>
 };
 
 export const useGetTransaction = (id: string) => {
-  const { data, loading, error, refetch } = useQuery(GetTransactionDocument, {
+  const { data, loading, error, refetch } = useQuery<
+    GetTransactionQuery,
+    GetTransactionQueryVariables
+  >(GetTransactionDocument, {
     variables: { id },
     skip: !id,
     fetchPolicy: 'cache-and-network',
@@ -58,46 +63,46 @@ const TRANSACTION_REFETCH_QUERIES = [
 ];
 
 export const useCreateTransaction = () => {
-  const [createTransaction, { data, loading, error }] = useMutation(
-    CreateTransactionDocument,
-    {
-      refetchQueries: TRANSACTION_REFETCH_QUERIES,
-    },
-  );
+  const [createTransaction, { data, loading, error }] = useMutation<
+    { createTransaction: TransactionFieldsFragment },
+    CreateTransactionMutationVariables
+  >(CreateTransactionDocument, {
+    refetchQueries: TRANSACTION_REFETCH_QUERIES,
+  });
 
   return {
     createTransaction: (variables: CreateTransactionMutationVariables) =>
       createTransaction({ variables }),
-    data: data?.createTransaction as TransactionFieldsFragment | null | undefined,
+    data: data?.createTransaction,
     loading,
     error,
   };
 };
 
 export const useUpdateTransaction = () => {
-  const [updateTransaction, { data, loading, error }] = useMutation(
-    UpdateTransactionDocument,
-    {
-      refetchQueries: TRANSACTION_REFETCH_QUERIES,
-    },
-  );
+  const [updateTransaction, { data, loading, error }] = useMutation<
+    { updateTransaction: TransactionFieldsFragment },
+    UpdateTransactionMutationVariables
+  >(UpdateTransactionDocument, {
+    refetchQueries: TRANSACTION_REFETCH_QUERIES,
+  });
 
   return {
     updateTransaction: (variables: UpdateTransactionMutationVariables) =>
       updateTransaction({ variables }),
-    data: data?.updateTransaction as TransactionFieldsFragment | null | undefined,
+    data: data?.updateTransaction,
     loading,
     error,
   };
 };
 
 export const useDeleteTransaction = () => {
-  const [deleteTransaction, { data, loading, error }] = useMutation(
-    DeleteTransactionDocument,
-    {
-      refetchQueries: TRANSACTION_REFETCH_QUERIES,
-    },
-  );
+  const [deleteTransaction, { data, loading, error }] = useMutation<
+    { deleteTransaction: TransactionFieldsFragment },
+    { id: string }
+  >(DeleteTransactionDocument, {
+    refetchQueries: TRANSACTION_REFETCH_QUERIES,
+  });
 
   return {
     deleteTransaction: (id: string) => deleteTransaction({ variables: { id } }),

@@ -1,20 +1,21 @@
-import type { CodegenConfig } from '@graphql-codegen/cli';
+import type { CodegenConfig } from "@graphql-codegen/cli";
+require("dotenv").config();
 
-const apiUrl = process.env.EXPO_PUBLIC_API_URL ?? 'http://localhost:3333';
+const apiUrl = process.env.EXPO_PUBLIC_API_URL ?? "http://localhost:3333";
 
 const config: CodegenConfig = {
   overwrite: true,
   schema: `${apiUrl}/api/graphql`,
-  documents: 'src/services/gql/**/*.{gql,graphql}',
+  documents: "src/services/gql/**/*.{gql,graphql}",
   generates: {
-    './src/services/gql/types/': {
-      preset: 'client',
+    "./src/services/gql/types/": {
+      preset: "client",
       plugins: [],
       presetConfig: {
         fragmentMasking: false,
       },
       config: {
-        namingConvention: 'keep',
+        namingConvention: "keep",
       },
     },
   },

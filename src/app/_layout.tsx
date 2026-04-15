@@ -7,7 +7,10 @@ import { ShareIntentProvider, useShareIntent } from "expo-share-intent";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 import { AuthProvider, useAuth } from "../context/AuthContext";
-import { ShareIntentBridgeProvider, usePendingShare } from "../context/ShareIntentBridgeContext";
+import {
+  ShareIntentBridgeProvider,
+  usePendingShare,
+} from "../context/ShareIntentBridgeContext";
 import { apolloClient } from "../services/gql/client";
 import { AlertProvider } from "../components/ui/AlertDialog";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
@@ -29,20 +32,25 @@ function ShareIntentListener() {
           const base64 = await readAsStringAsync(uri, {
             encoding: EncodingType.Base64,
           });
-          setPending({ type: "image", uri, base64, mimeType: file.mimeType ?? "image/jpeg" });
+          setPending({
+            type: "image",
+            uri,
+            base64,
+            mimeType: file.mimeType ?? "image/jpeg",
+          });
         } else if (shareIntent.text) {
           setPending({ type: "text", text: shareIntent.text });
         } else {
           return;
         }
-        router.push("/(tabs)/add");
+        router.push("/add");
       } finally {
         resetShareIntent();
       }
     }
 
     handle();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hasShareIntent]);
 
   return null;

@@ -1,4 +1,5 @@
 import React from "react";
+import { StyleProp, ViewStyle } from "react-native";
 import { SvgXml } from "react-native-svg";
 import { lucideIcons, resolveIconName } from "../lib/lucide-data";
 export type { IconName } from "../lib/lucide-data";
@@ -8,6 +9,7 @@ interface DynamicIconProps {
   size?: number;
   color?: string;
   strokeWidth?: number;
+  style?: StyleProp<ViewStyle>;
 }
 
 /**
@@ -26,6 +28,7 @@ export function DynamicIcon({
   size = 24,
   color = "currentColor",
   strokeWidth = 1.5,
+  style,
 }: DynamicIconProps) {
   const resolved = resolveIconName(name.toLowerCase());
   const content = lucideIcons[resolved];
@@ -39,5 +42,5 @@ export function DynamicIcon({
 
   const xml = `<svg viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="${strokeWidth}" stroke-linecap="round" stroke-linejoin="round">${content}</svg>`;
 
-  return <SvgXml xml={xml} width={size} height={size} />;
+  return <SvgXml xml={xml} width={size} height={size} style={style} />;
 }

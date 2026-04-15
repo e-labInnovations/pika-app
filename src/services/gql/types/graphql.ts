@@ -52,6 +52,7 @@ export type Access = {
   media?: Maybe<mediaAccess>;
   oauth_accounts?: Maybe<oauth_accountsAccess>;
   oauth_codes?: Maybe<oauth_codesAccess>;
+  pages?: Maybe<pagesAccess>;
   payload_kv?: Maybe<payload_kvAccess>;
   payload_locked_documents?: Maybe<payload_locked_documentsAccess>;
   payload_mcp_api_keys?: Maybe<payload_mcp_api_keysAccess>;
@@ -2900,6 +2901,22 @@ export type AppSettingsUpdateDocAccess = {
   where?: Maybe<Scalars['JSONObject']['output']>;
 };
 
+export type Banner = {
+  __typename?: 'Banner';
+  blockName?: Maybe<Scalars['String']['output']>;
+  blockType?: Maybe<Scalars['String']['output']>;
+  content: Scalars['String']['output'];
+  id?: Maybe<Scalars['String']['output']>;
+  style: Banner_style;
+};
+
+export enum Banner_style {
+  error = 'error',
+  info = 'info',
+  success = 'success',
+  warning = 'warning'
+}
+
 export type CalendarDay = {
   __typename?: 'CalendarDay';
   balance: Scalars['Float']['output'];
@@ -3844,6 +3861,25 @@ export type Category_where_or = {
   updatedAt?: InputMaybe<Category_updatedAt_operator>;
   user?: InputMaybe<Category_user_operator>;
 };
+
+export type Code = {
+  __typename?: 'Code';
+  blockName?: Maybe<Scalars['String']['output']>;
+  blockType?: Maybe<Scalars['String']['output']>;
+  caption?: Maybe<Scalars['String']['output']>;
+  code: Scalars['String']['output'];
+  id?: Maybe<Scalars['String']['output']>;
+  language?: Maybe<Code_language>;
+};
+
+export enum Code_language {
+  bash = 'bash',
+  css = 'css',
+  javascript = 'javascript',
+  json = 'json',
+  text = 'text',
+  typescript = 'typescript'
+}
 
 export type CurrenciesResult = {
   __typename?: 'CurrenciesResult';
@@ -5175,6 +5211,7 @@ export type Mutation = {
   createMedia?: Maybe<Media>;
   createOauthAccount?: Maybe<OauthAccount>;
   createOauthCode?: Maybe<OauthCode>;
+  createPage?: Maybe<Page>;
   createPayloadKv?: Maybe<PayloadKv>;
   createPayloadLockedDocument?: Maybe<PayloadLockedDocument>;
   createPayloadMcpApiKey?: Maybe<PayloadMcpApiKey>;
@@ -5192,6 +5229,7 @@ export type Mutation = {
   deleteMedia?: Maybe<Media>;
   deleteOauthAccount?: Maybe<OauthAccount>;
   deleteOauthCode?: Maybe<OauthCode>;
+  deletePage?: Maybe<Page>;
   deletePayloadKv?: Maybe<PayloadKv>;
   deletePayloadLockedDocument?: Maybe<PayloadLockedDocument>;
   deletePayloadMcpApiKey?: Maybe<PayloadMcpApiKey>;
@@ -5209,6 +5247,7 @@ export type Mutation = {
   duplicateMedia?: Maybe<Media>;
   duplicateOauthAccount?: Maybe<OauthAccount>;
   duplicateOauthCode?: Maybe<OauthCode>;
+  duplicatePage?: Maybe<Page>;
   duplicatePayloadKv?: Maybe<PayloadKv>;
   duplicatePayloadLockedDocument?: Maybe<PayloadLockedDocument>;
   duplicatePayloadPreference?: Maybe<PayloadPreference>;
@@ -5235,6 +5274,7 @@ export type Mutation = {
   updateMedia?: Maybe<Media>;
   updateOauthAccount?: Maybe<OauthAccount>;
   updateOauthCode?: Maybe<OauthCode>;
+  updatePage?: Maybe<Page>;
   updatePayloadKv?: Maybe<PayloadKv>;
   updatePayloadLockedDocument?: Maybe<PayloadLockedDocument>;
   updatePayloadMcpApiKey?: Maybe<PayloadMcpApiKey>;
@@ -5282,6 +5322,12 @@ export type MutationcreateOauthAccountArgs = {
 
 export type MutationcreateOauthCodeArgs = {
   data: mutationOauthCodeInput;
+  draft?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+
+export type MutationcreatePageArgs = {
+  data: mutationPageInput;
   draft?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
@@ -5388,6 +5434,12 @@ export type MutationdeleteOauthCodeArgs = {
 };
 
 
+export type MutationdeletePageArgs = {
+  id: Scalars['String']['input'];
+  trash?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+
 export type MutationdeletePayloadKvArgs = {
   id: Scalars['String']['input'];
   trash?: InputMaybe<Scalars['Boolean']['input']>;
@@ -5486,6 +5538,12 @@ export type MutationduplicateOauthAccountArgs = {
 
 export type MutationduplicateOauthCodeArgs = {
   data: mutationOauthCodeInput;
+  id: Scalars['String']['input'];
+};
+
+
+export type MutationduplicatePageArgs = {
+  data: mutationPageInput;
   id: Scalars['String']['input'];
 };
 
@@ -5645,6 +5703,15 @@ export type MutationupdateOauthAccountArgs = {
 export type MutationupdateOauthCodeArgs = {
   autosave?: InputMaybe<Scalars['Boolean']['input']>;
   data: mutationOauthCodeUpdateInput;
+  draft?: InputMaybe<Scalars['Boolean']['input']>;
+  id: Scalars['String']['input'];
+  trash?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+
+export type MutationupdatePageArgs = {
+  autosave?: InputMaybe<Scalars['Boolean']['input']>;
+  data: mutationPageUpdateInput;
   draft?: InputMaybe<Scalars['Boolean']['input']>;
   id: Scalars['String']['input'];
   trash?: InputMaybe<Scalars['Boolean']['input']>;
@@ -7339,6 +7406,605 @@ export type OauthCodesUpdateDocAccess = {
   where?: Maybe<Scalars['JSONObject']['output']>;
 };
 
+export type Page = {
+  __typename?: 'Page';
+  createdAt?: Maybe<Scalars['DateTime']['output']>;
+  description?: Maybe<Scalars['String']['output']>;
+  id: Scalars['String']['output'];
+  layout: Array<Page_Layout>;
+  publishedAt?: Maybe<Scalars['DateTime']['output']>;
+  slug: Scalars['String']['output'];
+  title: Scalars['String']['output'];
+  updatedAt?: Maybe<Scalars['DateTime']['output']>;
+};
+
+export type Page_Layout = Banner | Code | RichText;
+
+export type Page_createdAt_operator = {
+  equals?: InputMaybe<Scalars['DateTime']['input']>;
+  exists?: InputMaybe<Scalars['Boolean']['input']>;
+  greater_than?: InputMaybe<Scalars['DateTime']['input']>;
+  greater_than_equal?: InputMaybe<Scalars['DateTime']['input']>;
+  less_than?: InputMaybe<Scalars['DateTime']['input']>;
+  less_than_equal?: InputMaybe<Scalars['DateTime']['input']>;
+  like?: InputMaybe<Scalars['DateTime']['input']>;
+  not_equals?: InputMaybe<Scalars['DateTime']['input']>;
+};
+
+export type Page_description_operator = {
+  contains?: InputMaybe<Scalars['String']['input']>;
+  equals?: InputMaybe<Scalars['String']['input']>;
+  exists?: InputMaybe<Scalars['Boolean']['input']>;
+  like?: InputMaybe<Scalars['String']['input']>;
+  not_equals?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type Page_id_operator = {
+  all?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  contains?: InputMaybe<Scalars['String']['input']>;
+  equals?: InputMaybe<Scalars['String']['input']>;
+  exists?: InputMaybe<Scalars['Boolean']['input']>;
+  in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  like?: InputMaybe<Scalars['String']['input']>;
+  not_equals?: InputMaybe<Scalars['String']['input']>;
+  not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+};
+
+export type Page_publishedAt_operator = {
+  equals?: InputMaybe<Scalars['DateTime']['input']>;
+  exists?: InputMaybe<Scalars['Boolean']['input']>;
+  greater_than?: InputMaybe<Scalars['DateTime']['input']>;
+  greater_than_equal?: InputMaybe<Scalars['DateTime']['input']>;
+  less_than?: InputMaybe<Scalars['DateTime']['input']>;
+  less_than_equal?: InputMaybe<Scalars['DateTime']['input']>;
+  like?: InputMaybe<Scalars['DateTime']['input']>;
+  not_equals?: InputMaybe<Scalars['DateTime']['input']>;
+};
+
+export type Page_slug_operator = {
+  all?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  contains?: InputMaybe<Scalars['String']['input']>;
+  equals?: InputMaybe<Scalars['String']['input']>;
+  in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  like?: InputMaybe<Scalars['String']['input']>;
+  not_equals?: InputMaybe<Scalars['String']['input']>;
+  not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+};
+
+export type Page_title_operator = {
+  all?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  contains?: InputMaybe<Scalars['String']['input']>;
+  equals?: InputMaybe<Scalars['String']['input']>;
+  in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  like?: InputMaybe<Scalars['String']['input']>;
+  not_equals?: InputMaybe<Scalars['String']['input']>;
+  not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+};
+
+export type Page_updatedAt_operator = {
+  equals?: InputMaybe<Scalars['DateTime']['input']>;
+  exists?: InputMaybe<Scalars['Boolean']['input']>;
+  greater_than?: InputMaybe<Scalars['DateTime']['input']>;
+  greater_than_equal?: InputMaybe<Scalars['DateTime']['input']>;
+  less_than?: InputMaybe<Scalars['DateTime']['input']>;
+  less_than_equal?: InputMaybe<Scalars['DateTime']['input']>;
+  like?: InputMaybe<Scalars['DateTime']['input']>;
+  not_equals?: InputMaybe<Scalars['DateTime']['input']>;
+};
+
+export type Page_where = {
+  AND?: InputMaybe<Array<InputMaybe<Page_where_and>>>;
+  OR?: InputMaybe<Array<InputMaybe<Page_where_or>>>;
+  createdAt?: InputMaybe<Page_createdAt_operator>;
+  description?: InputMaybe<Page_description_operator>;
+  id?: InputMaybe<Page_id_operator>;
+  publishedAt?: InputMaybe<Page_publishedAt_operator>;
+  slug?: InputMaybe<Page_slug_operator>;
+  title?: InputMaybe<Page_title_operator>;
+  updatedAt?: InputMaybe<Page_updatedAt_operator>;
+};
+
+export type Page_where_and = {
+  AND?: InputMaybe<Array<InputMaybe<Page_where_and>>>;
+  OR?: InputMaybe<Array<InputMaybe<Page_where_or>>>;
+  createdAt?: InputMaybe<Page_createdAt_operator>;
+  description?: InputMaybe<Page_description_operator>;
+  id?: InputMaybe<Page_id_operator>;
+  publishedAt?: InputMaybe<Page_publishedAt_operator>;
+  slug?: InputMaybe<Page_slug_operator>;
+  title?: InputMaybe<Page_title_operator>;
+  updatedAt?: InputMaybe<Page_updatedAt_operator>;
+};
+
+export type Page_where_or = {
+  AND?: InputMaybe<Array<InputMaybe<Page_where_and>>>;
+  OR?: InputMaybe<Array<InputMaybe<Page_where_or>>>;
+  createdAt?: InputMaybe<Page_createdAt_operator>;
+  description?: InputMaybe<Page_description_operator>;
+  id?: InputMaybe<Page_id_operator>;
+  publishedAt?: InputMaybe<Page_publishedAt_operator>;
+  slug?: InputMaybe<Page_slug_operator>;
+  title?: InputMaybe<Page_title_operator>;
+  updatedAt?: InputMaybe<Page_updatedAt_operator>;
+};
+
+export type Pages = {
+  __typename?: 'Pages';
+  docs: Array<Page>;
+  hasNextPage: Scalars['Boolean']['output'];
+  hasPrevPage: Scalars['Boolean']['output'];
+  limit: Scalars['Int']['output'];
+  nextPage?: Maybe<Scalars['Int']['output']>;
+  offset?: Maybe<Scalars['Int']['output']>;
+  page: Scalars['Int']['output'];
+  pagingCounter: Scalars['Int']['output'];
+  prevPage?: Maybe<Scalars['Int']['output']>;
+  totalDocs: Scalars['Int']['output'];
+  totalPages: Scalars['Int']['output'];
+};
+
+export type PagesCreateAccess = {
+  __typename?: 'PagesCreateAccess';
+  permission: Scalars['Boolean']['output'];
+  where?: Maybe<Scalars['JSONObject']['output']>;
+};
+
+export type PagesCreateDocAccess = {
+  __typename?: 'PagesCreateDocAccess';
+  permission: Scalars['Boolean']['output'];
+  where?: Maybe<Scalars['JSONObject']['output']>;
+};
+
+export type PagesDeleteAccess = {
+  __typename?: 'PagesDeleteAccess';
+  permission: Scalars['Boolean']['output'];
+  where?: Maybe<Scalars['JSONObject']['output']>;
+};
+
+export type PagesDeleteDocAccess = {
+  __typename?: 'PagesDeleteDocAccess';
+  permission: Scalars['Boolean']['output'];
+  where?: Maybe<Scalars['JSONObject']['output']>;
+};
+
+export type PagesDocAccessFields = {
+  __typename?: 'PagesDocAccessFields';
+  createdAt?: Maybe<PagesDocAccessFields_createdAt>;
+  description?: Maybe<PagesDocAccessFields_description>;
+  layout?: Maybe<PagesDocAccessFields_layout>;
+  publishedAt?: Maybe<PagesDocAccessFields_publishedAt>;
+  slug?: Maybe<PagesDocAccessFields_slug>;
+  title?: Maybe<PagesDocAccessFields_title>;
+  updatedAt?: Maybe<PagesDocAccessFields_updatedAt>;
+};
+
+export type PagesDocAccessFields_createdAt = {
+  __typename?: 'PagesDocAccessFields_createdAt';
+  create?: Maybe<PagesDocAccessFields_createdAt_Create>;
+  delete?: Maybe<PagesDocAccessFields_createdAt_Delete>;
+  read?: Maybe<PagesDocAccessFields_createdAt_Read>;
+  update?: Maybe<PagesDocAccessFields_createdAt_Update>;
+};
+
+export type PagesDocAccessFields_createdAt_Create = {
+  __typename?: 'PagesDocAccessFields_createdAt_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type PagesDocAccessFields_createdAt_Delete = {
+  __typename?: 'PagesDocAccessFields_createdAt_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type PagesDocAccessFields_createdAt_Read = {
+  __typename?: 'PagesDocAccessFields_createdAt_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type PagesDocAccessFields_createdAt_Update = {
+  __typename?: 'PagesDocAccessFields_createdAt_Update';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type PagesDocAccessFields_description = {
+  __typename?: 'PagesDocAccessFields_description';
+  create?: Maybe<PagesDocAccessFields_description_Create>;
+  delete?: Maybe<PagesDocAccessFields_description_Delete>;
+  read?: Maybe<PagesDocAccessFields_description_Read>;
+  update?: Maybe<PagesDocAccessFields_description_Update>;
+};
+
+export type PagesDocAccessFields_description_Create = {
+  __typename?: 'PagesDocAccessFields_description_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type PagesDocAccessFields_description_Delete = {
+  __typename?: 'PagesDocAccessFields_description_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type PagesDocAccessFields_description_Read = {
+  __typename?: 'PagesDocAccessFields_description_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type PagesDocAccessFields_description_Update = {
+  __typename?: 'PagesDocAccessFields_description_Update';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type PagesDocAccessFields_layout = {
+  __typename?: 'PagesDocAccessFields_layout';
+  create?: Maybe<PagesDocAccessFields_layout_Create>;
+  delete?: Maybe<PagesDocAccessFields_layout_Delete>;
+  read?: Maybe<PagesDocAccessFields_layout_Read>;
+  update?: Maybe<PagesDocAccessFields_layout_Update>;
+};
+
+export type PagesDocAccessFields_layout_Create = {
+  __typename?: 'PagesDocAccessFields_layout_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type PagesDocAccessFields_layout_Delete = {
+  __typename?: 'PagesDocAccessFields_layout_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type PagesDocAccessFields_layout_Read = {
+  __typename?: 'PagesDocAccessFields_layout_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type PagesDocAccessFields_layout_Update = {
+  __typename?: 'PagesDocAccessFields_layout_Update';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type PagesDocAccessFields_publishedAt = {
+  __typename?: 'PagesDocAccessFields_publishedAt';
+  create?: Maybe<PagesDocAccessFields_publishedAt_Create>;
+  delete?: Maybe<PagesDocAccessFields_publishedAt_Delete>;
+  read?: Maybe<PagesDocAccessFields_publishedAt_Read>;
+  update?: Maybe<PagesDocAccessFields_publishedAt_Update>;
+};
+
+export type PagesDocAccessFields_publishedAt_Create = {
+  __typename?: 'PagesDocAccessFields_publishedAt_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type PagesDocAccessFields_publishedAt_Delete = {
+  __typename?: 'PagesDocAccessFields_publishedAt_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type PagesDocAccessFields_publishedAt_Read = {
+  __typename?: 'PagesDocAccessFields_publishedAt_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type PagesDocAccessFields_publishedAt_Update = {
+  __typename?: 'PagesDocAccessFields_publishedAt_Update';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type PagesDocAccessFields_slug = {
+  __typename?: 'PagesDocAccessFields_slug';
+  create?: Maybe<PagesDocAccessFields_slug_Create>;
+  delete?: Maybe<PagesDocAccessFields_slug_Delete>;
+  read?: Maybe<PagesDocAccessFields_slug_Read>;
+  update?: Maybe<PagesDocAccessFields_slug_Update>;
+};
+
+export type PagesDocAccessFields_slug_Create = {
+  __typename?: 'PagesDocAccessFields_slug_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type PagesDocAccessFields_slug_Delete = {
+  __typename?: 'PagesDocAccessFields_slug_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type PagesDocAccessFields_slug_Read = {
+  __typename?: 'PagesDocAccessFields_slug_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type PagesDocAccessFields_slug_Update = {
+  __typename?: 'PagesDocAccessFields_slug_Update';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type PagesDocAccessFields_title = {
+  __typename?: 'PagesDocAccessFields_title';
+  create?: Maybe<PagesDocAccessFields_title_Create>;
+  delete?: Maybe<PagesDocAccessFields_title_Delete>;
+  read?: Maybe<PagesDocAccessFields_title_Read>;
+  update?: Maybe<PagesDocAccessFields_title_Update>;
+};
+
+export type PagesDocAccessFields_title_Create = {
+  __typename?: 'PagesDocAccessFields_title_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type PagesDocAccessFields_title_Delete = {
+  __typename?: 'PagesDocAccessFields_title_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type PagesDocAccessFields_title_Read = {
+  __typename?: 'PagesDocAccessFields_title_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type PagesDocAccessFields_title_Update = {
+  __typename?: 'PagesDocAccessFields_title_Update';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type PagesDocAccessFields_updatedAt = {
+  __typename?: 'PagesDocAccessFields_updatedAt';
+  create?: Maybe<PagesDocAccessFields_updatedAt_Create>;
+  delete?: Maybe<PagesDocAccessFields_updatedAt_Delete>;
+  read?: Maybe<PagesDocAccessFields_updatedAt_Read>;
+  update?: Maybe<PagesDocAccessFields_updatedAt_Update>;
+};
+
+export type PagesDocAccessFields_updatedAt_Create = {
+  __typename?: 'PagesDocAccessFields_updatedAt_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type PagesDocAccessFields_updatedAt_Delete = {
+  __typename?: 'PagesDocAccessFields_updatedAt_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type PagesDocAccessFields_updatedAt_Read = {
+  __typename?: 'PagesDocAccessFields_updatedAt_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type PagesDocAccessFields_updatedAt_Update = {
+  __typename?: 'PagesDocAccessFields_updatedAt_Update';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type PagesFields = {
+  __typename?: 'PagesFields';
+  createdAt?: Maybe<PagesFields_createdAt>;
+  description?: Maybe<PagesFields_description>;
+  layout?: Maybe<PagesFields_layout>;
+  publishedAt?: Maybe<PagesFields_publishedAt>;
+  slug?: Maybe<PagesFields_slug>;
+  title?: Maybe<PagesFields_title>;
+  updatedAt?: Maybe<PagesFields_updatedAt>;
+};
+
+export type PagesFields_createdAt = {
+  __typename?: 'PagesFields_createdAt';
+  create?: Maybe<PagesFields_createdAt_Create>;
+  delete?: Maybe<PagesFields_createdAt_Delete>;
+  read?: Maybe<PagesFields_createdAt_Read>;
+  update?: Maybe<PagesFields_createdAt_Update>;
+};
+
+export type PagesFields_createdAt_Create = {
+  __typename?: 'PagesFields_createdAt_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type PagesFields_createdAt_Delete = {
+  __typename?: 'PagesFields_createdAt_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type PagesFields_createdAt_Read = {
+  __typename?: 'PagesFields_createdAt_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type PagesFields_createdAt_Update = {
+  __typename?: 'PagesFields_createdAt_Update';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type PagesFields_description = {
+  __typename?: 'PagesFields_description';
+  create?: Maybe<PagesFields_description_Create>;
+  delete?: Maybe<PagesFields_description_Delete>;
+  read?: Maybe<PagesFields_description_Read>;
+  update?: Maybe<PagesFields_description_Update>;
+};
+
+export type PagesFields_description_Create = {
+  __typename?: 'PagesFields_description_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type PagesFields_description_Delete = {
+  __typename?: 'PagesFields_description_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type PagesFields_description_Read = {
+  __typename?: 'PagesFields_description_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type PagesFields_description_Update = {
+  __typename?: 'PagesFields_description_Update';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type PagesFields_layout = {
+  __typename?: 'PagesFields_layout';
+  create?: Maybe<PagesFields_layout_Create>;
+  delete?: Maybe<PagesFields_layout_Delete>;
+  read?: Maybe<PagesFields_layout_Read>;
+  update?: Maybe<PagesFields_layout_Update>;
+};
+
+export type PagesFields_layout_Create = {
+  __typename?: 'PagesFields_layout_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type PagesFields_layout_Delete = {
+  __typename?: 'PagesFields_layout_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type PagesFields_layout_Read = {
+  __typename?: 'PagesFields_layout_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type PagesFields_layout_Update = {
+  __typename?: 'PagesFields_layout_Update';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type PagesFields_publishedAt = {
+  __typename?: 'PagesFields_publishedAt';
+  create?: Maybe<PagesFields_publishedAt_Create>;
+  delete?: Maybe<PagesFields_publishedAt_Delete>;
+  read?: Maybe<PagesFields_publishedAt_Read>;
+  update?: Maybe<PagesFields_publishedAt_Update>;
+};
+
+export type PagesFields_publishedAt_Create = {
+  __typename?: 'PagesFields_publishedAt_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type PagesFields_publishedAt_Delete = {
+  __typename?: 'PagesFields_publishedAt_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type PagesFields_publishedAt_Read = {
+  __typename?: 'PagesFields_publishedAt_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type PagesFields_publishedAt_Update = {
+  __typename?: 'PagesFields_publishedAt_Update';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type PagesFields_slug = {
+  __typename?: 'PagesFields_slug';
+  create?: Maybe<PagesFields_slug_Create>;
+  delete?: Maybe<PagesFields_slug_Delete>;
+  read?: Maybe<PagesFields_slug_Read>;
+  update?: Maybe<PagesFields_slug_Update>;
+};
+
+export type PagesFields_slug_Create = {
+  __typename?: 'PagesFields_slug_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type PagesFields_slug_Delete = {
+  __typename?: 'PagesFields_slug_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type PagesFields_slug_Read = {
+  __typename?: 'PagesFields_slug_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type PagesFields_slug_Update = {
+  __typename?: 'PagesFields_slug_Update';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type PagesFields_title = {
+  __typename?: 'PagesFields_title';
+  create?: Maybe<PagesFields_title_Create>;
+  delete?: Maybe<PagesFields_title_Delete>;
+  read?: Maybe<PagesFields_title_Read>;
+  update?: Maybe<PagesFields_title_Update>;
+};
+
+export type PagesFields_title_Create = {
+  __typename?: 'PagesFields_title_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type PagesFields_title_Delete = {
+  __typename?: 'PagesFields_title_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type PagesFields_title_Read = {
+  __typename?: 'PagesFields_title_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type PagesFields_title_Update = {
+  __typename?: 'PagesFields_title_Update';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type PagesFields_updatedAt = {
+  __typename?: 'PagesFields_updatedAt';
+  create?: Maybe<PagesFields_updatedAt_Create>;
+  delete?: Maybe<PagesFields_updatedAt_Delete>;
+  read?: Maybe<PagesFields_updatedAt_Read>;
+  update?: Maybe<PagesFields_updatedAt_Update>;
+};
+
+export type PagesFields_updatedAt_Create = {
+  __typename?: 'PagesFields_updatedAt_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type PagesFields_updatedAt_Delete = {
+  __typename?: 'PagesFields_updatedAt_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type PagesFields_updatedAt_Read = {
+  __typename?: 'PagesFields_updatedAt_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type PagesFields_updatedAt_Update = {
+  __typename?: 'PagesFields_updatedAt_Update';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type PagesReadAccess = {
+  __typename?: 'PagesReadAccess';
+  permission: Scalars['Boolean']['output'];
+  where?: Maybe<Scalars['JSONObject']['output']>;
+};
+
+export type PagesReadDocAccess = {
+  __typename?: 'PagesReadDocAccess';
+  permission: Scalars['Boolean']['output'];
+  where?: Maybe<Scalars['JSONObject']['output']>;
+};
+
+export type PagesUpdateAccess = {
+  __typename?: 'PagesUpdateAccess';
+  permission: Scalars['Boolean']['output'];
+  where?: Maybe<Scalars['JSONObject']['output']>;
+};
+
+export type PagesUpdateDocAccess = {
+  __typename?: 'PagesUpdateDocAccess';
+  permission: Scalars['Boolean']['output'];
+  where?: Maybe<Scalars['JSONObject']['output']>;
+};
+
 export type PayloadKv = {
   __typename?: 'PayloadKv';
   data: Scalars['JSON']['output'];
@@ -7609,6 +8275,7 @@ export enum PayloadLockedDocumentUpdate_DocumentRelationshipInputRelationTo {
   media = 'media',
   oauth_accounts = 'oauth_accounts',
   oauth_codes = 'oauth_codes',
+  pages = 'pages',
   payload_mcp_api_keys = 'payload_mcp_api_keys',
   people = 'people',
   reminders = 'reminders',
@@ -7629,7 +8296,7 @@ export enum PayloadLockedDocumentUpdate_UserRelationshipInputRelationTo {
   users = 'users'
 }
 
-export type PayloadLockedDocument_Document = Account | AiUsage | Category | Media | OauthAccount | OauthCode | PayloadMcpApiKey | Person | Reminder | Tag | Transaction | TransactionLink | User | UserSetting;
+export type PayloadLockedDocument_Document = Account | AiUsage | Category | Media | OauthAccount | OauthCode | Page | PayloadMcpApiKey | Person | Reminder | Tag | Transaction | TransactionLink | User | UserSetting;
 
 export type PayloadLockedDocument_DocumentRelationshipInput = {
   relationTo?: InputMaybe<PayloadLockedDocument_DocumentRelationshipInputRelationTo>;
@@ -7643,6 +8310,7 @@ export enum PayloadLockedDocument_DocumentRelationshipInputRelationTo {
   media = 'media',
   oauth_accounts = 'oauth_accounts',
   oauth_codes = 'oauth_codes',
+  pages = 'pages',
   payload_mcp_api_keys = 'payload_mcp_api_keys',
   people = 'people',
   reminders = 'reminders',
@@ -7660,6 +8328,7 @@ export enum PayloadLockedDocument_Document_RelationTo {
   media = 'media',
   oauth_accounts = 'oauth_accounts',
   oauth_codes = 'oauth_codes',
+  pages = 'pages',
   payload_mcp_api_keys = 'payload_mcp_api_keys',
   people = 'people',
   reminders = 'reminders',
@@ -7722,6 +8391,7 @@ export enum PayloadLockedDocument_document_Relation_RelationTo {
   media = 'media',
   oauth_accounts = 'oauth_accounts',
   oauth_codes = 'oauth_codes',
+  pages = 'pages',
   payload_mcp_api_keys = 'payload_mcp_api_keys',
   people = 'people',
   reminders = 'reminders',
@@ -14027,6 +14697,8 @@ export type Query = {
   OauthAccounts?: Maybe<OauthAccounts>;
   OauthCode?: Maybe<OauthCode>;
   OauthCodes?: Maybe<OauthCodes>;
+  Page?: Maybe<Page>;
+  Pages?: Maybe<Pages>;
   PayloadKv?: Maybe<PayloadKv>;
   PayloadKvs?: Maybe<PayloadKvs>;
   PayloadLockedDocument?: Maybe<PayloadLockedDocument>;
@@ -14055,6 +14727,7 @@ export type Query = {
   countCategories?: Maybe<countCategories>;
   countOauthAccounts?: Maybe<countOauthAccounts>;
   countOauthCodes?: Maybe<countOauthCodes>;
+  countPages?: Maybe<countPages>;
   countPayloadKvs?: Maybe<countPayloadKvs>;
   countPayloadLockedDocuments?: Maybe<countPayloadLockedDocuments>;
   countPayloadMcpApiKeys?: Maybe<countPayloadMcpApiKeys>;
@@ -14077,6 +14750,7 @@ export type Query = {
   docAccessMedia?: Maybe<mediaDocAccess>;
   docAccessOauthAccount?: Maybe<oauth_accountsDocAccess>;
   docAccessOauthCode?: Maybe<oauth_codesDocAccess>;
+  docAccessPage?: Maybe<pagesDocAccess>;
   docAccessPayloadKv?: Maybe<payload_kvDocAccess>;
   docAccessPayloadLockedDocument?: Maybe<payload_locked_documentsDocAccess>;
   docAccessPayloadMcpApiKey?: Maybe<payload_mcp_api_keysDocAccess>;
@@ -14213,6 +14887,26 @@ export type QueryOauthCodesArgs = {
   sort?: InputMaybe<Scalars['String']['input']>;
   trash?: InputMaybe<Scalars['Boolean']['input']>;
   where?: InputMaybe<OauthCode_where>;
+};
+
+
+export type QueryPageArgs = {
+  draft?: InputMaybe<Scalars['Boolean']['input']>;
+  id: Scalars['String']['input'];
+  select?: InputMaybe<Scalars['Boolean']['input']>;
+  trash?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+
+export type QueryPagesArgs = {
+  draft?: InputMaybe<Scalars['Boolean']['input']>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  page?: InputMaybe<Scalars['Int']['input']>;
+  pagination?: InputMaybe<Scalars['Boolean']['input']>;
+  select?: InputMaybe<Scalars['Boolean']['input']>;
+  sort?: InputMaybe<Scalars['String']['input']>;
+  trash?: InputMaybe<Scalars['Boolean']['input']>;
+  where?: InputMaybe<Page_where>;
 };
 
 
@@ -14483,6 +15177,13 @@ export type QuerycountOauthCodesArgs = {
 };
 
 
+export type QuerycountPagesArgs = {
+  draft?: InputMaybe<Scalars['Boolean']['input']>;
+  trash?: InputMaybe<Scalars['Boolean']['input']>;
+  where?: InputMaybe<Page_where>;
+};
+
+
 export type QuerycountPayloadKvsArgs = {
   draft?: InputMaybe<Scalars['Boolean']['input']>;
   trash?: InputMaybe<Scalars['Boolean']['input']>;
@@ -14598,6 +15299,11 @@ export type QuerydocAccessOauthAccountArgs = {
 
 
 export type QuerydocAccessOauthCodeArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+export type QuerydocAccessPageArgs = {
   id: Scalars['String']['input'];
 };
 
@@ -16272,6 +16978,19 @@ export type RemindersUpdateDocAccess = {
   __typename?: 'RemindersUpdateDocAccess';
   permission: Scalars['Boolean']['output'];
   where?: Maybe<Scalars['JSONObject']['output']>;
+};
+
+export type RichText = {
+  __typename?: 'RichText';
+  blockName?: Maybe<Scalars['String']['output']>;
+  blockType?: Maybe<Scalars['String']['output']>;
+  content: Scalars['JSON']['output'];
+  id?: Maybe<Scalars['String']['output']>;
+};
+
+
+export type RichTextcontentArgs = {
+  depth?: InputMaybe<Scalars['Int']['input']>;
 };
 
 export type Tag = {
@@ -19141,7 +19860,6 @@ export type UserSetting = {
   geminiApiKey?: Maybe<Scalars['String']['output']>;
   id: Scalars['String']['output'];
   locale?: Maybe<Scalars['String']['output']>;
-  settings?: Maybe<Scalars['JSON']['output']>;
   theme?: Maybe<UserSetting_theme>;
   timezone?: Maybe<Scalars['String']['output']>;
   updatedAt?: Maybe<Scalars['DateTime']['output']>;
@@ -19218,16 +19936,6 @@ export type UserSetting_locale_operator = {
   not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
 };
 
-export type UserSetting_settings_operator = {
-  contains?: InputMaybe<Scalars['JSON']['input']>;
-  equals?: InputMaybe<Scalars['JSON']['input']>;
-  exists?: InputMaybe<Scalars['Boolean']['input']>;
-  intersects?: InputMaybe<Scalars['JSON']['input']>;
-  like?: InputMaybe<Scalars['JSON']['input']>;
-  not_equals?: InputMaybe<Scalars['JSON']['input']>;
-  within?: InputMaybe<Scalars['JSON']['input']>;
-};
-
 export enum UserSetting_theme {
   dark = 'dark',
   light = 'light',
@@ -19294,7 +20002,6 @@ export type UserSetting_where = {
   geminiApiKey?: InputMaybe<UserSetting_geminiApiKey_operator>;
   id?: InputMaybe<UserSetting_id_operator>;
   locale?: InputMaybe<UserSetting_locale_operator>;
-  settings?: InputMaybe<UserSetting_settings_operator>;
   theme?: InputMaybe<UserSetting_theme_operator>;
   timezone?: InputMaybe<UserSetting_timezone_operator>;
   updatedAt?: InputMaybe<UserSetting_updatedAt_operator>;
@@ -19310,7 +20017,6 @@ export type UserSetting_where_and = {
   geminiApiKey?: InputMaybe<UserSetting_geminiApiKey_operator>;
   id?: InputMaybe<UserSetting_id_operator>;
   locale?: InputMaybe<UserSetting_locale_operator>;
-  settings?: InputMaybe<UserSetting_settings_operator>;
   theme?: InputMaybe<UserSetting_theme_operator>;
   timezone?: InputMaybe<UserSetting_timezone_operator>;
   updatedAt?: InputMaybe<UserSetting_updatedAt_operator>;
@@ -19326,7 +20032,6 @@ export type UserSetting_where_or = {
   geminiApiKey?: InputMaybe<UserSetting_geminiApiKey_operator>;
   id?: InputMaybe<UserSetting_id_operator>;
   locale?: InputMaybe<UserSetting_locale_operator>;
-  settings?: InputMaybe<UserSetting_settings_operator>;
   theme?: InputMaybe<UserSetting_theme_operator>;
   timezone?: InputMaybe<UserSetting_timezone_operator>;
   updatedAt?: InputMaybe<UserSetting_updatedAt_operator>;
@@ -19379,7 +20084,6 @@ export type UserSettingsDocAccessFields = {
   defaultAccount?: Maybe<UserSettingsDocAccessFields_defaultAccount>;
   geminiApiKey?: Maybe<UserSettingsDocAccessFields_geminiApiKey>;
   locale?: Maybe<UserSettingsDocAccessFields_locale>;
-  settings?: Maybe<UserSettingsDocAccessFields_settings>;
   theme?: Maybe<UserSettingsDocAccessFields_theme>;
   timezone?: Maybe<UserSettingsDocAccessFields_timezone>;
   updatedAt?: Maybe<UserSettingsDocAccessFields_updatedAt>;
@@ -19526,34 +20230,6 @@ export type UserSettingsDocAccessFields_locale_Update = {
   permission: Scalars['Boolean']['output'];
 };
 
-export type UserSettingsDocAccessFields_settings = {
-  __typename?: 'UserSettingsDocAccessFields_settings';
-  create?: Maybe<UserSettingsDocAccessFields_settings_Create>;
-  delete?: Maybe<UserSettingsDocAccessFields_settings_Delete>;
-  read?: Maybe<UserSettingsDocAccessFields_settings_Read>;
-  update?: Maybe<UserSettingsDocAccessFields_settings_Update>;
-};
-
-export type UserSettingsDocAccessFields_settings_Create = {
-  __typename?: 'UserSettingsDocAccessFields_settings_Create';
-  permission: Scalars['Boolean']['output'];
-};
-
-export type UserSettingsDocAccessFields_settings_Delete = {
-  __typename?: 'UserSettingsDocAccessFields_settings_Delete';
-  permission: Scalars['Boolean']['output'];
-};
-
-export type UserSettingsDocAccessFields_settings_Read = {
-  __typename?: 'UserSettingsDocAccessFields_settings_Read';
-  permission: Scalars['Boolean']['output'];
-};
-
-export type UserSettingsDocAccessFields_settings_Update = {
-  __typename?: 'UserSettingsDocAccessFields_settings_Update';
-  permission: Scalars['Boolean']['output'];
-};
-
 export type UserSettingsDocAccessFields_theme = {
   __typename?: 'UserSettingsDocAccessFields_theme';
   create?: Maybe<UserSettingsDocAccessFields_theme_Create>;
@@ -19673,7 +20349,6 @@ export type UserSettingsFields = {
   defaultAccount?: Maybe<UserSettingsFields_defaultAccount>;
   geminiApiKey?: Maybe<UserSettingsFields_geminiApiKey>;
   locale?: Maybe<UserSettingsFields_locale>;
-  settings?: Maybe<UserSettingsFields_settings>;
   theme?: Maybe<UserSettingsFields_theme>;
   timezone?: Maybe<UserSettingsFields_timezone>;
   updatedAt?: Maybe<UserSettingsFields_updatedAt>;
@@ -19817,34 +20492,6 @@ export type UserSettingsFields_locale_Read = {
 
 export type UserSettingsFields_locale_Update = {
   __typename?: 'UserSettingsFields_locale_Update';
-  permission: Scalars['Boolean']['output'];
-};
-
-export type UserSettingsFields_settings = {
-  __typename?: 'UserSettingsFields_settings';
-  create?: Maybe<UserSettingsFields_settings_Create>;
-  delete?: Maybe<UserSettingsFields_settings_Delete>;
-  read?: Maybe<UserSettingsFields_settings_Read>;
-  update?: Maybe<UserSettingsFields_settings_Update>;
-};
-
-export type UserSettingsFields_settings_Create = {
-  __typename?: 'UserSettingsFields_settings_Create';
-  permission: Scalars['Boolean']['output'];
-};
-
-export type UserSettingsFields_settings_Delete = {
-  __typename?: 'UserSettingsFields_settings_Delete';
-  permission: Scalars['Boolean']['output'];
-};
-
-export type UserSettingsFields_settings_Read = {
-  __typename?: 'UserSettingsFields_settings_Read';
-  permission: Scalars['Boolean']['output'];
-};
-
-export type UserSettingsFields_settings_Update = {
-  __typename?: 'UserSettingsFields_settings_Update';
   permission: Scalars['Boolean']['output'];
 };
 
@@ -21033,6 +21680,11 @@ export type countOauthCodes = {
   totalDocs?: Maybe<Scalars['Int']['output']>;
 };
 
+export type countPages = {
+  __typename?: 'countPages';
+  totalDocs?: Maybe<Scalars['Int']['output']>;
+};
+
 export type countPayloadKvs = {
   __typename?: 'countPayloadKvs';
   totalDocs?: Maybe<Scalars['Int']['output']>;
@@ -21306,6 +21958,26 @@ export type mutationOauthCodeUpdateInput = {
   redirectUri?: InputMaybe<Scalars['String']['input']>;
   updatedAt?: InputMaybe<Scalars['String']['input']>;
   userId?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type mutationPageInput = {
+  createdAt?: InputMaybe<Scalars['String']['input']>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  layout?: InputMaybe<Scalars['JSON']['input']>;
+  publishedAt?: InputMaybe<Scalars['String']['input']>;
+  slug: Scalars['String']['input'];
+  title: Scalars['String']['input'];
+  updatedAt?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type mutationPageUpdateInput = {
+  createdAt?: InputMaybe<Scalars['String']['input']>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  layout?: InputMaybe<Scalars['JSON']['input']>;
+  publishedAt?: InputMaybe<Scalars['String']['input']>;
+  slug?: InputMaybe<Scalars['String']['input']>;
+  title?: InputMaybe<Scalars['String']['input']>;
+  updatedAt?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type mutationPayloadKvInput = {
@@ -21739,7 +22411,6 @@ export type mutationUserSettingInput = {
   defaultAccount?: InputMaybe<Scalars['String']['input']>;
   geminiApiKey?: InputMaybe<Scalars['String']['input']>;
   locale?: InputMaybe<Scalars['String']['input']>;
-  settings?: InputMaybe<Scalars['JSON']['input']>;
   theme?: InputMaybe<UserSetting_theme_MutationInput>;
   timezone?: InputMaybe<Scalars['String']['input']>;
   updatedAt?: InputMaybe<Scalars['String']['input']>;
@@ -21752,7 +22423,6 @@ export type mutationUserSettingUpdateInput = {
   defaultAccount?: InputMaybe<Scalars['String']['input']>;
   geminiApiKey?: InputMaybe<Scalars['String']['input']>;
   locale?: InputMaybe<Scalars['String']['input']>;
-  settings?: InputMaybe<Scalars['JSON']['input']>;
   theme?: InputMaybe<UserSettingUpdate_theme_MutationInput>;
   timezone?: InputMaybe<Scalars['String']['input']>;
   updatedAt?: InputMaybe<Scalars['String']['input']>;
@@ -21822,6 +22492,24 @@ export type oauth_codesDocAccess = {
   fields?: Maybe<OauthCodesDocAccessFields>;
   read?: Maybe<OauthCodesReadDocAccess>;
   update?: Maybe<OauthCodesUpdateDocAccess>;
+};
+
+export type pagesAccess = {
+  __typename?: 'pagesAccess';
+  create?: Maybe<PagesCreateAccess>;
+  delete?: Maybe<PagesDeleteAccess>;
+  fields?: Maybe<PagesFields>;
+  read?: Maybe<PagesReadAccess>;
+  update?: Maybe<PagesUpdateAccess>;
+};
+
+export type pagesDocAccess = {
+  __typename?: 'pagesDocAccess';
+  create?: Maybe<PagesCreateDocAccess>;
+  delete?: Maybe<PagesDeleteDocAccess>;
+  fields?: Maybe<PagesDocAccessFields>;
+  read?: Maybe<PagesReadDocAccess>;
+  update?: Maybe<PagesUpdateDocAccess>;
 };
 
 export type payload_kvAccess = {
