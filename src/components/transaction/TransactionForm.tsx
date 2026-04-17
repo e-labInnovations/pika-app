@@ -2,6 +2,7 @@
  * Shared form for Add and Edit transaction screens.
  */
 import * as ImagePicker from "expo-image-picker";
+import { LinearGradient } from "expo-linear-gradient";
 import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
@@ -34,6 +35,7 @@ import {
 } from "../../services/gql/types/graphql";
 import { uploadMedia, resolveMediaUrl } from "../../lib/media-upload";
 import { useColors } from "../../theme/colors";
+import { useSuggestCategory, type SuggestedCategory } from "../../services/gql/ai/ai.service";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -235,6 +237,39 @@ export function TransactionForm({ initialValues, onSubmit, onCancel, submitLabel
   const [showPerson, setShowPerson] = useState(false);
   const [showTags, setShowTags] = useState(false);
 
+  // AI category suggestion state
+  const { suggestCategory, loading: suggesting } = useSuggestCategory();
+  const [suggestedCategory, setSuggestedCategory] = useState<SuggestedCategory | null>(null);
+
+  const handleSuggestCategory = async () => {
+    const title = values.title.trim();
+    if (title.length < 3) return;
+    try {
+      const res = await suggestCategory({
+        type: values.type,
+        title,
+        amount: values.amount.trim() || undefined,
+        date: values.date.toISOString(),
+        note: values.note.trim() || undefined,
+        personId: values.person?.id,
+      });
+      const cat = (res.data?.suggestCategory?.category ?? null) as SuggestedCategory | null;
+      if (cat) {
+        setSuggestedCategory(cat);
+      } else {
+        showAlert({ title: "No suggestion", message: "Couldn't find a matching category." });
+      }
+    } catch (e: any) {
+      showAlert({ title: "Couldn't suggest", message: e?.message ?? "Suggestion failed." });
+    }
+  };
+
+  const applySuggestedCategory = () => {
+    if (!suggestedCategory) return;
+    set("category", suggestedCategory);
+    setSuggestedCategory(null);
+  };
+
   const set = <K extends keyof TxFormValues>(key: K, val: TxFormValues[K]) =>
     setValues((v) => ({ ...v, [key]: val }));
 
@@ -415,18 +450,99 @@ export function TransactionForm({ initialValues, onSubmit, onCancel, submitLabel
 
         {/* ── Category ── */}
         <View style={{ borderRadius: 16, backgroundColor: C.surfaceMid, overflow: "hidden" }}>
-          <PickerRow label="Category *" onPress={() => setShowCategory(true)}>
-            {values.category ? (
-              <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
-                <View style={{ width: 28, height: 28, borderRadius: 8, backgroundColor: values.category.bgColor ?? `${values.category.color ?? "#f59e0b"}22`, alignItems: "center", justifyContent: "center" }}>
-                  <DynamicIcon name={values.category.icon ?? "folder"} size={14} color={values.category.color ?? "#f59e0b"} />
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
+            <View style={{ flex: 1 }}>
+              <PickerRow label="Category *" onPress={() => setShowCategory(true)}>
+                {values.category ? (
+                  <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+                    <View style={{ width: 28, height: 28, borderRadius: 8, backgroundColor: values.category.bgColor ?? `${values.category.color ?? "#f59e0b"}22`, alignItems: "center", justifyContent: "center" }}>
+                      <DynamicIcon name={values.category.icon ?? "folder"} size={14} color={values.category.color ?? "#f59e0b"} />
+                    </View>
+                    <Text style={{ fontSize: 14, fontWeight: "600", color: C.onSurface }}>{values.category.name}</Text>
+                  </View>
+                ) : (
+                  <Text style={{ fontSize: 14, color: C.outlineVariant }}>Select category…</Text>
+                )}
+              </PickerRow>
+            </View>
+            <TouchableOpacity
+              onPress={handleSuggestCategory}
+              disabled={suggesting || values.title.trim().length < 3}
+              activeOpacity={0.75}
+              accessibilityLabel="Suggest category"
+              style={{
+                width: 40,
+                height: 40,
+                alignItems: "center",
+                justifyContent: "center",
+                marginRight: 12,
+                borderRadius: 999,
+                opacity: values.title.trim().length < 3 ? 0.45 : 1,
+              }}
+            >
+              {suggesting ? (
+                <ActivityIndicator size="small" color="#7c3aed" />
+              ) : (
+                <DynamicIcon name="sparkles" size={18} color="#7c3aed" />
+              )}
+            </TouchableOpacity>
+          </View>
+
+          {suggestedCategory && (
+            <LinearGradient
+              colors={["#7c3aed22", "#db277722", "#f59e0b22"]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
+              style={{
+                borderTopWidth: 1,
+                borderTopColor: `${C.outlineVariant}40`,
+              }}
+            >
+              <View
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  gap: 10,
+                  paddingHorizontal: 14,
+                  paddingVertical: 10,
+                }}
+              >
+                <DynamicIcon name="sparkles" size={14} color="#7c3aed" />
+                <View
+                  style={{
+                    width: 26,
+                    height: 26,
+                    borderRadius: 7,
+                    backgroundColor: suggestedCategory.bgColor ?? `${suggestedCategory.color ?? "#f59e0b"}22`,
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <DynamicIcon name={suggestedCategory.icon ?? "folder"} size={12} color={suggestedCategory.color ?? "#f59e0b"} />
                 </View>
-                <Text style={{ fontSize: 14, fontWeight: "600", color: C.onSurface }}>{values.category.name}</Text>
+                <Text style={{ flex: 1, fontSize: 13, fontWeight: "600", color: C.onSurface }} numberOfLines={1}>
+                  {suggestedCategory.name}
+                </Text>
+                <TouchableOpacity onPress={applySuggestedCategory} activeOpacity={0.8}>
+                  <LinearGradient
+                    colors={["#7c3aed", "#db2777"]}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 0 }}
+                    style={{ paddingHorizontal: 12, paddingVertical: 6, borderRadius: 999 }}
+                  >
+                    <Text style={{ fontSize: 12, fontWeight: "700", color: "#fff" }}>Apply</Text>
+                  </LinearGradient>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => setSuggestedCategory(null)}
+                  activeOpacity={0.75}
+                  style={{ padding: 4 }}
+                >
+                  <DynamicIcon name="x" size={14} color={C.onSurfaceVariant} />
+                </TouchableOpacity>
               </View>
-            ) : (
-              <Text style={{ fontSize: 14, color: C.outlineVariant }}>Select category…</Text>
-            )}
-          </PickerRow>
+            </LinearGradient>
+          )}
         </View>
 
         {/* ── Account(s) ── */}

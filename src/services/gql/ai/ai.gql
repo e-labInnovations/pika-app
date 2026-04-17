@@ -23,3 +23,33 @@ mutation ImageToTransaction($image: String!, $mimeType: String, $model: String) 
     }
   }
 }
+
+mutation SuggestCategory(
+  $type: String!
+  $title: String!
+  $amount: String
+  $date: String
+  $note: String
+  $personId: String
+  $model: String
+) {
+  suggestCategory(
+    type: $type
+    title: $title
+    amount: $amount
+    date: $date
+    note: $note
+    personId: $personId
+    model: $model
+  ) {
+    category
+    reason
+    model
+    latencyMs
+    usage {
+      promptTokenCount
+      candidatesTokenCount
+      totalTokenCount
+    }
+  }
+}
