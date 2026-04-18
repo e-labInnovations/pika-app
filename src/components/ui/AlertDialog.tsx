@@ -1,10 +1,5 @@
 import React, { useEffect } from "react";
-import {
-  Modal,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { Modal, Text, TouchableOpacity, View } from "react-native";
 import { useColors } from "../../theme/colors";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -59,7 +54,12 @@ function useDialogState(): [DialogState, (opts: ShowAlertOptions) => void] {
           },
         }),
       );
-      setState({ visible: true, title: opts.title, message: opts.message, buttons });
+      setState({
+        visible: true,
+        title: opts.title,
+        message: opts.message,
+        buttons,
+      });
     },
     [dismiss],
   );
@@ -100,6 +100,8 @@ export function AlertDialog({
   onRequestClose,
 }: AlertDialogProps) {
   const C = useColors();
+
+  console.log("🚀 message", message);
 
   const cancelBtn = buttons.find((b) => b.style === "cancel");
   const otherBtns = buttons.filter((b) => b.style !== "cancel");
@@ -157,7 +159,9 @@ export function AlertDialog({
           </View>
 
           {/* Divider */}
-          <View style={{ height: 1, backgroundColor: `${C.outlineVariant}40` }} />
+          <View
+            style={{ height: 1, backgroundColor: `${C.outlineVariant}40` }}
+          />
 
           {/* Buttons */}
           <View style={{ flexDirection: stackButtons ? "column" : "row" }}>
@@ -175,7 +179,11 @@ export function AlertDialog({
                 }}
               >
                 <Text
-                  style={{ fontSize: 15, fontWeight: "600", color: C.onSurfaceVariant }}
+                  style={{
+                    fontSize: 15,
+                    fontWeight: "600",
+                    color: C.onSurfaceVariant,
+                  }}
                 >
                   {cancelBtn.text}
                 </Text>
@@ -193,7 +201,8 @@ export function AlertDialog({
                   justifyContent: "center",
                   borderTopWidth: stackButtons || (!cancelBtn && i > 0) ? 1 : 0,
                   borderTopColor: `${C.outlineVariant}40`,
-                  borderLeftWidth: !stackButtons && (cancelBtn || i > 0) ? 1 : 0,
+                  borderLeftWidth:
+                    !stackButtons && (cancelBtn || i > 0) ? 1 : 0,
                   borderLeftColor: `${C.outlineVariant}40`,
                 }}
               >

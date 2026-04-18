@@ -24,6 +24,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { LinearGradient } from "expo-linear-gradient";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { DynamicIcon } from "../Icon";
 import { showAlert } from "../ui/AlertDialog";
@@ -32,6 +33,7 @@ import {
   useTextToTransaction,
   useImageToTransaction,
 } from "../../services/gql/ai/ai.service";
+import { useCreateTransaction } from "../../services/gql/transactions/transactions.service";
 import type {
   CategoryFieldsFragment,
   AccountFieldsFragment,
@@ -39,8 +41,12 @@ import type {
   TagFieldsFragment,
 } from "../../services/gql/types/graphql";
 import type { TxType } from "./CategoryPickerSheet";
-import type { TxFormValues } from "./TransactionForm";
+import { type TxFormValues, formValuesToMutationInput } from "./TransactionForm";
+import { uploadMedia } from "../../lib/media-upload";
 import { useFormatMoney } from "../../lib/format-currency";
+
+const AI_GRADIENT = ["#7c3aed", "#db2777", "#f59e0b"] as const;
+const AI_GRADIENT_SMALL = ["#7c3aed", "#db2777"] as const;
 
 // ── AI data shape returned by the mutations ───────────────────────────────────
 
@@ -91,6 +97,8 @@ interface Props {
     values: Partial<TxFormValues>,
     image?: AIImageAttachment,
   ) => void;
+  /** Fired after a transaction is created via the "Create" shortcut */
+  onCreated?: () => void;
   /** Pre-fill the text tab with this string and open straight to analyze */
   initialText?: string;
   /** Pre-load the receipt tab with this image */
@@ -133,13 +141,17 @@ function AnalysisPreview({
 
   return (
     <ScrollView showsVerticalScrollIndicator={false} style={{ flex: 1 }}>
-      {/* Transaction card */}
-      <View
+      {/* Transaction card — AI gradient wash */}
+      <LinearGradient
+        colors={["#7c3aed22", "#db277722", "#f59e0b22"]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
         style={{
           borderRadius: 16,
-          backgroundColor: C.surfaceMid,
           padding: 14,
           gap: 10,
+          borderWidth: 1,
+          borderColor: "#7c3aed33",
         }}
       >
         {/* Title + Amount */}
@@ -366,7 +378,7 @@ function AnalysisPreview({
             {data.note}
           </Text>
         ) : null}
-      </View>
+      </LinearGradient>
 
       {/* Status row */}
       <View
@@ -409,7 +421,7 @@ function AnalysisPreview({
 
 // ── Main sheet ────────────────────────────────────────────────────────────────
 
-export function AIAssistantSheet({ visible, onClose, onUseDetails, initialText, initialImage }: Props) {
+export function AIAssistantSheet({ visible, onClose, onUseDetails, onCreated, initialText, initialImage }: Props) {
   const C = useColors();
   const insets = useSafeAreaInsets();
 
@@ -422,9 +434,11 @@ export function AIAssistantSheet({ visible, onClose, onUseDetails, initialText, 
   } | null>(null);
   const [result, setResult] = useState<AITransactionData | null>(null);
   const [attachImage, setAttachImage] = useState(true);
+  const [creating, setCreating] = useState(false);
 
   const { textToTransaction, loading: textLoading } = useTextToTransaction();
   const { imageToTransaction, loading: imageLoading } = useImageToTransaction();
+  const { createTransaction } = useCreateTransaction();
   const analyzing = textLoading || imageLoading;
 
   // Apply pre-filled content from share intent when sheet opens
@@ -515,12 +529,56 @@ export function AIAssistantSheet({ visible, onClose, onUseDetails, initialText, 
     handleClose();
   };
 
+  const handleCreateDirect = async () => {
+    if (!result) return;
+    if (!canCreateDirect) return;
+    setCreating(true);
+    try {
+      const values = aiDataToFormValues(result) as TxFormValues;
+      let attachmentIds: string[] = [];
+      if (attachImage && image && tab === "receipt") {
+        const media = await uploadMedia(
+          image.uri,
+          `receipt-${Date.now()}.jpg`,
+          image.mimeType,
+        );
+        attachmentIds = [media.id];
+      }
+      await createTransaction({
+        data: formValuesToMutationInput(values, attachmentIds),
+      });
+      resetState();
+      onClose();
+      onCreated?.();
+    } catch (err: any) {
+      const msg =
+        err?.graphQLErrors?.[0]?.message ??
+        err?.networkError?.message ??
+        err?.message ??
+        "Could not create transaction.";
+      showAlert({ title: "Create failed", message: msg });
+    } finally {
+      setCreating(false);
+    }
+  };
+
   const handleReject = () => setResult(null);
 
   // ── Derived ─────────────────────────────────────────────────────────────────
 
   const canAnalyze =
     tab === "text" ? textInput.trim().length > 0 : image !== null;
+
+  const canCreateDirect = (() => {
+    if (!result) return false;
+    const hasTitle = !!result.title?.trim();
+    const hasAmount =
+      result.amount != null && !isNaN(parseFloat(String(result.amount))) && parseFloat(String(result.amount)) > 0;
+    const hasAccount = !!result.account?.id;
+    const hasCategory = !!result.category?.id;
+    const hasToAccount = result.type !== "transfer" || !!result.toAccount?.id;
+    return hasTitle && hasAmount && hasAccount && hasCategory && hasToAccount;
+  })();
 
   // ── Render ───────────────────────────────────────────────────────────────────
 
@@ -888,37 +946,32 @@ export function AIAssistantSheet({ visible, onClose, onUseDetails, initialText, 
                   disabled={!canAnalyze || analyzing}
                   style={{
                     flex: 2,
-                    paddingVertical: 14,
                     borderRadius: 14,
-                    backgroundColor:
-                      canAnalyze && !analyzing
-                        ? "#7c3aed"
-                        : `${C.outlineVariant}60`,
-                    alignItems: "center",
-                    flexDirection: "row",
-                    justifyContent: "center",
-                    gap: 8,
+                    overflow: "hidden",
+                    opacity: canAnalyze && !analyzing ? 1 : 0.55,
                   }}
                 >
-                  {analyzing ? (
-                    <ActivityIndicator size="small" color="#fff" />
-                  ) : (
-                    <DynamicIcon
-                      name="sparkles"
-                      size={16}
-                      color={canAnalyze ? "#fff" : C.onSurfaceVariant}
-                    />
-                  )}
-                  <Text
+                  <LinearGradient
+                    colors={AI_GRADIENT}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 1 }}
                     style={{
-                      fontSize: 15,
-                      fontWeight: "700",
-                      color:
-                        canAnalyze && !analyzing ? "#fff" : C.onSurfaceVariant,
+                      paddingVertical: 14,
+                      alignItems: "center",
+                      flexDirection: "row",
+                      justifyContent: "center",
+                      gap: 8,
                     }}
                   >
-                    {analyzing ? "Analyzing…" : "Analyze"}
-                  </Text>
+                    {analyzing ? (
+                      <ActivityIndicator size="small" color="#fff" />
+                    ) : (
+                      <DynamicIcon name="sparkles" size={16} color="#fff" />
+                    )}
+                    <Text style={{ fontSize: 15, fontWeight: "700", color: "#fff" }}>
+                      {analyzing ? "Analyzing…" : "Analyze"}
+                    </Text>
+                  </LinearGradient>
                 </TouchableOpacity>
               </>
             ) : (
@@ -926,12 +979,14 @@ export function AIAssistantSheet({ visible, onClose, onUseDetails, initialText, 
                 <TouchableOpacity
                   onPress={handleReject}
                   activeOpacity={0.75}
+                  disabled={creating}
                   style={{
                     flex: 1,
                     paddingVertical: 14,
                     borderRadius: 14,
                     backgroundColor: C.surfaceMid,
                     alignItems: "center",
+                    opacity: creating ? 0.5 : 1,
                   }}
                 >
                   <Text
@@ -947,23 +1002,57 @@ export function AIAssistantSheet({ visible, onClose, onUseDetails, initialText, 
                 <TouchableOpacity
                   onPress={handleUseDetails}
                   activeOpacity={0.8}
+                  disabled={creating}
                   style={{
-                    flex: 2,
+                    flex: 1.3,
                     paddingVertical: 14,
                     borderRadius: 14,
-                    backgroundColor: "#7c3aed",
+                    backgroundColor: C.surfaceMid,
                     alignItems: "center",
                     flexDirection: "row",
                     justifyContent: "center",
-                    gap: 8,
+                    gap: 6,
+                    opacity: creating ? 0.5 : 1,
                   }}
                 >
-                  <DynamicIcon name="check" size={16} color="#fff" />
-                  <Text
-                    style={{ fontSize: 15, fontWeight: "700", color: "#fff" }}
-                  >
-                    Use Details
+                  <DynamicIcon name="pencil" size={14} color={C.onSurface} />
+                  <Text style={{ fontSize: 14, fontWeight: "700", color: C.onSurface }}>
+                    Review
                   </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={handleCreateDirect}
+                  activeOpacity={0.8}
+                  disabled={!canCreateDirect || creating}
+                  accessibilityLabel="Create transaction directly"
+                  style={{
+                    flex: 1.5,
+                    borderRadius: 14,
+                    overflow: "hidden",
+                    opacity: canCreateDirect && !creating ? 1 : 0.55,
+                  }}
+                >
+                  <LinearGradient
+                    colors={AI_GRADIENT_SMALL}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 0 }}
+                    style={{
+                      paddingVertical: 14,
+                      alignItems: "center",
+                      flexDirection: "row",
+                      justifyContent: "center",
+                      gap: 6,
+                    }}
+                  >
+                    {creating ? (
+                      <ActivityIndicator size="small" color="#fff" />
+                    ) : (
+                      <DynamicIcon name="check" size={16} color="#fff" />
+                    )}
+                    <Text style={{ fontSize: 14, fontWeight: "700", color: "#fff" }}>
+                      {creating ? "Creating…" : "Create"}
+                    </Text>
+                  </LinearGradient>
                 </TouchableOpacity>
               </>
             )}

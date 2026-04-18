@@ -97,7 +97,7 @@ export default function AddTransactionScreen() {
       setFormKey((k) => k + 1);
       setAiPrefill(null);
       setAiSeedImage(null);
-      router.back();
+      router.replace("/transactions");
     } catch (err: any) {
       showAlert({
         title: "Error",
@@ -132,7 +132,7 @@ export default function AddTransactionScreen() {
         onCancel={() => {
           setAiPrefill(null);
           setAiSeedImage(null);
-          router.back();
+          router.replace("/transactions");
         }}
         submitLabel="Save Transaction"
         title="Add Transaction"
@@ -144,6 +144,7 @@ export default function AddTransactionScreen() {
         visible={aiOpen}
         onClose={() => setAiOpen(false)}
         onUseDetails={handleAIUseDetails}
+        onCreated={() => router.replace("/transactions")}
         initialText={aiInitialText}
         initialImage={aiInitialImage}
       />
