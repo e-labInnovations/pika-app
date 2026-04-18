@@ -4,6 +4,7 @@ import { Text, TouchableOpacity, View } from "react-native";
 import { UserAvatar } from "../UserAvatar";
 import { useAuth } from "../../context/AuthContext";
 import { useColors } from "../../theme/colors";
+import { router } from "expo-router";
 
 function getGreeting(): string {
   const hour = new Date().getHours();
@@ -25,12 +26,14 @@ export function HomeHeader({ topPad }: Props) {
       style={{ paddingTop: topPad }}
     >
       <View className="flex-row items-center gap-3">
-        <UserAvatar
-          id={user?.id ?? ""}
-          name={user?.name ?? user?.email ?? "?"}
-          avatarUrl={user?.avatar?.url}
-          size={40}
-        />
+        <TouchableOpacity onPress={() => router.push("/settings/profile")}>
+          <UserAvatar
+            id={user?.id ?? ""}
+            name={user?.name ?? user?.email ?? "?"}
+            avatarUrl={user?.avatar?.url}
+            size={40}
+          />
+        </TouchableOpacity>
         <View>
           <Text className="text-[10px] font-semibold tracking-[1.5px] uppercase text-on-surface-variant">
             {getGreeting()}

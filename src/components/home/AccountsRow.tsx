@@ -109,6 +109,75 @@ function AccountCard({
   );
 }
 
+// ── Empty state card ──────────────────────────────────────────────────────────
+
+function EmptyAccountsCard() {
+  const C = useColors();
+  return (
+    <View
+      className="rounded-2xl bg-surface-mid p-4 gap-3"
+      style={{ borderWidth: 1.5, borderColor: `${C.primary}30`, borderStyle: "dashed" }}
+    >
+      <View className="flex-row items-center gap-3">
+        <View
+          className="w-12 h-12 rounded-xl items-center justify-center"
+          style={{ backgroundColor: `${C.primary}18` }}
+        >
+          <DynamicIcon name="wallet" size={22} color={C.primary} />
+        </View>
+        <View className="flex-1">
+          <Text className="text-[15px] font-extrabold text-on-surface">
+            No accounts yet
+          </Text>
+          <Text className="text-[12px] text-on-surface-variant mt-0.5">
+            You need at least one account before adding transactions.
+          </Text>
+        </View>
+      </View>
+      <View className="flex-row gap-8" style={{ gap: 8 }}>
+        <TouchableOpacity
+          onPress={() => router.push("/settings/add-account")}
+          activeOpacity={0.8}
+          style={{
+            flex: 1,
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 6,
+            paddingVertical: 11,
+            borderRadius: 12,
+            backgroundColor: C.primary,
+          }}
+        >
+          <DynamicIcon name="plus" size={14} color="#fff" />
+          <Text style={{ fontSize: 13, fontWeight: "700", color: "#fff" }}>
+            Add Account
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => router.push("/settings/accounts")}
+          activeOpacity={0.8}
+          style={{
+            flex: 1,
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 6,
+            paddingVertical: 11,
+            borderRadius: 12,
+            backgroundColor: C.surfaceHigh,
+          }}
+        >
+          <DynamicIcon name="list" size={14} color={C.onSurface} />
+          <Text style={{ fontSize: 13, fontWeight: "700", color: C.onSurface }}>
+            Manage
+          </Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+}
+
 // ── Skeleton Card ─────────────────────────────────────────────────────────────
 
 function AccountCardSkeleton() {
@@ -291,8 +360,7 @@ export function AccountsRow({ showBalance, accounts, loading }: Props) {
   }, [accounts]);
 
   const showSkeleton = loading && !accounts?.length;
-
-  if (!showSkeleton && !sorted.length) return null;
+  const isEmpty = !showSkeleton && !sorted.length;
 
   return (
     <>
@@ -300,34 +368,40 @@ export function AccountsRow({ showBalance, accounts, loading }: Props) {
         <Text className="text-base font-extrabold text-on-surface tracking-tight">
           Accounts
         </Text>
-        <TouchableOpacity
-          onPress={() => router.push("/settings/accounts")}
-          activeOpacity={0.75}
-        >
-          <Text className="text-[13px] font-semibold text-primary-bright">
-            See All
-          </Text>
-        </TouchableOpacity>
+        {!isEmpty && (
+          <TouchableOpacity
+            onPress={() => router.push("/settings/accounts")}
+            activeOpacity={0.75}
+          >
+            <Text className="text-[13px] font-semibold text-primary-bright">
+              See All
+            </Text>
+          </TouchableOpacity>
+        )}
       </View>
 
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={{ paddingHorizontal: 16, gap: 10 }}
-        style={{ marginHorizontal: -16 }}
-      >
-        {showSkeleton
-          ? [1, 2, 3].map((i) => <AccountCardSkeleton key={i} />)
-          : sorted.map((acc) => (
-              <AccountCard
-                key={acc.id}
-                account={acc}
-                showBalance={showBalance}
-                fmt={fmt}
-                onPress={() => setSelected(acc)}
-              />
-            ))}
-      </ScrollView>
+      {isEmpty ? (
+        <EmptyAccountsCard />
+      ) : (
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={{ paddingHorizontal: 16, gap: 10 }}
+          style={{ marginHorizontal: -16 }}
+        >
+          {showSkeleton
+            ? [1, 2, 3].map((i) => <AccountCardSkeleton key={i} />)
+            : sorted.map((acc) => (
+                <AccountCard
+                  key={acc.id}
+                  account={acc}
+                  showBalance={showBalance}
+                  fmt={fmt}
+                  onPress={() => setSelected(acc)}
+                />
+              ))}
+        </ScrollView>
+      )}
 
       <AccountActionsSheet
         account={selected}

@@ -11,10 +11,8 @@ export default function ProtectedLayout() {
         headerShown: false,
       }}
     >
-      <Stack.Screen name="(tabs)" />
-      <Stack.Screen name="people" />
-      <Stack.Screen name="settings" />
-      <Stack.Screen name="transactions" />
+      <Stack.Screen name="sign-in" />
+      <Stack.Screen name="auth" />
     </Stack>
   );
 }
