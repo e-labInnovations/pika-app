@@ -1,6 +1,5 @@
 import React, { useMemo, useState } from "react";
 import {
-  ActivityIndicator,
   Modal,
   ScrollView,
   Text,
@@ -11,6 +10,8 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { AccountAvatar } from "../AccountAvatar";
 import { DynamicIcon } from "../Icon";
+import { PickerListSkeleton } from "../ui/PickerSkeletons";
+import { EmptyAccountsCard } from "../account/EmptyAccountsCard";
 import { useGetAccounts } from "../../services/gql/accounts/accounts.service";
 import { type AccountFieldsFragment } from "../../services/gql/types/graphql";
 import { useFormatMoney } from "../../lib/format-currency";
@@ -80,13 +81,12 @@ export function AccountPickerSheet({ visible, onClose, selectedId, onSelect, exc
             )}
           </View>
 
-          {loading ? (
-            <View className="p-10 items-center">
-              <ActivityIndicator colorClassName="accent-primary" />
-            </View>
-          ) : (
-            <ScrollView showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
-              <View className="px-4 pb-2 gap-0.5">
+          <ScrollView showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
+            <View className="px-4 pb-2 gap-0.5">
+              {loading ? (
+                <PickerListSkeleton count={5} />
+              ) : (
+                <>
                 {filtered.map((account) => {
                   const isSelected = selectedId === account.id;
                   return (
@@ -122,14 +122,21 @@ export function AccountPickerSheet({ visible, onClose, selectedId, onSelect, exc
                     </TouchableOpacity>
                   );
                 })}
-                {filtered.length === 0 && (
-                  <View className="p-8 items-center">
-                    <Text className="text-on-surface-variant text-sm">No accounts found</Text>
-                  </View>
-                )}
-              </View>
-            </ScrollView>
-          )}
+                {filtered.length === 0 &&
+                  ((accounts?.length ?? 0) === 0 ? (
+                    <View className="pt-2 pb-4">
+                      <EmptyAccountsCard compact onBeforeNavigate={onClose} />
+                    </View>
+                  ) : (
+                    <View className="p-10 items-center gap-2">
+                      <DynamicIcon name="wallet" size={28} color={C.outlineVariant} />
+                      <Text className="text-on-surface-variant text-sm">No accounts found</Text>
+                    </View>
+                  ))}
+                </>
+              )}
+            </View>
+          </ScrollView>
         </View>
       </View>
     </Modal>

@@ -1,6 +1,5 @@
 import React, { useMemo, useState } from "react";
 import {
-  ActivityIndicator,
   Modal,
   ScrollView,
   Text,
@@ -11,6 +10,7 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { UserAvatar } from "../UserAvatar";
 import { DynamicIcon } from "../Icon";
+import { PickerListSkeleton } from "../ui/PickerSkeletons";
 import { useGetPeople } from "../../services/gql/people/people.service";
 import { type PersonFieldsFragment } from "../../services/gql/types/graphql";
 import { useFormatMoney } from "../../lib/format-currency";
@@ -81,13 +81,12 @@ export function PersonPickerSheet({ visible, onClose, selectedId, onSelect }: Pr
             )}
           </View>
 
-          {loading ? (
-            <View className="p-10 items-center">
-              <ActivityIndicator colorClassName="accent-primary" />
-            </View>
-          ) : (
-            <ScrollView showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
-              <View className="px-4 pb-2 gap-0.5">
+          <ScrollView showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
+            <View className="px-4 pb-2 gap-0.5">
+              {loading ? (
+                <PickerListSkeleton count={5} />
+              ) : (
+                <>
                 {/* None option */}
                 <TouchableOpacity
                   onPress={() => { onSelect(null); onClose(); }}
@@ -136,13 +135,15 @@ export function PersonPickerSheet({ visible, onClose, selectedId, onSelect }: Pr
                   );
                 })}
                 {filtered.length === 0 && (
-                  <View className="p-8 items-center">
+                  <View className="p-10 items-center gap-2">
+                    <DynamicIcon name="users" size={28} color={C.outlineVariant} />
                     <Text className="text-on-surface-variant text-sm">No people found</Text>
                   </View>
                 )}
-              </View>
-            </ScrollView>
-          )}
+                </>
+              )}
+            </View>
+          </ScrollView>
         </View>
       </View>
     </Modal>

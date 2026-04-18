@@ -5,6 +5,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { AccountAvatar } from "../AccountAvatar";
 import { DynamicIcon } from "../Icon";
 import { Skeleton } from "../ui/Skeleton";
+import { EmptyAccountsCard } from "../account/EmptyAccountsCard";
 import { useFormatMoney } from "../../lib/format-currency";
 import { formatRelativeShort } from "../../lib/format-date";
 import type { AccountFieldsFragment } from "../../services/gql/types/graphql";
@@ -107,75 +108,6 @@ function AccountCard({
         </Text>
       ) : null}
     </TouchableOpacity>
-  );
-}
-
-// ── Empty state card ──────────────────────────────────────────────────────────
-
-function EmptyAccountsCard() {
-  const C = useColors();
-  return (
-    <View
-      className="rounded-2xl bg-surface-mid p-4 gap-3"
-      style={{ borderWidth: 1.5, borderColor: `${C.primary}30`, borderStyle: "dashed" }}
-    >
-      <View className="flex-row items-center gap-3">
-        <View
-          className="w-12 h-12 rounded-xl items-center justify-center"
-          style={{ backgroundColor: `${C.primary}18` }}
-        >
-          <DynamicIcon name="wallet" size={22} color={C.primary} />
-        </View>
-        <View className="flex-1">
-          <Text className="text-[15px] font-extrabold text-on-surface">
-            No accounts yet
-          </Text>
-          <Text className="text-[12px] text-on-surface-variant mt-0.5">
-            You need at least one account before adding transactions.
-          </Text>
-        </View>
-      </View>
-      <View className="flex-row gap-8" style={{ gap: 8 }}>
-        <TouchableOpacity
-          onPress={() => router.push("/settings/add-account")}
-          activeOpacity={0.8}
-          style={{
-            flex: 1,
-            flexDirection: "row",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: 6,
-            paddingVertical: 11,
-            borderRadius: 12,
-            backgroundColor: C.primary,
-          }}
-        >
-          <DynamicIcon name="plus" size={14} color="#fff" />
-          <Text style={{ fontSize: 13, fontWeight: "700", color: "#fff" }}>
-            Add Account
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => router.push("/settings/accounts")}
-          activeOpacity={0.8}
-          style={{
-            flex: 1,
-            flexDirection: "row",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: 6,
-            paddingVertical: 11,
-            borderRadius: 12,
-            backgroundColor: C.surfaceHigh,
-          }}
-        >
-          <DynamicIcon name="list" size={14} color={C.onSurface} />
-          <Text style={{ fontSize: 13, fontWeight: "700", color: C.onSurface }}>
-            Manage
-          </Text>
-        </TouchableOpacity>
-      </View>
-    </View>
   );
 }
 

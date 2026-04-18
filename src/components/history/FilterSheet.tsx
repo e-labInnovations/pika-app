@@ -16,6 +16,12 @@ import { useGetCategories } from '../../services/gql/categories/categories.servi
 import { useGetTags } from '../../services/gql/tags/tags.service';
 import { useGetPeople } from '../../services/gql/people/people.service';
 import { useGetAccounts } from '../../services/gql/accounts/accounts.service';
+import { ChipListSkeleton, PickerListSkeleton } from '../ui/PickerSkeletons';
+import { SystemBadge } from '../ui/SystemBadge';
+import { EmptyAccountsCard } from '../account/EmptyAccountsCard';
+import { useAuth } from '../../context/AuthContext';
+import { isSystem } from '../../lib/ownership';
+import { Category_type_Input } from '../../services/gql/types/graphql';
 import {
   DEFAULT_FILTER,
   DATE_PRESETS,
@@ -55,14 +61,18 @@ function tabCount(tab: FilterTab, f: TxFilter): number {
 
 function SelectRow({
   label,
+  description,
   selected,
   onPress,
   left,
+  trailingBadge,
 }: {
   label: string;
+  description?: string | null;
   selected: boolean;
   onPress: () => void;
   left?: React.ReactNode;
+  trailingBadge?: React.ReactNode;
 }) {
   const C = useColors();
   return (
@@ -73,13 +83,23 @@ function SelectRow({
       style={{ backgroundColor: selected ? `${C.primary}15` : C.surfaceHigh }}
     >
       {left}
-      <Text
-        className="flex-1 text-[13px] font-semibold"
-        style={{ color: selected ? C.primary : C.onSurface }}
-        numberOfLines={1}
-      >
-        {label}
-      </Text>
+      <View className="flex-1 min-w-0">
+        <View className="flex-row items-center gap-1.5">
+          <Text
+            className="text-[13px] font-semibold"
+            style={{ color: selected ? C.primary : C.onSurface, flexShrink: 1 }}
+            numberOfLines={1}
+          >
+            {label}
+          </Text>
+          {trailingBadge}
+        </View>
+        {description ? (
+          <Text className="text-[10px] text-on-surface-variant" numberOfLines={1}>
+            {description}
+          </Text>
+        ) : null}
+      </View>
       <View
         className="w-5 h-5 rounded-full border-2 items-center justify-center"
         style={{
@@ -280,10 +300,31 @@ function DatePanel({ local, setLocal }: { local: TxFilter; setLocal: React.Dispa
   );
 }
 
+type CategoryTypeFilter = 'all' | 'expense' | 'income' | 'transfer';
+
+const CATEGORY_TYPE_TABS: {
+  id: CategoryTypeFilter;
+  label: string;
+  icon: string;
+  color: string;
+}[] = [
+  { id: 'all', label: 'All', icon: 'layers', color: '#6366f1' },
+  { id: 'expense', label: 'Expense', icon: 'arrow-up-right', color: '#ef4444' },
+  { id: 'income', label: 'Income', icon: 'arrow-down-left', color: '#10b981' },
+  { id: 'transfer', label: 'Transfer', icon: 'arrow-right-left', color: '#8b5cf6' },
+];
+
 function CategoriesPanel({ local, setLocal }: { local: TxFilter; setLocal: React.Dispatch<React.SetStateAction<TxFilter>> }) {
   const C = useColors();
+  const { user } = useAuth();
   const [search, setSearch] = useState('');
-  const { categories } = useGetCategories({ limit: 200, sort: 'name' });
+  const [typeFilter, setTypeFilter] = useState<CategoryTypeFilter>('all');
+
+  const where =
+    typeFilter === 'all'
+      ? undefined
+      : { type: { equals: Category_type_Input[typeFilter] } };
+  const { categories, loading } = useGetCategories({ limit: 300, sort: 'name', where });
 
   // Build parent → children map
   const roots: typeof categories = [];
@@ -303,7 +344,12 @@ function CategoriesPanel({ local, setLocal }: { local: TxFilter; setLocal: React
   const matchesRoot = (cat: NonNullable<typeof categories>[number]) =>
     !search ||
     cat.name.toLowerCase().includes(lc) ||
-    (childrenMap.get(cat.id) ?? []).some((c) => c.name.toLowerCase().includes(lc));
+    (cat.description ?? '').toLowerCase().includes(lc) ||
+    (childrenMap.get(cat.id) ?? []).some(
+      (c) =>
+        c.name.toLowerCase().includes(lc) ||
+        (c.description ?? '').toLowerCase().includes(lc),
+    );
 
   const toggle = (id: string) =>
     setLocal((p) => ({
@@ -325,100 +371,167 @@ function CategoriesPanel({ local, setLocal }: { local: TxFilter; setLocal: React
     }));
   };
 
-  return (
-    <View className="gap-2">
-      <SearchInput value={search} onChangeText={setSearch} placeholder="Search categories…" />
-      <View className="gap-1.5">
-        {roots.filter(matchesRoot).map((root) => {
-          const children = (childrenMap.get(root.id) ?? []).filter(
-            (c) => !search || c.name.toLowerCase().includes(lc),
-          );
-          const catBg = root.bgColor ?? `${root.color ?? C.outlineVariant}22`;
-          const catColor = root.color ?? C.outlineVariant;
-          const hasChildren = (childrenMap.get(root.id) ?? []).length > 0;
-          const allSelected = hasChildren
-            ? [root.id, ...(childrenMap.get(root.id) ?? []).map((c) => c.id)].every((id) => local.categories.includes(id))
-            : local.categories.includes(root.id);
-          const someSelected = hasChildren
-            ? (childrenMap.get(root.id) ?? []).some((c) => local.categories.includes(c.id)) || local.categories.includes(root.id)
-            : local.categories.includes(root.id);
+  const filteredRoots = roots.filter(matchesRoot);
 
+  return (
+    <View className="gap-2.5">
+      {/* Type filter chips */}
+      <View className="flex-row gap-1.5">
+        {CATEGORY_TYPE_TABS.map((t) => {
+          const active = typeFilter === t.id;
           return (
-            <View key={root.id} className="gap-1">
-              {/* Parent row */}
-              <TouchableOpacity
-                onPress={() => hasChildren ? toggleWithChildren(root.id) : toggle(root.id)}
-                activeOpacity={0.7}
-                className="flex-row items-center gap-3 px-3 py-2.5 rounded-xl"
+            <TouchableOpacity
+              key={t.id}
+              onPress={() => setTypeFilter(t.id)}
+              activeOpacity={0.75}
+              className="flex-row items-center gap-1 px-2.5 py-1.5 rounded-full"
+              style={{
+                backgroundColor: active ? `${t.color}20` : C.surfaceHigh,
+                borderWidth: 1,
+                borderColor: active ? t.color : 'transparent',
+              }}
+            >
+              <DynamicIcon
+                name={t.icon}
+                size={11}
+                color={active ? t.color : C.onSurfaceVariant}
+              />
+              <Text
                 style={{
-                  backgroundColor: someSelected ? `${C.primary}12` : C.surfaceHigh,
+                  fontSize: 11,
+                  fontWeight: '700',
+                  color: active ? t.color : C.onSurfaceVariant,
                 }}
               >
-                <View
-                  className="w-8 h-8 rounded-lg items-center justify-center"
-                  style={{ backgroundColor: catBg }}
-                >
-                  <DynamicIcon name={root.icon} size={16} color={catColor} />
-                </View>
-                <Text
-                  className="flex-1 text-[13px] font-semibold"
-                  style={{ color: someSelected ? C.primary : C.onSurface }}
-                  numberOfLines={1}
-                >
-                  {root.name}
-                </Text>
-                <View
-                  className="w-5 h-5 rounded-full border-2 items-center justify-center"
-                  style={{
-                    borderColor: allSelected ? C.primary : someSelected ? C.primary : C.outlineVariant,
-                    backgroundColor: allSelected ? C.primary : 'transparent',
-                  }}
-                >
-                  {allSelected && <DynamicIcon name="check" size={11} color="#fff" />}
-                  {!allSelected && someSelected && (
-                    <View className="w-2 h-2 rounded-full" style={{ backgroundColor: C.primary }} />
-                  )}
-                </View>
-              </TouchableOpacity>
-
-              {/* Children */}
-              {children.length > 0 && (
-                <View className="ml-8 gap-1">
-                  {children.map((child) => {
-                    const cBg = child.bgColor ?? `${child.color ?? C.outlineVariant}22`;
-                    const cColor = child.color ?? C.outlineVariant;
-                    const sel = local.categories.includes(child.id);
-                    return (
-                      <SelectRow
-                        key={child.id}
-                        label={child.name}
-                        selected={sel}
-                        onPress={() => toggle(child.id)}
-                        left={
-                          <View
-                            className="w-7 h-7 rounded-lg items-center justify-center"
-                            style={{ backgroundColor: cBg }}
-                          >
-                            <DynamicIcon name={child.icon} size={13} color={cColor} />
-                          </View>
-                        }
-                      />
-                    );
-                  })}
-                </View>
-              )}
-            </View>
+                {t.label}
+              </Text>
+            </TouchableOpacity>
           );
         })}
       </View>
+
+      <SearchInput value={search} onChangeText={setSearch} placeholder="Search categories…" />
+
+      {loading ? (
+        <PickerListSkeleton count={5} />
+      ) : filteredRoots.length === 0 ? (
+        <View className="py-10 items-center gap-2">
+          <DynamicIcon name="folder-search" size={28} color={C.outlineVariant} />
+          <Text className="text-on-surface-variant text-sm">No categories found</Text>
+        </View>
+      ) : (
+        <View className="gap-2.5">
+          {filteredRoots.map((root) => {
+            const children = (childrenMap.get(root.id) ?? []).filter(
+              (c) =>
+                !search ||
+                c.name.toLowerCase().includes(lc) ||
+                (c.description ?? '').toLowerCase().includes(lc),
+            );
+            const catBg = root.bgColor ?? `${root.color ?? C.outlineVariant}22`;
+            const catColor = root.color ?? C.outlineVariant;
+            const hasChildren = (childrenMap.get(root.id) ?? []).length > 0;
+            const allSelected = hasChildren
+              ? [root.id, ...(childrenMap.get(root.id) ?? []).map((c) => c.id)].every((id) => local.categories.includes(id))
+              : local.categories.includes(root.id);
+            const someSelected = hasChildren
+              ? (childrenMap.get(root.id) ?? []).some((c) => local.categories.includes(c.id)) || local.categories.includes(root.id)
+              : local.categories.includes(root.id);
+            const systemFlag = isSystem(root, user?.id ?? null);
+
+            return (
+              <View key={root.id} className="gap-1">
+                {/* Parent row */}
+                <TouchableOpacity
+                  onPress={() => hasChildren ? toggleWithChildren(root.id) : toggle(root.id)}
+                  activeOpacity={0.7}
+                  className="flex-row items-center gap-3 px-3 py-2.5 rounded-xl"
+                  style={{
+                    backgroundColor: someSelected ? `${C.primary}12` : C.surfaceHigh,
+                  }}
+                >
+                  <View
+                    className="w-8 h-8 rounded-lg items-center justify-center"
+                    style={{ backgroundColor: catBg }}
+                  >
+                    <DynamicIcon name={root.icon} size={16} color={catColor} />
+                  </View>
+                  <View className="flex-1 min-w-0">
+                    <View className="flex-row items-center gap-1.5">
+                      <Text
+                        className="text-[13px] font-semibold"
+                        style={{ color: someSelected ? C.primary : C.onSurface, flexShrink: 1 }}
+                        numberOfLines={1}
+                      >
+                        {root.name}
+                      </Text>
+                      {systemFlag && <SystemBadge size="xs" />}
+                    </View>
+                    {root.description ? (
+                      <Text className="text-[10px] text-on-surface-variant" numberOfLines={1}>
+                        {root.description}
+                      </Text>
+                    ) : null}
+                  </View>
+                  <View
+                    className="w-5 h-5 rounded-full border-2 items-center justify-center"
+                    style={{
+                      borderColor: allSelected ? C.primary : someSelected ? C.primary : C.outlineVariant,
+                      backgroundColor: allSelected ? C.primary : 'transparent',
+                    }}
+                  >
+                    {allSelected && <DynamicIcon name="check" size={11} color="#fff" />}
+                    {!allSelected && someSelected && (
+                      <View className="w-2 h-2 rounded-full" style={{ backgroundColor: C.primary }} />
+                    )}
+                  </View>
+                </TouchableOpacity>
+
+                {/* Children */}
+                {children.length > 0 && (
+                  <View
+                    className="ml-4 pl-3 gap-1"
+                    style={{ borderLeftWidth: 1.5, borderLeftColor: `${catColor}55` }}
+                  >
+                    {children.map((child) => {
+                      const cBg = child.bgColor ?? `${child.color ?? C.outlineVariant}22`;
+                      const cColor = child.color ?? C.outlineVariant;
+                      const sel = local.categories.includes(child.id);
+                      const childSystem = isSystem(child, user?.id ?? null);
+                      return (
+                        <SelectRow
+                          key={child.id}
+                          label={child.name}
+                          selected={sel}
+                          onPress={() => toggle(child.id)}
+                          trailingBadge={childSystem ? <SystemBadge size="xs" /> : null}
+                          left={
+                            <View
+                              className="w-7 h-7 rounded-lg items-center justify-center"
+                              style={{ backgroundColor: cBg }}
+                            >
+                              <DynamicIcon name={child.icon} size={13} color={cColor} />
+                            </View>
+                          }
+                        />
+                      );
+                    })}
+                  </View>
+                )}
+              </View>
+            );
+          })}
+        </View>
+      )}
     </View>
   );
 }
 
 function TagsPanel({ local, setLocal }: { local: TxFilter; setLocal: React.Dispatch<React.SetStateAction<TxFilter>> }) {
   const C = useColors();
+  const { user } = useAuth();
   const [search, setSearch] = useState('');
-  const { tags } = useGetTags({ limit: 200, sort: 'name' });
+  const { tags, loading } = useGetTags({ limit: 200, sort: 'name' });
 
   const filtered = (tags ?? []).filter(
     (t) => !search || t.name.toLowerCase().includes(search.toLowerCase()),
@@ -433,38 +546,50 @@ function TagsPanel({ local, setLocal }: { local: TxFilter; setLocal: React.Dispa
   return (
     <View className="gap-2">
       <SearchInput value={search} onChangeText={setSearch} placeholder="Search tags…" />
-      <View className="flex-row flex-wrap gap-2">
-        {filtered.map((tag) => {
-          const active = local.tags.includes(tag.id);
-          const color = tag.color ?? C.outlineVariant;
-          const bg = tag.bgColor ?? `${color}22`;
-          return (
-            <TouchableOpacity
-              key={tag.id}
-              onPress={() => toggle(tag.id)}
-              activeOpacity={0.75}
-              className="flex-row items-center gap-1.5 px-3 py-1.5 rounded-full"
-              style={{
-                backgroundColor: active ? bg : 'transparent',
-                borderWidth: 1.5,
-                borderColor: active ? color : `${C.outlineVariant}80`,
-              }}
-            >
-              <DynamicIcon name={tag.icon} size={12} color={active ? color : C.onSurfaceVariant} />
-              <Text style={{ fontSize: 13, fontWeight: '600', color: active ? color : C.onSurface }}>
-                {tag.name}
-              </Text>
-            </TouchableOpacity>
-          );
-        })}
-      </View>
+      {loading ? (
+        <ChipListSkeleton count={10} />
+      ) : filtered.length === 0 ? (
+        <View className="py-10 items-center gap-2">
+          <DynamicIcon name="hash" size={28} color={C.outlineVariant} />
+          <Text className="text-on-surface-variant text-sm">No tags found</Text>
+        </View>
+      ) : (
+        <View className="flex-row flex-wrap gap-2">
+          {filtered.map((tag) => {
+            const active = local.tags.includes(tag.id);
+            const color = tag.color ?? C.outlineVariant;
+            const bg = tag.bgColor ?? `${color}22`;
+            const systemFlag = isSystem(tag, user?.id ?? null);
+            return (
+              <TouchableOpacity
+                key={tag.id}
+                onPress={() => toggle(tag.id)}
+                activeOpacity={0.75}
+                className="flex-row items-center gap-1.5 px-3 py-1.5 rounded-full"
+                style={{
+                  backgroundColor: active ? bg : 'transparent',
+                  borderWidth: 1.5,
+                  borderColor: active ? color : `${C.outlineVariant}80`,
+                }}
+              >
+                <DynamicIcon name={tag.icon} size={12} color={active ? color : C.onSurfaceVariant} />
+                <Text style={{ fontSize: 13, fontWeight: '600', color: active ? color : C.onSurface }}>
+                  {tag.name}
+                </Text>
+                {systemFlag && <SystemBadge size="xs" />}
+              </TouchableOpacity>
+            );
+          })}
+        </View>
+      )}
     </View>
   );
 }
 
 function PeoplePanel({ local, setLocal }: { local: TxFilter; setLocal: React.Dispatch<React.SetStateAction<TxFilter>> }) {
+  const C = useColors();
   const [search, setSearch] = useState('');
-  const { people } = useGetPeople({ limit: 200, sort: 'name' });
+  const { people, loading } = useGetPeople({ limit: 200, sort: 'name' });
 
   const filtered = (people ?? []).filter(
     (p) => !search || p.name.toLowerCase().includes(search.toLowerCase()),
@@ -479,31 +604,50 @@ function PeoplePanel({ local, setLocal }: { local: TxFilter; setLocal: React.Dis
   return (
     <View className="gap-2">
       <SearchInput value={search} onChangeText={setSearch} placeholder="Search people…" />
-      <View className="gap-1.5">
-        {filtered.map((person) => (
-          <SelectRow
-            key={person.id}
-            label={person.name}
-            selected={local.people.includes(person.id)}
-            onPress={() => toggle(person.id)}
-            left={
-              <UserAvatar
-                id={person.id}
-                name={person.name}
-                avatarUrl={person.avatar?.url}
-                size={28}
-              />
-            }
-          />
-        ))}
-      </View>
+      {loading ? (
+        <PickerListSkeleton count={5} />
+      ) : filtered.length === 0 ? (
+        <View className="py-10 items-center gap-2">
+          <DynamicIcon name="users" size={28} color={C.outlineVariant} />
+          <Text className="text-on-surface-variant text-sm">No people found</Text>
+        </View>
+      ) : (
+        <View className="gap-1.5">
+          {filtered.map((person) => (
+            <SelectRow
+              key={person.id}
+              label={person.name}
+              description={person.email ?? person.phone ?? null}
+              selected={local.people.includes(person.id)}
+              onPress={() => toggle(person.id)}
+              left={
+                <UserAvatar
+                  id={person.id}
+                  name={person.name}
+                  avatarUrl={person.avatar?.url}
+                  size={28}
+                />
+              }
+            />
+          ))}
+        </View>
+      )}
     </View>
   );
 }
 
-function AccountsPanel({ local, setLocal }: { local: TxFilter; setLocal: React.Dispatch<React.SetStateAction<TxFilter>> }) {
+function AccountsPanel({
+  local,
+  setLocal,
+  onClose,
+}: {
+  local: TxFilter;
+  setLocal: React.Dispatch<React.SetStateAction<TxFilter>>;
+  onClose: () => void;
+}) {
+  const C = useColors();
   const [search, setSearch] = useState('');
-  const { accounts } = useGetAccounts({ limit: 100, sort: 'name' });
+  const { accounts, loading } = useGetAccounts({ limit: 100, sort: 'name' });
 
   const filtered = (accounts ?? []).filter(
     (a) => !search || a.name.toLowerCase().includes(search.toLowerCase()),
@@ -515,29 +659,45 @@ function AccountsPanel({ local, setLocal }: { local: TxFilter; setLocal: React.D
       accounts: p.accounts.includes(id) ? p.accounts.filter((v) => v !== id) : [...p.accounts, id],
     }));
 
+  const hasAnyAccounts = (accounts?.length ?? 0) > 0;
+
   return (
     <View className="gap-2">
-      <SearchInput value={search} onChangeText={setSearch} placeholder="Search accounts…" />
-      <View className="gap-1.5">
-        {filtered.map((acc) => (
-          <SelectRow
-            key={acc.id}
-            label={acc.name}
-            selected={local.accounts.includes(acc.id)}
-            onPress={() => toggle(acc.id)}
-            left={
-              <AccountAvatar
-                avatarUrl={acc.avatar?.url}
-                icon={acc.icon}
-                bgColor={acc.bgColor}
-                iconColor={acc.color}
-                name={acc.name}
-                size={28}
-              />
-            }
-          />
-        ))}
-      </View>
+      {hasAnyAccounts && (
+        <SearchInput value={search} onChangeText={setSearch} placeholder="Search accounts…" />
+      )}
+      {loading ? (
+        <PickerListSkeleton count={5} />
+      ) : !hasAnyAccounts ? (
+        <EmptyAccountsCard compact onBeforeNavigate={onClose} />
+      ) : filtered.length === 0 ? (
+        <View className="py-10 items-center gap-2">
+          <DynamicIcon name="wallet" size={28} color={C.outlineVariant} />
+          <Text className="text-on-surface-variant text-sm">No accounts found</Text>
+        </View>
+      ) : (
+        <View className="gap-1.5">
+          {filtered.map((acc) => (
+            <SelectRow
+              key={acc.id}
+              label={acc.name}
+              description={acc.description ?? null}
+              selected={local.accounts.includes(acc.id)}
+              onPress={() => toggle(acc.id)}
+              left={
+                <AccountAvatar
+                  avatarUrl={acc.avatar?.url}
+                  icon={acc.icon}
+                  bgColor={acc.bgColor}
+                  iconColor={acc.color}
+                  name={acc.name}
+                  size={28}
+                />
+              }
+            />
+          ))}
+        </View>
+      )}
     </View>
   );
 }
@@ -698,7 +858,7 @@ export function FilterSheet({ visible, filter, onApply, onClose }: Props) {
             {activeTab === 'categories' && <CategoriesPanel local={local} setLocal={setLocal} />}
             {activeTab === 'tags'       && <TagsPanel       local={local} setLocal={setLocal} />}
             {activeTab === 'people'     && <PeoplePanel     local={local} setLocal={setLocal} />}
-            {activeTab === 'accounts'   && <AccountsPanel   local={local} setLocal={setLocal} />}
+            {activeTab === 'accounts'   && <AccountsPanel   local={local} setLocal={setLocal} onClose={onClose} />}
           </ScrollView>
         </View>
 

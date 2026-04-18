@@ -1,6 +1,5 @@
 import React, { useMemo, useState } from "react";
 import {
-  ActivityIndicator,
   Modal,
   ScrollView,
   Text,
@@ -10,6 +9,10 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { DynamicIcon } from "../Icon";
+import { ChipListSkeleton } from "../ui/PickerSkeletons";
+import { SystemBadge } from "../ui/SystemBadge";
+import { useAuth } from "../../context/AuthContext";
+import { isSystem } from "../../lib/ownership";
 import { useGetTags } from "../../services/gql/tags/tags.service";
 import { type TagFieldsFragment } from "../../services/gql/types/graphql";
 import { useColors } from "../../theme/colors";
@@ -24,6 +27,7 @@ interface Props {
 export function TagPickerSheet({ visible, onClose, selectedIds, onApply }: Props) {
   const C = useColors();
   const insets = useSafeAreaInsets();
+  const { user } = useAuth();
   const [search, setSearch] = useState("");
   const [localSelected, setLocalSelected] = useState<string[]>(selectedIds);
 
@@ -93,48 +97,53 @@ export function TagPickerSheet({ visible, onClose, selectedIds, onApply }: Props
             )}
           </View>
 
-          {loading ? (
-            <View className="p-10 items-center">
-              <ActivityIndicator colorClassName="accent-primary" />
-            </View>
-          ) : (
-            <ScrollView showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
-              <View className="flex-row flex-wrap px-4 pb-2 gap-2">
-                {filtered.map((tag) => {
-                  const isSelected = localSelected.includes(tag.id);
-                  const fg = tag.color ?? C.primary;
-                  const selectedBg = tag.bgColor ?? `${fg}33`;
-                  return (
-                    <TouchableOpacity
-                      key={tag.id}
-                      onPress={() => toggle(tag.id)}
-                      activeOpacity={0.75}
-                      className="flex-row items-center gap-1.5 px-3 py-2 rounded-full"
-                      style={{
-                        backgroundColor: isSelected ? selectedBg : "transparent",
-                        borderWidth: 1.5,
-                        borderColor: isSelected ? fg : `${C.outlineVariant}80`,
-                      }}
-                    >
-                      <DynamicIcon name={tag.icon} size={13} color={isSelected ? fg : C.onSurfaceVariant} />
-                      <Text
-                        className="text-[13px] font-semibold"
-                        style={{ color: isSelected ? fg : C.onSurface }}
+          <ScrollView showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
+            <View className="flex-row flex-wrap px-4 pb-2 gap-2">
+              {loading ? (
+                <View className="w-full">
+                  <ChipListSkeleton count={10} />
+                </View>
+              ) : (
+                <>
+                  {filtered.map((tag) => {
+                    const isSelected = localSelected.includes(tag.id);
+                    const fg = tag.color ?? C.primary;
+                    const selectedBg = tag.bgColor ?? `${fg}33`;
+                    const systemFlag = isSystem(tag, user?.id ?? null);
+                    return (
+                      <TouchableOpacity
+                        key={tag.id}
+                        onPress={() => toggle(tag.id)}
+                        activeOpacity={0.75}
+                        className="flex-row items-center gap-1.5 px-3 py-2 rounded-full"
+                        style={{
+                          backgroundColor: isSelected ? selectedBg : "transparent",
+                          borderWidth: 1.5,
+                          borderColor: isSelected ? fg : `${C.outlineVariant}80`,
+                        }}
                       >
-                        {tag.name}
-                      </Text>
-                      {isSelected && <DynamicIcon name="check" size={11} color={fg} />}
-                    </TouchableOpacity>
-                  );
-                })}
-                {filtered.length === 0 && (
-                  <View className="flex-1 p-8 items-center">
-                    <Text className="text-on-surface-variant text-sm">No tags found</Text>
-                  </View>
-                )}
-              </View>
-            </ScrollView>
-          )}
+                        <DynamicIcon name={tag.icon} size={13} color={isSelected ? fg : C.onSurfaceVariant} />
+                        <Text
+                          className="text-[13px] font-semibold"
+                          style={{ color: isSelected ? fg : C.onSurface }}
+                        >
+                          {tag.name}
+                        </Text>
+                        {systemFlag && <SystemBadge size="xs" />}
+                        {isSelected && <DynamicIcon name="check" size={11} color={fg} />}
+                      </TouchableOpacity>
+                    );
+                  })}
+                  {filtered.length === 0 && (
+                    <View className="flex-1 p-10 items-center gap-2">
+                      <DynamicIcon name="hash" size={28} color={C.outlineVariant} />
+                      <Text className="text-on-surface-variant text-sm">No tags found</Text>
+                    </View>
+                  )}
+                </>
+              )}
+            </View>
+          </ScrollView>
 
           {/* Apply */}
           <View className="flex-row gap-2.5 px-5 pt-3">
