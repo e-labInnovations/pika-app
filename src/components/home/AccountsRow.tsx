@@ -6,6 +6,7 @@ import { AccountAvatar } from "../AccountAvatar";
 import { DynamicIcon } from "../Icon";
 import { Skeleton } from "../ui/Skeleton";
 import { useFormatMoney } from "../../lib/format-currency";
+import { formatRelativeShort } from "../../lib/format-date";
 import type { AccountFieldsFragment } from "../../services/gql/types/graphql";
 import { useColors } from "../../theme/colors";
 
@@ -199,6 +200,56 @@ function AccountCardSkeleton() {
   );
 }
 
+// ── Stat Tile ─────────────────────────────────────────────────────────────────
+
+function StatTile({
+  label,
+  value,
+  icon,
+  iconColor,
+  valueColor,
+}: {
+  label: string;
+  value: string;
+  icon: string;
+  iconColor: string;
+  valueColor?: string;
+}) {
+  const C = useColors();
+  return (
+    <View
+      style={{
+        flex: 1,
+        borderRadius: 12,
+        backgroundColor: C.surfaceMid,
+        padding: 10,
+        gap: 6,
+      }}
+    >
+      <View className="flex-row items-center gap-1.5">
+        <DynamicIcon name={icon} size={12} color={iconColor} />
+        <Text
+          className="text-[10px] font-bold uppercase tracking-[0.5px] text-on-surface-variant"
+          numberOfLines={1}
+        >
+          {label}
+        </Text>
+      </View>
+      <Text
+        style={{
+          fontSize: 14,
+          fontWeight: "800",
+          color: valueColor ?? C.onSurface,
+          letterSpacing: -0.3,
+        }}
+        numberOfLines={1}
+      >
+        {value}
+      </Text>
+    </View>
+  );
+}
+
 // ── Action Sheet ──────────────────────────────────────────────────────────────
 
 function AccountActionsSheet({
@@ -214,6 +265,14 @@ function AccountActionsSheet({
 }) {
   const C = useColors();
   const insets = useSafeAreaInsets();
+  const fmt = useFormatMoney();
+
+  const balance = account?.balance ?? 0;
+  const balanceColor = balance >= 0 ? "#10b981" : "#ef4444";
+  const txnCount = account?.totalTransactions ?? 0;
+  const lastActivity = account?.lastTransactionAt
+    ? formatRelativeShort(new Date(account.lastTransactionAt))
+    : "No activity";
 
   return (
     <Modal
@@ -249,12 +308,25 @@ function AccountActionsSheet({
               size={44}
             />
             <View className="flex-1 min-w-0">
-              <Text
-                className="text-base font-extrabold text-on-surface"
-                numberOfLines={1}
-              >
-                {account.name}
-              </Text>
+              <View className="flex-row items-center gap-2">
+                <Text
+                  className="text-base font-extrabold text-on-surface"
+                  numberOfLines={1}
+                  style={{ flexShrink: 1 }}
+                >
+                  {account.name}
+                </Text>
+                {account.isActive === false && (
+                  <View
+                    className="rounded-full px-1.5 py-0.5"
+                    style={{ backgroundColor: `${C.outlineVariant}33` }}
+                  >
+                    <Text className="text-[9px] font-bold uppercase tracking-[0.5px] text-on-surface-variant">
+                      Inactive
+                    </Text>
+                  </View>
+                )}
+              </View>
               {account.description ? (
                 <Text
                   className="text-[12px] text-on-surface-variant"
@@ -264,6 +336,31 @@ function AccountActionsSheet({
                 </Text>
               ) : null}
             </View>
+          </View>
+        )}
+
+        {/* Stats row */}
+        {account && (
+          <View className="flex-row px-5 pb-3" style={{ gap: 8 }}>
+            <StatTile
+              label="Balance"
+              value={fmt(balance)}
+              valueColor={balanceColor}
+              icon="wallet"
+              iconColor={balanceColor}
+            />
+            <StatTile
+              label="Transactions"
+              value={String(txnCount)}
+              icon="receipt"
+              iconColor="#6366f1"
+            />
+            <StatTile
+              label="Last activity"
+              value={lastActivity}
+              icon="clock"
+              iconColor="#f59e0b"
+            />
           </View>
         )}
 
