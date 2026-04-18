@@ -730,29 +730,39 @@ export function TransactionForm({ initialValues, onSubmit, onCancel, submitLabel
 
 // ── Export mutation helpers ───────────────────────────────────────────────────
 
-function baseFields(v: TxFormValues, attachmentIds: string[]) {
+/**
+ * For optional relation / text fields:
+ * - On create we omit (undefined) so Payload uses its default / leaves unset.
+ * - On update we send null to explicitly clear a previously-set value —
+ *   undefined would be treated as "no change" and the old value would persist.
+ */
+function baseFields(v: TxFormValues, attachmentIds: string[], mode: "create" | "update") {
+  const clearable = <T,>(val: T | null | undefined): T | null | undefined =>
+    val ?? (mode === "update" ? null : undefined);
+
   return {
     title: v.title.trim(),
     amount: v.amount.trim(),
     date: v.date.toISOString(),
     category: v.category?.id ?? undefined,
     account: v.account?.id,
-    toAccount: v.toAccount?.id ?? undefined,
-    person: v.person?.id ?? undefined,
+    toAccount: clearable(v.toAccount?.id),
+    person: clearable(v.person?.id),
     tags: v.tags.map((t) => t.id),
-    note: v.note.trim() || undefined,
-    attachments: attachmentIds.length > 0 ? attachmentIds : undefined,
+    note: clearable(v.note.trim() || undefined),
+    attachments:
+      attachmentIds.length > 0 ? attachmentIds : mode === "update" ? [] : undefined,
   };
 }
 
 /** Use for createTransaction */
 export function formValuesToMutationInput(v: TxFormValues, attachmentIds: string[] = []) {
-  return { ...baseFields(v, attachmentIds), type: TX_MUTATION_TYPE[v.type] };
+  return { ...baseFields(v, attachmentIds, "create"), type: TX_MUTATION_TYPE[v.type] };
 }
 
 /** Use for updateTransaction (different type enum) */
 export function formValuesToUpdateInput(v: TxFormValues, attachmentIds: string[] = []) {
   type UpdateType = import("../../services/gql/types/graphql").TransactionUpdate_type_MutationInput;
   const t = v.type as unknown as UpdateType;
-  return { ...baseFields(v, attachmentIds), type: t };
+  return { ...baseFields(v, attachmentIds, "update"), type: t };
 }
