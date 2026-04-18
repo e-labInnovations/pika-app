@@ -30,6 +30,7 @@ import {
 } from "@/services/gql/types/graphql";
 import { useColors } from "@/theme/colors";
 import { LinkedTransactionsCard } from "@/components/transaction/LinkedTransactionsCard";
+import { AttachmentActionsSheet } from "@/components/transaction/AttachmentActionsSheet";
 
 const { width: SCREEN_W } = Dimensions.get("window");
 
@@ -231,7 +232,19 @@ function AttachmentsCard({
   const C = useColors();
   const [viewing, setViewing] =
     useState<TransactionAttachmentFieldsFragment | null>(null);
+  const [actionsFor, setActionsFor] =
+    useState<TransactionAttachmentFieldsFragment | null>(null);
   const itemSize = (SCREEN_W - 32 - 16 - 8) / 3;
+
+  const handleView = (att: TransactionAttachmentFieldsFragment) => {
+    setActionsFor(null);
+    if (isImage(att.mimeType)) {
+      setViewing(att);
+      return;
+    }
+    const url = resolveMediaUrl(att.url);
+    if (url) Linking.openURL(url);
+  };
 
   return (
     <>
@@ -247,13 +260,7 @@ function AttachmentsCard({
               return (
                 <TouchableOpacity
                   key={att.id}
-                  onPress={() => {
-                    if (img) {
-                      setViewing(att);
-                    } else if (url) {
-                      Linking.openURL(url);
-                    }
-                  }}
+                  onPress={() => setActionsFor(att)}
                   activeOpacity={0.8}
                   style={{
                     width: itemSize,
@@ -320,6 +327,11 @@ function AttachmentsCard({
           onClose={() => setViewing(null)}
         />
       )}
+      <AttachmentActionsSheet
+        attachment={actionsFor}
+        onClose={() => setActionsFor(null)}
+        onView={handleView}
+      />
     </>
   );
 }

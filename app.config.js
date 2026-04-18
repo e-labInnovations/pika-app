@@ -80,6 +80,7 @@ export default {
         },
       ],
       'expo-web-browser',
+      'expo-sharing',
     ],
     extra: {
       eas: {

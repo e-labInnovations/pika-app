@@ -1,6 +1,7 @@
 /**
  * Shared form for Add and Edit transaction screens.
  */
+import * as DocumentPicker from "expo-document-picker";
 import * as ImagePicker from "expo-image-picker";
 import { LinearGradient } from "expo-linear-gradient";
 import React, { useEffect, useState } from "react";
@@ -21,6 +22,7 @@ import { DynamicIcon } from "../Icon";
 import { AccountAvatar } from "../AccountAvatar";
 import { UserAvatar } from "../UserAvatar";
 import { DateTimePicker } from "./DateTimePicker";
+import { AttachSourceSheet } from "./AttachSourceSheet";
 import { CategoryPickerSheet, type TxType } from "./CategoryPickerSheet";
 import { AccountPickerSheet } from "./AccountPickerSheet";
 import { PersonPickerSheet } from "./PersonPickerSheet";
@@ -301,7 +303,32 @@ export function TransactionForm({ initialValues, onSubmit, onCancel, submitLabel
 
   // ── Attachment helpers ────────────────────────────────────────────────────
 
-  const pickAttachment = async () => {
+  const [attachSourceOpen, setAttachSourceOpen] = useState(false);
+
+  /** Upload a freshly-picked set of local assets, flipping mediaId as they complete. */
+  const uploadNewItems = async (items: LocalAttachment[]) => {
+    setAttachments((prev) => [...prev, ...items]);
+    for (const item of items) {
+      try {
+        const media = await uploadMedia(
+          item.uri,
+          item.filename ?? `file-${Date.now()}`,
+          item.mimeType ?? "application/octet-stream",
+          item.filename ?? undefined,
+        );
+        setAttachments((prev) =>
+          prev.map((a) => (a.localId === item.localId ? { ...a, mediaId: media.id } : a)),
+        );
+      } catch {
+        showAlert({ title: "Upload failed", message: `Could not upload ${item.filename}.` });
+        setAttachments((prev) =>
+          prev.map((a) => (a.localId === item.localId ? { ...a, mediaId: null } : a)),
+        );
+      }
+    }
+  };
+
+  const pickPhotos = async () => {
     const perm = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (!perm.granted) {
       showAlert({ title: "Permission required", message: "Allow access to your photo library to add attachments." });
@@ -314,33 +341,35 @@ export function TransactionForm({ initialValues, onSubmit, onCancel, submitLabel
     });
     if (result.canceled) return;
 
+    const stamp = Date.now();
     const newItems: LocalAttachment[] = result.assets.map((a, i) => ({
-      // Unique stable ID: timestamp + position ensures no collisions across picks
-      localId: `${Date.now()}-${i}`,
+      localId: `${stamp}-${i}`,
       uri: a.uri,
-      filename: a.fileName ?? `attachment-${Date.now()}-${i}.jpg`,
+      filename: a.fileName ?? `attachment-${stamp}-${i}.jpg`,
       mimeType: a.mimeType ?? "image/jpeg",
-      // mediaId === undefined means "uploading"
     }));
+    await uploadNewItems(newItems);
+  };
 
-    // Add all items immediately (they show a spinner until uploaded)
-    setAttachments((prev) => [...prev, ...newItems]);
+  const pickDocuments = async () => {
+    try {
+      const res = await DocumentPicker.getDocumentAsync({
+        type: "*/*",
+        multiple: true,
+        copyToCacheDirectory: true,
+      });
+      if (res.canceled) return;
 
-    // Upload each independently — tracked by localId, not array index
-    for (const item of newItems) {
-      try {
-        // Use the filename as alt to guarantee uniqueness per upload
-        const media = await uploadMedia(item.uri, item.filename ?? `file-${Date.now()}`, item.mimeType ?? "image/jpeg", item.filename ?? undefined);
-        setAttachments((prev) =>
-          prev.map((a) => a.localId === item.localId ? { ...a, mediaId: media.id } : a),
-        );
-      } catch {
-        showAlert({ title: "Upload failed", message: `Could not upload ${item.filename}.` });
-        // Mark as failed (null) so the user sees the red × and can remove it
-        setAttachments((prev) =>
-          prev.map((a) => a.localId === item.localId ? { ...a, mediaId: null } : a),
-        );
-      }
+      const stamp = Date.now();
+      const newItems: LocalAttachment[] = res.assets.map((a, i) => ({
+        localId: `${stamp}-${i}`,
+        uri: a.uri,
+        filename: a.name ?? `document-${stamp}-${i}`,
+        mimeType: a.mimeType ?? "application/octet-stream",
+      }));
+      await uploadNewItems(newItems);
+    } catch (e: any) {
+      showAlert({ title: "Error", message: e?.message ?? "Could not pick document." });
     }
   };
 
@@ -644,7 +673,7 @@ export function TransactionForm({ initialValues, onSubmit, onCancel, submitLabel
             ))}
             {/* Add button */}
             <TouchableOpacity
-              onPress={pickAttachment}
+              onPress={() => setAttachSourceOpen(true)}
               activeOpacity={0.75}
               style={{
                 width: THUMB_SIZE, height: THUMB_SIZE, borderRadius: 14,
@@ -723,6 +752,12 @@ export function TransactionForm({ initialValues, onSubmit, onCancel, submitLabel
         onClose={() => setShowTags(false)}
         selectedIds={values.tags.map((t) => t.id)}
         onApply={(tags) => set("tags", tags)}
+      />
+      <AttachSourceSheet
+        visible={attachSourceOpen}
+        onClose={() => setAttachSourceOpen(false)}
+        onPickPhotos={pickPhotos}
+        onPickDocuments={pickDocuments}
       />
     </KeyboardAvoidingView>
   );
