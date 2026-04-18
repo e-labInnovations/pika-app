@@ -37,7 +37,12 @@ import {
 } from "../../services/gql/types/graphql";
 import { uploadMedia, resolveMediaUrl } from "../../lib/media-upload";
 import { useColors } from "../../theme/colors";
-import { useSuggestCategory, type SuggestedCategory } from "../../services/gql/ai/ai.service";
+import {
+  usePredictCategory,
+  useSuggestCategory,
+  type PredictedCategory,
+  type SuggestedCategory,
+} from "../../services/gql/ai/ai.service";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -239,9 +244,15 @@ export function TransactionForm({ initialValues, onSubmit, onCancel, submitLabel
   const [showPerson, setShowPerson] = useState(false);
   const [showTags, setShowTags] = useState(false);
 
-  // AI category suggestion state
+  // AI category suggestion state (explicit button, Gemini-backed)
   const { suggestCategory, loading: suggesting } = useSuggestCategory();
   const [suggestedCategory, setSuggestedCategory] = useState<SuggestedCategory | null>(null);
+
+  // AI category prediction state (debounced, local MiniLM-backed)
+  const { predictCategory } = usePredictCategory();
+  const [predictedCategory, setPredictedCategory] = useState<PredictedCategory | null>(null);
+  const predictReqIdRef = React.useRef(0);
+  const dismissedPredictionTitleRef = React.useRef<string | null>(null);
 
   const handleSuggestCategory = async () => {
     const title = values.title.trim();
@@ -270,6 +281,55 @@ export function TransactionForm({ initialValues, onSubmit, onCancel, submitLabel
     if (!suggestedCategory) return;
     set("category", suggestedCategory);
     setSuggestedCategory(null);
+  };
+
+  // ── Debounced local prediction ──
+  // Fires ~500ms after the user stops typing (or changes type).
+  // Auto-fills the category row when there's a high-confidence local match,
+  // and only when the user hasn't already picked one. The "Predicted" chip
+  // stays visible so the user can tell it wasn't their choice.
+  useEffect(() => {
+    const title = values.title.trim();
+
+    // Clear any stale prediction if preconditions fail
+    if (title.length < 3) {
+      setPredictedCategory(null);
+      return;
+    }
+    if (dismissedPredictionTitleRef.current === title) return;
+
+    // Don't predict if the user has already picked a category that isn't one we auto-filled
+    if (values.category && values.category.id !== predictedCategory?.id) {
+      setPredictedCategory(null);
+      return;
+    }
+
+    const reqId = ++predictReqIdRef.current;
+    const handle = setTimeout(async () => {
+      try {
+        const res = await predictCategory({ type: values.type, title });
+        if (reqId !== predictReqIdRef.current) return; // superseded
+        const cat = (res.data?.predictCategory?.category ?? null) as PredictedCategory | null;
+        if (!cat) return;
+        // Auto-fill only if the category slot is empty
+        setValues((v) =>
+          v.category ? v : { ...v, category: cat },
+        );
+        setPredictedCategory(cat);
+      } catch {
+        // swallow — prediction is best-effort
+      }
+    }, 500);
+
+    return () => clearTimeout(handle);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [values.title, values.type]);
+
+  const dismissPrediction = () => {
+    dismissedPredictionTitleRef.current = values.title.trim();
+    setPredictedCategory(null);
+    // If the field still holds the auto-filled pick, clear it so the user can start fresh
+    setValues((v) => (v.category && v.category.id === predictedCategory?.id ? { ...v, category: null } : v));
   };
 
   const set = <K extends keyof TxFormValues>(key: K, val: TxFormValues[K]) =>
@@ -483,11 +543,41 @@ export function TransactionForm({ initialValues, onSubmit, onCancel, submitLabel
             <View style={{ flex: 1 }}>
               <PickerRow label="Category *" onPress={() => setShowCategory(true)}>
                 {values.category ? (
-                  <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+                  <View style={{ flexDirection: "row", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
                     <View style={{ width: 28, height: 28, borderRadius: 8, backgroundColor: values.category.bgColor ?? `${values.category.color ?? "#f59e0b"}22`, alignItems: "center", justifyContent: "center" }}>
                       <DynamicIcon name={values.category.icon ?? "folder"} size={14} color={values.category.color ?? "#f59e0b"} />
                     </View>
                     <Text style={{ fontSize: 14, fontWeight: "600", color: C.onSurface }}>{values.category.name}</Text>
+                    {predictedCategory && values.category.id === predictedCategory.id && (
+                      <View
+                        style={{
+                          flexDirection: "row",
+                          alignItems: "center",
+                          gap: 3,
+                          paddingLeft: 6,
+                          paddingRight: 2,
+                          paddingVertical: 2,
+                          borderRadius: 999,
+                          backgroundColor: `${C.primary}18`,
+                        }}
+                      >
+                        <DynamicIcon name="sparkles" size={9} color={C.primary} />
+                        <Text style={{ fontSize: 9, fontWeight: "800", color: C.primary, letterSpacing: 0.4, textTransform: "uppercase" }}>
+                          Predicted
+                        </Text>
+                        <TouchableOpacity
+                          onPress={(e) => {
+                            e.stopPropagation();
+                            dismissPrediction();
+                          }}
+                          hitSlop={6}
+                          style={{ paddingHorizontal: 3, paddingVertical: 1 }}
+                          accessibilityLabel="Dismiss prediction"
+                        >
+                          <DynamicIcon name="x" size={10} color={C.primary} />
+                        </TouchableOpacity>
+                      </View>
+                    )}
                   </View>
                 ) : (
                   <Text style={{ fontSize: 14, color: C.outlineVariant }}>Select category…</Text>

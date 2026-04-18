@@ -26,6 +26,16 @@ export type Scalars = {
   JSONObject: { input: any; output: any; }
 };
 
+export type AICategoryPredictionResult = {
+  __typename?: 'AICategoryPredictionResult';
+  /** Resolved child Category object, or null when no candidate clears the score threshold */
+  category?: Maybe<Scalars['AITransactionData']['output']>;
+  latencyMs: Scalars['Float']['output'];
+  model: Scalars['String']['output'];
+  /** Best cosine similarity in [0, 1] */
+  score: Scalars['Float']['output'];
+};
+
 export type AICategorySuggestionResult = {
   __typename?: 'AICategorySuggestionResult';
   /** Resolved child Category object, or null if no match */
@@ -1136,6 +1146,7 @@ export enum AiUsageUpdate_apiKeyType_MutationInput {
 }
 
 export enum AiUsageUpdate_promptType_MutationInput {
+  category_prediction = 'category_prediction',
   category_suggestion = 'category_suggestion',
   image = 'image',
   text = 'text'
@@ -1245,6 +1256,7 @@ export type AiUsage_promptTokens_operator = {
 };
 
 export enum AiUsage_promptType {
+  category_prediction = 'category_prediction',
   category_suggestion = 'category_suggestion',
   image = 'image',
   text = 'text'
@@ -1257,6 +1269,7 @@ export enum AiUsage_promptType_Input {
 }
 
 export enum AiUsage_promptType_MutationInput {
+  category_prediction = 'category_prediction',
   category_suggestion = 'category_suggestion',
   image = 'image',
   text = 'text'
@@ -2159,6 +2172,7 @@ export type AppSetting_Ai = {
   models?: Maybe<Array<AppSetting_Ai_Models>>;
   perUserDailyLimit?: Maybe<Scalars['Float']['output']>;
   perUserMonthlyLimit?: Maybe<Scalars['Float']['output']>;
+  predictionEnabled?: Maybe<Scalars['Boolean']['output']>;
 };
 
 export type AppSetting_Ai_Models = {
@@ -2202,6 +2216,7 @@ export type AppSettingsDocAccessFields_ai_Fields = {
   models?: Maybe<AppSettingsDocAccessFields_ai_models>;
   perUserDailyLimit?: Maybe<AppSettingsDocAccessFields_ai_perUserDailyLimit>;
   perUserMonthlyLimit?: Maybe<AppSettingsDocAccessFields_ai_perUserMonthlyLimit>;
+  predictionEnabled?: Maybe<AppSettingsDocAccessFields_ai_predictionEnabled>;
 };
 
 export type AppSettingsDocAccessFields_ai_Read = {
@@ -2473,6 +2488,34 @@ export type AppSettingsDocAccessFields_ai_perUserMonthlyLimit_Update = {
   permission: Scalars['Boolean']['output'];
 };
 
+export type AppSettingsDocAccessFields_ai_predictionEnabled = {
+  __typename?: 'AppSettingsDocAccessFields_ai_predictionEnabled';
+  create?: Maybe<AppSettingsDocAccessFields_ai_predictionEnabled_Create>;
+  delete?: Maybe<AppSettingsDocAccessFields_ai_predictionEnabled_Delete>;
+  read?: Maybe<AppSettingsDocAccessFields_ai_predictionEnabled_Read>;
+  update?: Maybe<AppSettingsDocAccessFields_ai_predictionEnabled_Update>;
+};
+
+export type AppSettingsDocAccessFields_ai_predictionEnabled_Create = {
+  __typename?: 'AppSettingsDocAccessFields_ai_predictionEnabled_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type AppSettingsDocAccessFields_ai_predictionEnabled_Delete = {
+  __typename?: 'AppSettingsDocAccessFields_ai_predictionEnabled_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type AppSettingsDocAccessFields_ai_predictionEnabled_Read = {
+  __typename?: 'AppSettingsDocAccessFields_ai_predictionEnabled_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type AppSettingsDocAccessFields_ai_predictionEnabled_Update = {
+  __typename?: 'AppSettingsDocAccessFields_ai_predictionEnabled_Update';
+  permission: Scalars['Boolean']['output'];
+};
+
 export type AppSettingsDocAccessFields_createdAt = {
   __typename?: 'AppSettingsDocAccessFields_createdAt';
   create?: Maybe<AppSettingsDocAccessFields_createdAt_Create>;
@@ -2564,6 +2607,7 @@ export type AppSettingsFields_ai_Fields = {
   models?: Maybe<AppSettingsFields_ai_models>;
   perUserDailyLimit?: Maybe<AppSettingsFields_ai_perUserDailyLimit>;
   perUserMonthlyLimit?: Maybe<AppSettingsFields_ai_perUserMonthlyLimit>;
+  predictionEnabled?: Maybe<AppSettingsFields_ai_predictionEnabled>;
 };
 
 export type AppSettingsFields_ai_Read = {
@@ -2832,6 +2876,34 @@ export type AppSettingsFields_ai_perUserMonthlyLimit_Read = {
 
 export type AppSettingsFields_ai_perUserMonthlyLimit_Update = {
   __typename?: 'AppSettingsFields_ai_perUserMonthlyLimit_Update';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type AppSettingsFields_ai_predictionEnabled = {
+  __typename?: 'AppSettingsFields_ai_predictionEnabled';
+  create?: Maybe<AppSettingsFields_ai_predictionEnabled_Create>;
+  delete?: Maybe<AppSettingsFields_ai_predictionEnabled_Delete>;
+  read?: Maybe<AppSettingsFields_ai_predictionEnabled_Read>;
+  update?: Maybe<AppSettingsFields_ai_predictionEnabled_Update>;
+};
+
+export type AppSettingsFields_ai_predictionEnabled_Create = {
+  __typename?: 'AppSettingsFields_ai_predictionEnabled_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type AppSettingsFields_ai_predictionEnabled_Delete = {
+  __typename?: 'AppSettingsFields_ai_predictionEnabled_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type AppSettingsFields_ai_predictionEnabled_Read = {
+  __typename?: 'AppSettingsFields_ai_predictionEnabled_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type AppSettingsFields_ai_predictionEnabled_Update = {
+  __typename?: 'AppSettingsFields_ai_predictionEnabled_Update';
   permission: Scalars['Boolean']['output'];
 };
 
@@ -5276,6 +5348,7 @@ export type Mutation = {
   loginUser?: Maybe<usersLoginResult>;
   logoutPayloadMcpApiKey?: Maybe<Scalars['String']['output']>;
   logoutUser?: Maybe<Scalars['String']['output']>;
+  predictCategory?: Maybe<AICategoryPredictionResult>;
   refreshTokenPayloadMcpApiKey?: Maybe<payload_mcp_api_keysRefreshedPayloadMcpApiKey>;
   refreshTokenUser?: Maybe<usersRefreshedUser>;
   resetPasswordUser?: Maybe<usersResetPassword>;
@@ -5644,6 +5717,12 @@ export type MutationlogoutPayloadMcpApiKeyArgs = {
 
 export type MutationlogoutUserArgs = {
   allSessions?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+
+export type MutationpredictCategoryArgs = {
+  title: Scalars['String']['input'];
+  type: Scalars['String']['input'];
 };
 
 
@@ -21865,6 +21944,7 @@ export type mutationAppSetting_AiInput = {
   models?: InputMaybe<Array<InputMaybe<mutationAppSetting_Ai_ModelsInput>>>;
   perUserDailyLimit?: InputMaybe<Scalars['Float']['input']>;
   perUserMonthlyLimit?: InputMaybe<Scalars['Float']['input']>;
+  predictionEnabled?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 export type mutationAppSetting_Ai_ModelsInput = {
@@ -22875,6 +22955,14 @@ export type SuggestCategoryMutationVariables = Exact<{
 
 export type SuggestCategoryMutation = { __typename?: 'Mutation', suggestCategory?: { __typename?: 'AICategorySuggestionResult', category?: any | null, reason: string, model: string, latencyMs: number, usage: { __typename?: 'AIUsageMeta', promptTokenCount: number, candidatesTokenCount: number, totalTokenCount: number } } | null };
 
+export type PredictCategoryMutationVariables = Exact<{
+  type: Scalars['String']['input'];
+  title: Scalars['String']['input'];
+}>;
+
+
+export type PredictCategoryMutation = { __typename?: 'Mutation', predictCategory?: { __typename?: 'AICategoryPredictionResult', category?: any | null, score: number, model: string, latencyMs: number } | null };
+
 export type GetDashboardSummaryQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -23245,6 +23333,7 @@ export const DeleteAccountDocument = {"kind":"Document","definitions":[{"kind":"
 export const TextToTransactionDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"TextToTransaction"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"text"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"model"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"textToTransaction"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"text"},"value":{"kind":"Variable","name":{"kind":"Name","value":"text"}}},{"kind":"Argument","name":{"kind":"Name","value":"model"},"value":{"kind":"Variable","name":{"kind":"Name","value":"model"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"data"}},{"kind":"Field","name":{"kind":"Name","value":"model"}},{"kind":"Field","name":{"kind":"Name","value":"latencyMs"}},{"kind":"Field","name":{"kind":"Name","value":"usage"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"promptTokenCount"}},{"kind":"Field","name":{"kind":"Name","value":"candidatesTokenCount"}},{"kind":"Field","name":{"kind":"Name","value":"totalTokenCount"}}]}}]}}]}}]} as unknown as DocumentNode<TextToTransactionMutation, TextToTransactionMutationVariables>;
 export const ImageToTransactionDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"ImageToTransaction"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"image"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"mimeType"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"model"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"imageToTransaction"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"image"},"value":{"kind":"Variable","name":{"kind":"Name","value":"image"}}},{"kind":"Argument","name":{"kind":"Name","value":"mimeType"},"value":{"kind":"Variable","name":{"kind":"Name","value":"mimeType"}}},{"kind":"Argument","name":{"kind":"Name","value":"model"},"value":{"kind":"Variable","name":{"kind":"Name","value":"model"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"data"}},{"kind":"Field","name":{"kind":"Name","value":"model"}},{"kind":"Field","name":{"kind":"Name","value":"latencyMs"}},{"kind":"Field","name":{"kind":"Name","value":"usage"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"promptTokenCount"}},{"kind":"Field","name":{"kind":"Name","value":"candidatesTokenCount"}},{"kind":"Field","name":{"kind":"Name","value":"totalTokenCount"}}]}}]}}]}}]} as unknown as DocumentNode<ImageToTransactionMutation, ImageToTransactionMutationVariables>;
 export const SuggestCategoryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"SuggestCategory"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"type"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"title"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"amount"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"date"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"note"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"personId"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"model"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"suggestCategory"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"type"},"value":{"kind":"Variable","name":{"kind":"Name","value":"type"}}},{"kind":"Argument","name":{"kind":"Name","value":"title"},"value":{"kind":"Variable","name":{"kind":"Name","value":"title"}}},{"kind":"Argument","name":{"kind":"Name","value":"amount"},"value":{"kind":"Variable","name":{"kind":"Name","value":"amount"}}},{"kind":"Argument","name":{"kind":"Name","value":"date"},"value":{"kind":"Variable","name":{"kind":"Name","value":"date"}}},{"kind":"Argument","name":{"kind":"Name","value":"note"},"value":{"kind":"Variable","name":{"kind":"Name","value":"note"}}},{"kind":"Argument","name":{"kind":"Name","value":"personId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"personId"}}},{"kind":"Argument","name":{"kind":"Name","value":"model"},"value":{"kind":"Variable","name":{"kind":"Name","value":"model"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"category"}},{"kind":"Field","name":{"kind":"Name","value":"reason"}},{"kind":"Field","name":{"kind":"Name","value":"model"}},{"kind":"Field","name":{"kind":"Name","value":"latencyMs"}},{"kind":"Field","name":{"kind":"Name","value":"usage"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"promptTokenCount"}},{"kind":"Field","name":{"kind":"Name","value":"candidatesTokenCount"}},{"kind":"Field","name":{"kind":"Name","value":"totalTokenCount"}}]}}]}}]}}]} as unknown as DocumentNode<SuggestCategoryMutation, SuggestCategoryMutationVariables>;
+export const PredictCategoryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"PredictCategory"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"type"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"title"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"predictCategory"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"type"},"value":{"kind":"Variable","name":{"kind":"Name","value":"type"}}},{"kind":"Argument","name":{"kind":"Name","value":"title"},"value":{"kind":"Variable","name":{"kind":"Name","value":"title"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"category"}},{"kind":"Field","name":{"kind":"Name","value":"score"}},{"kind":"Field","name":{"kind":"Name","value":"model"}},{"kind":"Field","name":{"kind":"Name","value":"latencyMs"}}]}}]}}]} as unknown as DocumentNode<PredictCategoryMutation, PredictCategoryMutationVariables>;
 export const GetDashboardSummaryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetDashboardSummary"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"dashboardSummary"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"totalBalance"}},{"kind":"Field","name":{"kind":"Name","value":"balanceChangePercent"}},{"kind":"Field","name":{"kind":"Name","value":"monthlyPulse"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"income"}},{"kind":"Field","name":{"kind":"Name","value":"expenses"}},{"kind":"Field","name":{"kind":"Name","value":"surplus"}},{"kind":"Field","name":{"kind":"Name","value":"month"}},{"kind":"Field","name":{"kind":"Name","value":"year"}},{"kind":"Field","name":{"kind":"Name","value":"monthName"}}]}}]}}]}}]} as unknown as DocumentNode<GetDashboardSummaryQuery, GetDashboardSummaryQueryVariables>;
 export const GetMonthlyCategoriesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetMonthlyCategories"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"month"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"year"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"monthlyCategories"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"month"},"value":{"kind":"Variable","name":{"kind":"Name","value":"month"}}},{"kind":"Argument","name":{"kind":"Name","value":"year"},"value":{"kind":"Variable","name":{"kind":"Name","value":"year"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"data"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"amount"}},{"kind":"Field","name":{"kind":"Name","value":"transactionCount"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}},{"kind":"Field","name":{"kind":"Name","value":"color"}},{"kind":"Field","name":{"kind":"Name","value":"bgColor"}},{"kind":"Field","name":{"kind":"Name","value":"isParent"}},{"kind":"Field","name":{"kind":"Name","value":"parentId"}}]}},{"kind":"Field","name":{"kind":"Name","value":"meta"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"month"}},{"kind":"Field","name":{"kind":"Name","value":"year"}},{"kind":"Field","name":{"kind":"Name","value":"monthName"}},{"kind":"Field","name":{"kind":"Name","value":"totalExpenses"}}]}}]}}]}}]} as unknown as DocumentNode<GetMonthlyCategoriesQuery, GetMonthlyCategoriesQueryVariables>;
 export const GetMonthlyTagsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetMonthlyTags"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"month"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"year"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"monthlyTags"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"month"},"value":{"kind":"Variable","name":{"kind":"Name","value":"month"}}},{"kind":"Argument","name":{"kind":"Name","value":"year"},"value":{"kind":"Variable","name":{"kind":"Name","value":"year"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"data"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"totalAmount"}},{"kind":"Field","name":{"kind":"Name","value":"totalTransactionCount"}},{"kind":"Field","name":{"kind":"Name","value":"expenseAmount"}},{"kind":"Field","name":{"kind":"Name","value":"incomeAmount"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}},{"kind":"Field","name":{"kind":"Name","value":"color"}},{"kind":"Field","name":{"kind":"Name","value":"bgColor"}}]}},{"kind":"Field","name":{"kind":"Name","value":"meta"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"month"}},{"kind":"Field","name":{"kind":"Name","value":"year"}},{"kind":"Field","name":{"kind":"Name","value":"monthName"}},{"kind":"Field","name":{"kind":"Name","value":"totalExpenses"}},{"kind":"Field","name":{"kind":"Name","value":"totalIncome"}},{"kind":"Field","name":{"kind":"Name","value":"totalTransfers"}}]}}]}}]}}]} as unknown as DocumentNode<GetMonthlyTagsQuery, GetMonthlyTagsQueryVariables>;

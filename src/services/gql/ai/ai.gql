@@ -53,3 +53,12 @@ mutation SuggestCategory(
     }
   }
 }
+
+mutation PredictCategory($type: String!, $title: String!) {
+  predictCategory(type: $type, title: $title) {
+    category
+    score
+    model
+    latencyMs
+  }
+}
