@@ -101,8 +101,6 @@ export function AlertDialog({
 }: AlertDialogProps) {
   const C = useColors();
 
-  console.log("🚀 message", message);
-
   const cancelBtn = buttons.find((b) => b.style === "cancel");
   const otherBtns = buttons.filter((b) => b.style !== "cancel");
   const stackButtons = !cancelBtn && otherBtns.length > 2;

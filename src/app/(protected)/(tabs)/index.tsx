@@ -1,4 +1,5 @@
 import { useApolloClient } from "@apollo/client/react";
+import { router } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import React, { useCallback, useState } from "react";
 import {
@@ -10,6 +11,7 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { AccountsRow } from "@/components/home/AccountsRow";
+import { AIAssistantCard } from "@/components/home/AIAssistantCard";
 import { BalanceCard } from "@/components/home/BalanceCard";
 import { HomeHeader } from "@/components/home/HomeHeader";
 import { MonthlyCalendarCard } from "@/components/home/MonthlyCalendarCard";
@@ -18,6 +20,7 @@ import { SplitsDebtsCard } from "@/components/home/SplitsDebtsCard";
 import { SpendingTagsCard } from "@/components/home/SpendingTagsCard";
 import { TopCategoriesCard } from "@/components/home/TopCategoriesCard";
 import { WeeklyActivityCard } from "@/components/home/WeeklyActivityCard";
+import { AIAssistantSheet } from "@/components/transaction/AIAssistantSheet";
 import {
   useGetDashboardSummary,
   useGetWeeklyExpenses,
@@ -33,6 +36,8 @@ export default function HomeScreen() {
   const apolloClient = useApolloClient();
   const [showBalance, setShowBalance] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+  const [aiOpen, setAiOpen] = useState(false);
+  const [aiInitialTab, setAiInitialTab] = useState<"text" | "receipt">("text");
   const {
     data: dashboard,
     loading: dashboardLoading,
@@ -79,6 +84,12 @@ export default function HomeScreen() {
           balanceChangePercent={dashboard?.balanceChangePercent}
           loading={dashboardLoading}
         />
+        <AIAssistantCard
+          onOpen={(tab) => {
+            setAiInitialTab(tab);
+            setAiOpen(true);
+          }}
+        />
         <MonthlyPulseCard
           showBalance={showBalance}
           income={pulse?.income}
@@ -101,6 +112,20 @@ export default function HomeScreen() {
         <SpendingTagsCard />
         <SplitsDebtsCard />
       </ScrollView>
+      <AIAssistantSheet
+        visible={aiOpen}
+        onClose={() => setAiOpen(false)}
+        onUseDetails={() => {
+          // From home, "Review" routes to Add; user can re-engage AI there if needed.
+          setAiOpen(false);
+          router.push("/add");
+        }}
+        onCreated={() => {
+          setAiOpen(false);
+          onRefresh();
+        }}
+        initialTab={aiInitialTab}
+      />
     </View>
   );
 }

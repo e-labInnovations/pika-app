@@ -99,6 +99,8 @@ interface Props {
   ) => void;
   /** Fired after a transaction is created via the "Create" shortcut */
   onCreated?: () => void;
+  /** Which tab to open on. Ignored if initialText/initialImage is provided. */
+  initialTab?: "text" | "receipt";
   /** Pre-fill the text tab with this string and open straight to analyze */
   initialText?: string;
   /** Pre-load the receipt tab with this image */
@@ -421,7 +423,7 @@ function AnalysisPreview({
 
 // ── Main sheet ────────────────────────────────────────────────────────────────
 
-export function AIAssistantSheet({ visible, onClose, onUseDetails, onCreated, initialText, initialImage }: Props) {
+export function AIAssistantSheet({ visible, onClose, onUseDetails, onCreated, initialTab, initialText, initialImage }: Props) {
   const C = useColors();
   const insets = useSafeAreaInsets();
 
@@ -441,7 +443,7 @@ export function AIAssistantSheet({ visible, onClose, onUseDetails, onCreated, in
   const { createTransaction } = useCreateTransaction();
   const analyzing = textLoading || imageLoading;
 
-  // Apply pre-filled content from share intent when sheet opens
+  // Apply pre-filled content from share intent / home card when sheet opens
   React.useEffect(() => {
     if (!visible) return;
     if (initialImage) {
@@ -452,8 +454,11 @@ export function AIAssistantSheet({ visible, onClose, onUseDetails, onCreated, in
       setTab("text");
       setTextInput(initialText);
       setResult(null);
+    } else if (initialTab) {
+      setTab(initialTab);
+      setResult(null);
     }
-  }, [visible, initialText, initialImage]);
+  }, [visible, initialText, initialImage, initialTab]);
 
   // ── Handlers ────────────────────────────────────────────────────────────────
 
