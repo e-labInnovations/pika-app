@@ -1,0 +1,64 @@
+fragment AuthUserFields on User {
+  id
+  email
+  name
+  role
+  avatar {
+    id
+    url
+    thumbnailURL
+  }
+  settings {
+    docs {
+      id
+      currency
+      timezone
+      locale
+      theme
+      geminiApiKey
+      categoryAiMethod
+      defaultAccount {
+        id
+        name
+        icon
+      }
+    }
+    hasNextPage
+  }
+  createdAt
+  updatedAt
+}
+
+query MeUser {
+  meUser {
+    user {
+      ...AuthUserFields
+    }
+    exp
+    collection
+  }
+}
+
+mutation LoginUser($email: String!, $password: String!) {
+  loginUser(email: $email, password: $password) {
+    token
+    exp
+    user {
+      ...AuthUserFields
+    }
+  }
+}
+
+mutation LogoutUser {
+  logoutUser
+}
+
+# Payload's refreshTokenUser.user is a pared-down `usersJWT`, not the full User,
+# so we only pull the token + expiry here. Callers should re-query `meUser` if
+# they need refreshed user state.
+mutation RefreshTokenUser {
+  refreshTokenUser {
+    refreshedToken
+    exp
+  }
+}

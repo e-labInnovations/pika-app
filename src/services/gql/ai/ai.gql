@@ -32,6 +32,7 @@ mutation SuggestCategory(
   $note: String
   $personId: String
   $model: String
+  $forceMethod: String
 ) {
   suggestCategory(
     type: $type
@@ -41,6 +42,7 @@ mutation SuggestCategory(
     note: $note
     personId: $personId
     model: $model
+    forceMethod: $forceMethod
   ) {
     category
     reason

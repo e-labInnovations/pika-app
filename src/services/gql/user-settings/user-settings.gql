@@ -5,6 +5,7 @@ fragment UserSettingsFields on UserSetting {
   locale
   theme
   geminiApiKey
+  categoryAiMethod
   createdAt
   updatedAt
   defaultAccount {

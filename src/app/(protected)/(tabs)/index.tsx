@@ -21,6 +21,7 @@ import { SpendingTagsCard } from "@/components/home/SpendingTagsCard";
 import { TopCategoriesCard } from "@/components/home/TopCategoriesCard";
 import { WeeklyActivityCard } from "@/components/home/WeeklyActivityCard";
 import { AIAssistantSheet } from "@/components/transaction/AIAssistantSheet";
+import { usePendingAIPrefill } from "@/context/AIPrefillBridgeContext";
 import {
   useGetDashboardSummary,
   useGetWeeklyExpenses,
@@ -34,6 +35,7 @@ export default function HomeScreen() {
   const topPad = insets.top || (Platform.OS === "ios" ? 44 : 24);
 
   const apolloClient = useApolloClient();
+  const { setPending: setAIPrefill } = usePendingAIPrefill();
   const [showBalance, setShowBalance] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [aiOpen, setAiOpen] = useState(false);
@@ -115,8 +117,10 @@ export default function HomeScreen() {
       <AIAssistantSheet
         visible={aiOpen}
         onClose={() => setAiOpen(false)}
-        onUseDetails={() => {
-          // From home, "Review" routes to Add; user can re-engage AI there if needed.
+        onUseDetails={(values, image) => {
+          // Park the parsed values in the shared AI-prefill bridge; Add picks
+          // them up on mount (see add.tsx useEffect).
+          setAIPrefill({ values, image });
           setAiOpen(false);
           router.push("/add");
         }}

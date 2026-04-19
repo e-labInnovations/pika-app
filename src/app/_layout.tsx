@@ -11,6 +11,7 @@ import {
   ShareIntentBridgeProvider,
   usePendingShare,
 } from "../context/ShareIntentBridgeContext";
+import { AIPrefillBridgeProvider } from "../context/AIPrefillBridgeContext";
 import { apolloClient } from "../services/gql/client";
 import { AlertProvider } from "../components/ui/AlertDialog";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
@@ -82,13 +83,15 @@ export default function Layout() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <ShareIntentProvider>
         <ShareIntentBridgeProvider>
-          <ApolloProvider client={apolloClient}>
-            <AuthProvider>
-              <ShareIntentListener />
-              <Routes />
-              <AlertProvider />
-            </AuthProvider>
-          </ApolloProvider>
+          <AIPrefillBridgeProvider>
+            <ApolloProvider client={apolloClient}>
+              <AuthProvider>
+                <ShareIntentListener />
+                <Routes />
+                <AlertProvider />
+              </AuthProvider>
+            </ApolloProvider>
+          </AIPrefillBridgeProvider>
         </ShareIntentBridgeProvider>
       </ShareIntentProvider>
     </GestureHandlerRootView>

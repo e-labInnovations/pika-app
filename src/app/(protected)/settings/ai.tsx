@@ -21,6 +21,32 @@ import {
   useGetUserSettings,
   useUpdateUserSettings,
 } from "@/services/gql/user-settings/user-settings.service";
+import { UserSettingUpdate_categoryAiMethod_MutationInput } from "@/services/gql/types/graphql";
+
+type CategoryAiMethod = "minilm" | "gemini";
+
+const CATEGORY_METHOD_OPTIONS: {
+  value: CategoryAiMethod;
+  label: string;
+  description: string;
+  icon: string;
+  color: string;
+}[] = [
+  {
+    value: "minilm",
+    label: "Local (MiniLM)",
+    description: "Fast and free. Runs on our server with a small on-device-style model.",
+    icon: "cpu",
+    color: "#10b981",
+  },
+  {
+    value: "gemini",
+    label: "Cloud (Gemini)",
+    description: "Smarter for edge cases. Counts against your AI request quota.",
+    icon: "sparkles",
+    color: "#8b5cf6",
+  },
+];
 
 // ── Section label ─────────────────────────────────────────────────────────────
 
@@ -52,11 +78,51 @@ export default function AiSettingsScreen() {
   const [geminiKey, setGeminiKey] = useState("");
   const [savingGemini, setSavingGemini] = useState(false);
 
+  // Category AI method state (persists to user-settings)
+  const savedCategoryMethod: CategoryAiMethod =
+    (userSettings?.categoryAiMethod as CategoryAiMethod | null | undefined) ?? "minilm";
+  const [categoryMethod, setCategoryMethod] = useState<CategoryAiMethod>("minilm");
+  const [savingCategoryMethod, setSavingCategoryMethod] = useState(false);
+
   useEffect(() => {
     if (userSettings) {
       setGeminiKey(userSettings.geminiApiKey ?? "");
+      setCategoryMethod(
+        (userSettings.categoryAiMethod as CategoryAiMethod | null | undefined) ?? "minilm",
+      );
     }
-  }, [userSettings?.id, userSettings?.geminiApiKey]);
+  }, [userSettings?.id, userSettings?.geminiApiKey, userSettings?.categoryAiMethod]);
+
+  const handlePickCategoryMethod = async (next: CategoryAiMethod) => {
+    if (!userSettings?.id || savingCategoryMethod || next === savedCategoryMethod) {
+      setCategoryMethod(next);
+      return;
+    }
+    setCategoryMethod(next); // optimistic
+    setSavingCategoryMethod(true);
+    try {
+      await updateUserSettings({
+        id: userSettings.id,
+        data: {
+          categoryAiMethod:
+            next === "gemini"
+              ? UserSettingUpdate_categoryAiMethod_MutationInput.gemini
+              : UserSettingUpdate_categoryAiMethod_MutationInput.minilm,
+        },
+      });
+    } catch (err: any) {
+      setCategoryMethod(savedCategoryMethod); // revert on failure
+      showAlert({
+        title: "Error",
+        message:
+          err?.graphQLErrors?.[0]?.message ??
+          err?.message ??
+          "Failed to update preference.",
+      });
+    } finally {
+      setSavingCategoryMethod(false);
+    }
+  };
 
   const savedGemini = userSettings?.geminiApiKey ?? "";
   const geminiChanged = geminiKey !== savedGemini;
@@ -304,6 +370,105 @@ export default function AiSettingsScreen() {
                 color={C.onSurfaceVariant}
               />
             </TouchableOpacity>
+          </View>
+
+          {/* ── Category Suggestions ───────────────────────────────────────── */}
+          <SectionLabel label="Category Suggestions" topPad />
+          <View
+            style={{
+              borderRadius: 16,
+              backgroundColor: C.surfaceMid,
+              padding: 12,
+              gap: 8,
+            }}
+          >
+            <Text
+              style={{
+                fontSize: 12,
+                color: C.onSurfaceVariant,
+                paddingHorizontal: 4,
+                marginBottom: 2,
+              }}
+            >
+              Choose how Pika picks a category when you add a transaction.
+            </Text>
+            {CATEGORY_METHOD_OPTIONS.map((opt) => {
+              const selected = categoryMethod === opt.value;
+              const saving = savingCategoryMethod && selected;
+              return (
+                <TouchableOpacity
+                  key={opt.value}
+                  onPress={() => handlePickCategoryMethod(opt.value)}
+                  disabled={savingCategoryMethod}
+                  activeOpacity={0.75}
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                    gap: 12,
+                    padding: 12,
+                    borderRadius: 14,
+                    backgroundColor: selected
+                      ? `${opt.color}14`
+                      : C.surfaceHigh,
+                    borderWidth: 1.5,
+                    borderColor: selected ? opt.color : "transparent",
+                  }}
+                >
+                  <View
+                    style={{
+                      width: 36,
+                      height: 36,
+                      borderRadius: 10,
+                      backgroundColor: `${opt.color}22`,
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <DynamicIcon name={opt.icon} size={17} color={opt.color} />
+                  </View>
+                  <View style={{ flex: 1 }}>
+                    <Text
+                      style={{
+                        fontSize: 14,
+                        fontWeight: "700",
+                        color: selected ? opt.color : C.onSurface,
+                      }}
+                    >
+                      {opt.label}
+                    </Text>
+                    <Text
+                      style={{
+                        fontSize: 11,
+                        color: C.onSurfaceVariant,
+                        marginTop: 1,
+                      }}
+                    >
+                      {opt.description}
+                    </Text>
+                  </View>
+                  {saving ? (
+                    <ActivityIndicator size="small" color={opt.color} />
+                  ) : (
+                    <View
+                      style={{
+                        width: 20,
+                        height: 20,
+                        borderRadius: 10,
+                        borderWidth: 2,
+                        borderColor: selected ? opt.color : C.outlineVariant,
+                        backgroundColor: selected ? opt.color : "transparent",
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    >
+                      {selected && (
+                        <DynamicIcon name="check" size={11} color="#fff" />
+                      )}
+                    </View>
+                  )}
+                </TouchableOpacity>
+              );
+            })}
           </View>
 
           {/* ── Advanced ────────────────────────────────────────────────────── */}

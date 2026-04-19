@@ -1,8 +1,32 @@
 /**
- * Payload CMS auth endpoints — email/password only.
- * All token operations use the Authorization: JWT <token> header (Payload standard).
+ * Payload CMS auth — GraphQL-backed wrapper that keeps the shape of the
+ * existing REST-based `authApi` so callers (AuthContext, token-manager) don't
+ * need to change.
+ *
+ * Most operations (login, me, logout, checkToken) go through the shared
+ * Apollo client so they share its auth link, cache invalidation, and error
+ * handling.
+ *
+ * Refresh is intentionally a raw GraphQL fetch: it's triggered BY the auth
+ * link (via tokenManager), so routing it back through Apollo would deadlock
+ * on itself. Keeping refresh as a plain fetch with an explicit
+ * Authorization header sidesteps the cycle.
  */
-import { API_URL } from "./constants";
+import { print } from "graphql";
+import type { ApolloQueryResult } from "@apollo/client/core";
+import { apolloClient } from "../services/gql/client";
+import {
+  LoginUserDocument,
+  LogoutUserDocument,
+  MeUserDocument,
+  RefreshTokenUserDocument,
+  type AuthUserFieldsFragment,
+  type LoginUserMutation,
+  type LogoutUserMutation,
+  type MeUserQuery,
+  type RefreshTokenUserMutation,
+} from "../services/gql/types/graphql";
+import { API_URL, GRAPHQL_URL } from "./constants";
 import { storage } from "./storage";
 
 export type PayloadUserSettings = {
@@ -14,6 +38,7 @@ export type PayloadUserSettings = {
   theme?: string | null;
   defaultAccount?: { id: string; name: string; icon: string } | null;
   geminiApiKey?: string | null;
+  categoryAiMethod?: "minilm" | "gemini" | null;
   createdAt?: string | null;
   updatedAt?: string | null;
 };
@@ -41,93 +66,142 @@ type RefreshResponse = {
   message: string;
 };
 
-async function payloadFetch(path: string, init: RequestInit = {}) {
-  const res = await fetch(`${API_URL}${path}`, {
-    ...init,
-    headers: {
-      "Content-Type": "application/json",
-      ...(init.headers ?? {}),
-    },
-  });
-  return res;
+// ── Helpers ──────────────────────────────────────────────────────────────────
+
+function fragToUser(frag: AuthUserFieldsFragment): PayloadUser {
+  return frag as unknown as PayloadUser;
 }
+
+function gqlMessage(e: unknown, fallback: string): string {
+  const any = e as { graphQLErrors?: { message?: string }[]; message?: string };
+  return any?.graphQLErrors?.[0]?.message ?? any?.message ?? fallback;
+}
+
+/**
+ * Detect "not authenticated / token rejected" vs other errors. Used by
+ * `checkToken` so callers can distinguish a revoked token (hard sign-out)
+ * from transient network / 5xx blips (stay signed in).
+ */
+function isAuthError(e: unknown): boolean {
+  const any = e as { graphQLErrors?: { message?: string; extensions?: { code?: string } }[] };
+  if (!any?.graphQLErrors?.length) return false;
+  return any.graphQLErrors.some(
+    (g) =>
+      g.extensions?.code === "UNAUTHENTICATED" ||
+      (typeof g.message === "string" && g.message.toLowerCase().includes("not authorized")),
+  );
+}
+
+// ── Public API ──────────────────────────────────────────────────────────────
 
 export const authApi = {
   login: async (email: string, password: string): Promise<LoginResponse> => {
-    const res = await payloadFetch("/api/users/login", {
-      method: "POST",
-      body: JSON.stringify({ email, password }),
-    });
-
-    if (!res.ok) {
-      const body = await res.json().catch(() => ({}));
-      const msg =
-        body?.errors?.[0]?.message ??
-        body?.message ??
-        "Invalid email or password.";
-      throw new Error(msg);
+    try {
+      const res = await apolloClient.mutate<LoginUserMutation>({
+        mutation: LoginUserDocument,
+        variables: { email, password },
+        fetchPolicy: "no-cache",
+      });
+      const payload = res.data?.loginUser;
+      if (!payload?.token || !payload?.user) {
+        throw new Error("Invalid email or password.");
+      }
+      return {
+        token: payload.token,
+        exp: payload.exp ?? 0,
+        user: fragToUser(payload.user as AuthUserFieldsFragment),
+      };
+    } catch (e) {
+      throw new Error(gqlMessage(e, "Invalid email or password."));
     }
-
-    return res.json() as Promise<LoginResponse>;
   },
 
   refreshToken: async (): Promise<RefreshResponse | null> => {
     const token = await storage.getToken();
     if (!token) return null;
 
-    const res = await payloadFetch("/api/users/refresh-token", {
-      method: "POST",
-      headers: { Authorization: `JWT ${token}` },
-    });
-
-    if (!res.ok) return null;
-    return res.json() as Promise<RefreshResponse>;
+    // Raw GraphQL fetch — see file header comment for why this bypasses Apollo.
+    try {
+      const res = await fetch(GRAPHQL_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `JWT ${token}`,
+        },
+        body: JSON.stringify({ query: print(RefreshTokenUserDocument) }),
+      });
+      if (!res.ok) return null;
+      const body = (await res.json()) as {
+        data?: RefreshTokenUserMutation;
+        errors?: { message?: string }[];
+      };
+      const data = body?.data?.refreshTokenUser;
+      if (!data?.refreshedToken) return null;
+      return {
+        refreshedToken: data.refreshedToken,
+        exp: data.exp ?? 0,
+        message: "ok",
+      };
+    } catch {
+      return null;
+    }
   },
 
   /**
-   * Returns 'valid' if the server accepts the token, 'invalid' if the server
-   * explicitly rejects it (401/403), or 'network_error' if unreachable.
-   * Use this during rehydration to catch revoked / otherwise invalid tokens.
+   * 'valid' → server accepts the token
+   * 'invalid' → server explicitly rejects (revoked / bad)
+   * 'network_error' → unreachable / transient
    */
   checkToken: async (): Promise<"valid" | "invalid" | "network_error"> => {
     const token = await storage.getToken();
     if (!token) return "invalid";
     try {
-      const res = await payloadFetch("/api/users/me", {
-        headers: { Authorization: `JWT ${token}` },
+      const res: ApolloQueryResult<MeUserQuery> = await apolloClient.query({
+        query: MeUserDocument,
+        fetchPolicy: "network-only",
+        errorPolicy: "none",
       });
-      if (res.status === 401 || res.status === 403) return "invalid";
-      return res.ok ? "valid" : "network_error"; // 5xx → treat as transient
-    } catch {
-      return "network_error"; // fetch threw (no network)
+      return res.data?.meUser?.user ? "valid" : "invalid";
+    } catch (e) {
+      if (isAuthError(e)) return "invalid";
+      return "network_error";
     }
   },
 
-  me: async (tokenOverride?: string): Promise<PayloadUser | null> => {
-    const token = tokenOverride ?? (await storage.getToken());
+  me: async (_tokenOverride?: string): Promise<PayloadUser | null> => {
+    // _tokenOverride is accepted only for signature-compatibility with callers
+    // that were designed against the REST version. Apollo always uses the
+    // token currently in secure storage via the authLink, which is fine
+    // because every caller writes the token to storage first.
+    const token = _tokenOverride ?? (await storage.getToken());
     if (!token) return null;
-
-    const res = await payloadFetch("/api/users/me", {
-      headers: { Authorization: `JWT ${token}` },
-    });
-
-    if (!res.ok) {
-      const body = await res.json().catch(() => ({}));
-      throw new Error(
-        body?.errors?.[0]?.message ?? body?.message ?? `HTTP ${res.status}`,
-      );
+    try {
+      const res = await apolloClient.query<MeUserQuery>({
+        query: MeUserDocument,
+        fetchPolicy: "network-only",
+        errorPolicy: "none",
+      });
+      const user = res.data?.meUser?.user;
+      return user ? fragToUser(user as AuthUserFieldsFragment) : null;
+    } catch (e) {
+      throw new Error(gqlMessage(e, "Failed to fetch user."));
     }
-    const data = await res.json();
-    return (data?.user ?? null) as PayloadUser | null;
   },
 
   logout: async (): Promise<void> => {
     const token = await storage.getToken();
     if (!token) return;
     // Fire-and-forget — don't block on network failure
-    payloadFetch("/api/users/logout", {
-      method: "POST",
-      headers: { Authorization: `JWT ${token}` },
-    }).catch(() => {});
+    apolloClient
+      .mutate<LogoutUserMutation>({
+        mutation: LogoutUserDocument,
+        fetchPolicy: "no-cache",
+      })
+      .catch(() => {});
   },
 };
+
+// Re-export so callers that previously imported API_URL via auth-api keep
+// working without touching their imports. (No current callers do, but this
+// keeps the module boundary stable.)
+export { API_URL };

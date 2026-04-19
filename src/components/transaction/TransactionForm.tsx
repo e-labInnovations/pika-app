@@ -37,6 +37,7 @@ import {
 } from "../../services/gql/types/graphql";
 import { uploadMedia, resolveMediaUrl } from "../../lib/media-upload";
 import { useColors } from "../../theme/colors";
+import { useAuth } from "../../context/AuthContext";
 import {
   usePredictCategory,
   useSuggestCategory,
@@ -244,7 +245,11 @@ export function TransactionForm({ initialValues, onSubmit, onCancel, submitLabel
   const [showPerson, setShowPerson] = useState(false);
   const [showTags, setShowTags] = useState(false);
 
-  // AI category suggestion state (explicit button, Gemini-backed)
+  // AI category suggestion state — the explicit Suggest button routes through
+  // the user's preferred backend (minilm | gemini). See settings/ai.tsx.
+  const { settings } = useAuth();
+  const categoryAiMethod = (settings?.categoryAiMethod as "minilm" | "gemini" | null | undefined) ?? "minilm";
+
   const { suggestCategory, loading: suggesting } = useSuggestCategory();
   const [suggestedCategory, setSuggestedCategory] = useState<SuggestedCategory | null>(null);
 
@@ -254,7 +259,7 @@ export function TransactionForm({ initialValues, onSubmit, onCancel, submitLabel
   const predictReqIdRef = React.useRef(0);
   const dismissedPredictionTitleRef = React.useRef<string | null>(null);
 
-  const handleSuggestCategory = async () => {
+  const runSuggest = async (forceMethod?: "minilm" | "gemini") => {
     const title = values.title.trim();
     if (title.length < 3) return;
     try {
@@ -265,17 +270,39 @@ export function TransactionForm({ initialValues, onSubmit, onCancel, submitLabel
         date: values.date.toISOString(),
         note: values.note.trim() || undefined,
         personId: values.person?.id,
+        forceMethod,
       });
       const cat = (res.data?.suggestCategory?.category ?? null) as SuggestedCategory | null;
       if (cat) {
         setSuggestedCategory(cat);
+        return;
+      }
+
+      // No match — if we just tried MiniLM, let the user escalate to Gemini
+      // for this one request without changing their saved preference.
+      const triedMethod = forceMethod ?? categoryAiMethod;
+      if (triedMethod === "minilm") {
+        showAlert({
+          title: "No local match",
+          message:
+            "The local model couldn't confidently match a category. Try Gemini for a smarter guess?",
+          buttons: [
+            { text: "Cancel", style: "cancel" },
+            { text: "Try Gemini", onPress: () => runSuggest("gemini") },
+          ],
+        });
       } else {
-        showAlert({ title: "No suggestion", message: "Couldn't find a matching category." });
+        showAlert({
+          title: "No suggestion",
+          message: "Couldn't find a matching category.",
+        });
       }
     } catch (e: any) {
       showAlert({ title: "Couldn't suggest", message: e?.message ?? "Suggestion failed." });
     }
   };
+
+  const handleSuggestCategory = () => runSuggest();
 
   const applySuggestedCategory = () => {
     if (!suggestedCategory) return;

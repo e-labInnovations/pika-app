@@ -10,6 +10,7 @@ import { AIAssistantSheet } from "@/components/transaction/AIAssistantSheet";
 import { useCreateTransaction } from "@/services/gql/transactions/transactions.service";
 import { useGetPerson } from "@/services/gql/people/people.service";
 import { usePendingShare } from "@/context/ShareIntentBridgeContext";
+import { usePendingAIPrefill } from "@/context/AIPrefillBridgeContext";
 import type { TxType } from "@/components/transaction/CategoryPickerSheet";
 
 const DEFAULT_FORM_VALUES = (
@@ -48,6 +49,8 @@ export default function AddTransactionScreen() {
   >();
 
   const { pending, clearPending } = usePendingShare();
+  const { pending: pendingAIPrefill, clearPending: clearAIPrefill } =
+    usePendingAIPrefill();
 
   // Auto-open AI sheet when a share intent arrives
   useEffect(() => {
@@ -66,6 +69,27 @@ export default function AddTransactionScreen() {
     clearPending();
     setAiOpen(true);
   }, [pending]);
+
+  // Pick up AI-parsed data that the Home screen's AI Assistant parked in the
+  // bridge before navigating here (the "Review" flow). Apply as prefill then
+  // clear so a subsequent navigation to /add starts fresh.
+  useEffect(() => {
+    if (!pendingAIPrefill) return;
+    setAiPrefill(pendingAIPrefill.values);
+    const img = pendingAIPrefill.image;
+    setAiSeedImage(
+      img
+        ? {
+            uri: img.uri,
+            mimeType: img.mimeType,
+            filename: `receipt-${Date.now()}.jpg`,
+          }
+        : null,
+    );
+    setFormKey((k) => k + 1);
+    clearAIPrefill();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pendingAIPrefill]);
 
   const { personId, type, amount } = useLocalSearchParams<{
     personId?: string;
