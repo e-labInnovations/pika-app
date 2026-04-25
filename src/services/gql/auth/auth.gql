@@ -16,6 +16,9 @@ fragment AuthUserFields on User {
       locale
       theme
       geminiApiKey
+      hfApiKey
+      preferredModel
+      allowFallback
       categoryAiMethod
       defaultAccount {
         id
@@ -29,6 +32,36 @@ fragment AuthUserFields on User {
   updatedAt
 }
 
+fragment AppSettingsAiFields on AppSetting {
+  ai {
+    enabled
+    allowUserApiKey
+    defaultModel
+    models {
+      id
+      name
+      provider
+      enabled
+      contextWindow
+    }
+  }
+}
+
+# Combined session query — fetches authenticated user + app-level settings in one trip.
+query GetSession {
+  meUser {
+    user {
+      ...AuthUserFields
+    }
+    exp
+    collection
+  }
+  AppSetting {
+    ...AppSettingsAiFields
+  }
+}
+
+# Lightweight token check — used by AuthContext rehydration and token-manager.
 query MeUser {
   meUser {
     user {

@@ -5,19 +5,45 @@
  * We refresh if the token expires within BUFFER_SECONDS.
  * Concurrent callers share a single in-flight refresh promise.
  */
-import { authApi } from "./auth-api";
+import { print } from "graphql";
+import { RefreshTokenUserDocument } from "../services/gql/types/graphql";
+import { GRAPHQL_URL } from "./constants";
 import { storage } from "./storage";
 
 const BUFFER_SECONDS = 300; // refresh 5 min before expiry
 
 let refreshPromise: Promise<string | null> | null = null;
 
+/**
+ * Raw GraphQL fetch — intentionally bypasses Apollo.
+ *
+ * Every Apollo request goes through the auth link which calls
+ * tokenManager.getValidToken(). If we used apolloClient.mutate() here,
+ * that request would also hit the auth link → getValidToken() → another
+ * refresh attempt → deadlock. Plain fetch sidesteps the cycle entirely.
+ */
 async function doRefresh(): Promise<string | null> {
-  const data = await authApi.refreshToken();
-  if (!data?.refreshedToken) return null;
-  await storage.setToken(data.refreshedToken);
-  await storage.setExp(data.exp);
-  return data.refreshedToken;
+  const token = await storage.getToken();
+  if (!token) return null;
+  try {
+    const res = await fetch(GRAPHQL_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `JWT ${token}`,
+      },
+      body: JSON.stringify({ query: print(RefreshTokenUserDocument) }),
+    });
+    if (!res.ok) return null;
+    const body = await res.json();
+    const data = body?.data?.refreshTokenUser;
+    if (!data?.refreshedToken) return null;
+    await storage.setToken(data.refreshedToken);
+    await storage.setExp(data.exp ?? 0);
+    return data.refreshedToken;
+  } catch {
+    return null;
+  }
 }
 
 export const tokenManager = {
@@ -29,10 +55,10 @@ export const tokenManager = {
     const exp = await storage.getExp();
     const nowSec = Math.floor(Date.now() / 1000);
 
-    // Token is not expiring soon — return as-is
+    // Token not expiring soon — return as-is
     if (exp && exp - nowSec > BUFFER_SECONDS) return token;
 
-    // Token is expired or expiring soon — refresh (deduplicated)
+    // Token is expired or expiring soon — refresh (deduplicated across concurrent callers)
     if (!refreshPromise) {
       refreshPromise = doRefresh().finally(() => {
         refreshPromise = null;
@@ -44,9 +70,8 @@ export const tokenManager = {
       // string = new token
       return await refreshPromise;
     } catch {
-      // Network error on wake (no connection yet, timeout, etc.)
-      // Return the existing token — Apollo will get a 401 if truly invalid,
-      // which triggers setUnauthenticatedHandler → logout.
+      // Network error on wake — return existing token.
+      // Apollo will get a 401 if truly invalid → setUnauthenticatedHandler → logout.
       return token;
     }
   },

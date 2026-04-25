@@ -1142,7 +1142,10 @@ export type AiUsage = {
 
 export enum AiUsageUpdate_apiKeyType_MutationInput {
   app = 'app',
-  user = 'user'
+  app_hf = 'app_hf',
+  local = 'local',
+  user = 'user',
+  user_hf = 'user_hf'
 }
 
 export enum AiUsageUpdate_promptType_MutationInput {
@@ -1159,17 +1162,26 @@ export enum AiUsageUpdate_status_MutationInput {
 
 export enum AiUsage_apiKeyType {
   app = 'app',
-  user = 'user'
+  app_hf = 'app_hf',
+  local = 'local',
+  user = 'user',
+  user_hf = 'user_hf'
 }
 
 export enum AiUsage_apiKeyType_Input {
   app = 'app',
-  user = 'user'
+  app_hf = 'app_hf',
+  local = 'local',
+  user = 'user',
+  user_hf = 'user_hf'
 }
 
 export enum AiUsage_apiKeyType_MutationInput {
   app = 'app',
-  user = 'user'
+  app_hf = 'app_hf',
+  local = 'local',
+  user = 'user',
+  user_hf = 'user_hf'
 }
 
 export type AiUsage_apiKeyType_operator = {
@@ -2170,17 +2182,32 @@ export type AppSetting_Ai = {
   defaultModel?: Maybe<Scalars['String']['output']>;
   enabled?: Maybe<Scalars['Boolean']['output']>;
   geminiApiKey?: Maybe<Scalars['String']['output']>;
+  hfApiKey?: Maybe<Scalars['String']['output']>;
   models?: Maybe<Array<AppSetting_Ai_Models>>;
-  perUserDailyLimit?: Maybe<Scalars['Float']['output']>;
-  perUserMonthlyLimit?: Maybe<Scalars['Float']['output']>;
+  perUserDailyTokenLimit?: Maybe<Scalars['Float']['output']>;
+  perUserMonthlyTokenLimit?: Maybe<Scalars['Float']['output']>;
   predictionEnabled?: Maybe<Scalars['Boolean']['output']>;
 };
 
 export type AppSetting_Ai_Models = {
   __typename?: 'AppSetting_Ai_Models';
+  contextWindow?: Maybe<Scalars['Float']['output']>;
+  enabled?: Maybe<Scalars['Boolean']['output']>;
   id?: Maybe<Scalars['String']['output']>;
+  maxUserMonthlyTokens?: Maybe<Scalars['Float']['output']>;
   name?: Maybe<Scalars['String']['output']>;
+  provider?: Maybe<AppSetting_Ai_Models_provider>;
 };
+
+export enum AppSetting_Ai_Models_provider {
+  gemini = 'gemini',
+  huggingface = 'huggingface'
+}
+
+export enum AppSetting_Ai_Models_provider_MutationInput {
+  gemini = 'gemini',
+  huggingface = 'huggingface'
+}
 
 export type AppSettingsDocAccessFields = {
   __typename?: 'AppSettingsDocAccessFields';
@@ -2214,9 +2241,10 @@ export type AppSettingsDocAccessFields_ai_Fields = {
   defaultModel?: Maybe<AppSettingsDocAccessFields_ai_defaultModel>;
   enabled?: Maybe<AppSettingsDocAccessFields_ai_enabled>;
   geminiApiKey?: Maybe<AppSettingsDocAccessFields_ai_geminiApiKey>;
+  hfApiKey?: Maybe<AppSettingsDocAccessFields_ai_hfApiKey>;
   models?: Maybe<AppSettingsDocAccessFields_ai_models>;
-  perUserDailyLimit?: Maybe<AppSettingsDocAccessFields_ai_perUserDailyLimit>;
-  perUserMonthlyLimit?: Maybe<AppSettingsDocAccessFields_ai_perUserMonthlyLimit>;
+  perUserDailyTokenLimit?: Maybe<AppSettingsDocAccessFields_ai_perUserDailyTokenLimit>;
+  perUserMonthlyTokenLimit?: Maybe<AppSettingsDocAccessFields_ai_perUserMonthlyTokenLimit>;
   predictionEnabled?: Maybe<AppSettingsDocAccessFields_ai_predictionEnabled>;
 };
 
@@ -2342,6 +2370,34 @@ export type AppSettingsDocAccessFields_ai_geminiApiKey_Update = {
   permission: Scalars['Boolean']['output'];
 };
 
+export type AppSettingsDocAccessFields_ai_hfApiKey = {
+  __typename?: 'AppSettingsDocAccessFields_ai_hfApiKey';
+  create?: Maybe<AppSettingsDocAccessFields_ai_hfApiKey_Create>;
+  delete?: Maybe<AppSettingsDocAccessFields_ai_hfApiKey_Delete>;
+  read?: Maybe<AppSettingsDocAccessFields_ai_hfApiKey_Read>;
+  update?: Maybe<AppSettingsDocAccessFields_ai_hfApiKey_Update>;
+};
+
+export type AppSettingsDocAccessFields_ai_hfApiKey_Create = {
+  __typename?: 'AppSettingsDocAccessFields_ai_hfApiKey_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type AppSettingsDocAccessFields_ai_hfApiKey_Delete = {
+  __typename?: 'AppSettingsDocAccessFields_ai_hfApiKey_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type AppSettingsDocAccessFields_ai_hfApiKey_Read = {
+  __typename?: 'AppSettingsDocAccessFields_ai_hfApiKey_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type AppSettingsDocAccessFields_ai_hfApiKey_Update = {
+  __typename?: 'AppSettingsDocAccessFields_ai_hfApiKey_Update';
+  permission: Scalars['Boolean']['output'];
+};
+
 export type AppSettingsDocAccessFields_ai_models = {
   __typename?: 'AppSettingsDocAccessFields_ai_models';
   create?: Maybe<AppSettingsDocAccessFields_ai_models_Create>;
@@ -2363,8 +2419,12 @@ export type AppSettingsDocAccessFields_ai_models_Delete = {
 
 export type AppSettingsDocAccessFields_ai_models_Fields = {
   __typename?: 'AppSettingsDocAccessFields_ai_models_Fields';
+  contextWindow?: Maybe<AppSettingsDocAccessFields_ai_models_contextWindow>;
+  enabled?: Maybe<AppSettingsDocAccessFields_ai_models_enabled>;
   id?: Maybe<AppSettingsDocAccessFields_ai_models_id>;
+  maxUserMonthlyTokens?: Maybe<AppSettingsDocAccessFields_ai_models_maxUserMonthlyTokens>;
   name?: Maybe<AppSettingsDocAccessFields_ai_models_name>;
+  provider?: Maybe<AppSettingsDocAccessFields_ai_models_provider>;
 };
 
 export type AppSettingsDocAccessFields_ai_models_Read = {
@@ -2374,6 +2434,62 @@ export type AppSettingsDocAccessFields_ai_models_Read = {
 
 export type AppSettingsDocAccessFields_ai_models_Update = {
   __typename?: 'AppSettingsDocAccessFields_ai_models_Update';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type AppSettingsDocAccessFields_ai_models_contextWindow = {
+  __typename?: 'AppSettingsDocAccessFields_ai_models_contextWindow';
+  create?: Maybe<AppSettingsDocAccessFields_ai_models_contextWindow_Create>;
+  delete?: Maybe<AppSettingsDocAccessFields_ai_models_contextWindow_Delete>;
+  read?: Maybe<AppSettingsDocAccessFields_ai_models_contextWindow_Read>;
+  update?: Maybe<AppSettingsDocAccessFields_ai_models_contextWindow_Update>;
+};
+
+export type AppSettingsDocAccessFields_ai_models_contextWindow_Create = {
+  __typename?: 'AppSettingsDocAccessFields_ai_models_contextWindow_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type AppSettingsDocAccessFields_ai_models_contextWindow_Delete = {
+  __typename?: 'AppSettingsDocAccessFields_ai_models_contextWindow_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type AppSettingsDocAccessFields_ai_models_contextWindow_Read = {
+  __typename?: 'AppSettingsDocAccessFields_ai_models_contextWindow_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type AppSettingsDocAccessFields_ai_models_contextWindow_Update = {
+  __typename?: 'AppSettingsDocAccessFields_ai_models_contextWindow_Update';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type AppSettingsDocAccessFields_ai_models_enabled = {
+  __typename?: 'AppSettingsDocAccessFields_ai_models_enabled';
+  create?: Maybe<AppSettingsDocAccessFields_ai_models_enabled_Create>;
+  delete?: Maybe<AppSettingsDocAccessFields_ai_models_enabled_Delete>;
+  read?: Maybe<AppSettingsDocAccessFields_ai_models_enabled_Read>;
+  update?: Maybe<AppSettingsDocAccessFields_ai_models_enabled_Update>;
+};
+
+export type AppSettingsDocAccessFields_ai_models_enabled_Create = {
+  __typename?: 'AppSettingsDocAccessFields_ai_models_enabled_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type AppSettingsDocAccessFields_ai_models_enabled_Delete = {
+  __typename?: 'AppSettingsDocAccessFields_ai_models_enabled_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type AppSettingsDocAccessFields_ai_models_enabled_Read = {
+  __typename?: 'AppSettingsDocAccessFields_ai_models_enabled_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type AppSettingsDocAccessFields_ai_models_enabled_Update = {
+  __typename?: 'AppSettingsDocAccessFields_ai_models_enabled_Update';
   permission: Scalars['Boolean']['output'];
 };
 
@@ -2405,6 +2521,34 @@ export type AppSettingsDocAccessFields_ai_models_id_Update = {
   permission: Scalars['Boolean']['output'];
 };
 
+export type AppSettingsDocAccessFields_ai_models_maxUserMonthlyTokens = {
+  __typename?: 'AppSettingsDocAccessFields_ai_models_maxUserMonthlyTokens';
+  create?: Maybe<AppSettingsDocAccessFields_ai_models_maxUserMonthlyTokens_Create>;
+  delete?: Maybe<AppSettingsDocAccessFields_ai_models_maxUserMonthlyTokens_Delete>;
+  read?: Maybe<AppSettingsDocAccessFields_ai_models_maxUserMonthlyTokens_Read>;
+  update?: Maybe<AppSettingsDocAccessFields_ai_models_maxUserMonthlyTokens_Update>;
+};
+
+export type AppSettingsDocAccessFields_ai_models_maxUserMonthlyTokens_Create = {
+  __typename?: 'AppSettingsDocAccessFields_ai_models_maxUserMonthlyTokens_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type AppSettingsDocAccessFields_ai_models_maxUserMonthlyTokens_Delete = {
+  __typename?: 'AppSettingsDocAccessFields_ai_models_maxUserMonthlyTokens_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type AppSettingsDocAccessFields_ai_models_maxUserMonthlyTokens_Read = {
+  __typename?: 'AppSettingsDocAccessFields_ai_models_maxUserMonthlyTokens_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type AppSettingsDocAccessFields_ai_models_maxUserMonthlyTokens_Update = {
+  __typename?: 'AppSettingsDocAccessFields_ai_models_maxUserMonthlyTokens_Update';
+  permission: Scalars['Boolean']['output'];
+};
+
 export type AppSettingsDocAccessFields_ai_models_name = {
   __typename?: 'AppSettingsDocAccessFields_ai_models_name';
   create?: Maybe<AppSettingsDocAccessFields_ai_models_name_Create>;
@@ -2433,59 +2577,87 @@ export type AppSettingsDocAccessFields_ai_models_name_Update = {
   permission: Scalars['Boolean']['output'];
 };
 
-export type AppSettingsDocAccessFields_ai_perUserDailyLimit = {
-  __typename?: 'AppSettingsDocAccessFields_ai_perUserDailyLimit';
-  create?: Maybe<AppSettingsDocAccessFields_ai_perUserDailyLimit_Create>;
-  delete?: Maybe<AppSettingsDocAccessFields_ai_perUserDailyLimit_Delete>;
-  read?: Maybe<AppSettingsDocAccessFields_ai_perUserDailyLimit_Read>;
-  update?: Maybe<AppSettingsDocAccessFields_ai_perUserDailyLimit_Update>;
+export type AppSettingsDocAccessFields_ai_models_provider = {
+  __typename?: 'AppSettingsDocAccessFields_ai_models_provider';
+  create?: Maybe<AppSettingsDocAccessFields_ai_models_provider_Create>;
+  delete?: Maybe<AppSettingsDocAccessFields_ai_models_provider_Delete>;
+  read?: Maybe<AppSettingsDocAccessFields_ai_models_provider_Read>;
+  update?: Maybe<AppSettingsDocAccessFields_ai_models_provider_Update>;
 };
 
-export type AppSettingsDocAccessFields_ai_perUserDailyLimit_Create = {
-  __typename?: 'AppSettingsDocAccessFields_ai_perUserDailyLimit_Create';
+export type AppSettingsDocAccessFields_ai_models_provider_Create = {
+  __typename?: 'AppSettingsDocAccessFields_ai_models_provider_Create';
   permission: Scalars['Boolean']['output'];
 };
 
-export type AppSettingsDocAccessFields_ai_perUserDailyLimit_Delete = {
-  __typename?: 'AppSettingsDocAccessFields_ai_perUserDailyLimit_Delete';
+export type AppSettingsDocAccessFields_ai_models_provider_Delete = {
+  __typename?: 'AppSettingsDocAccessFields_ai_models_provider_Delete';
   permission: Scalars['Boolean']['output'];
 };
 
-export type AppSettingsDocAccessFields_ai_perUserDailyLimit_Read = {
-  __typename?: 'AppSettingsDocAccessFields_ai_perUserDailyLimit_Read';
+export type AppSettingsDocAccessFields_ai_models_provider_Read = {
+  __typename?: 'AppSettingsDocAccessFields_ai_models_provider_Read';
   permission: Scalars['Boolean']['output'];
 };
 
-export type AppSettingsDocAccessFields_ai_perUserDailyLimit_Update = {
-  __typename?: 'AppSettingsDocAccessFields_ai_perUserDailyLimit_Update';
+export type AppSettingsDocAccessFields_ai_models_provider_Update = {
+  __typename?: 'AppSettingsDocAccessFields_ai_models_provider_Update';
   permission: Scalars['Boolean']['output'];
 };
 
-export type AppSettingsDocAccessFields_ai_perUserMonthlyLimit = {
-  __typename?: 'AppSettingsDocAccessFields_ai_perUserMonthlyLimit';
-  create?: Maybe<AppSettingsDocAccessFields_ai_perUserMonthlyLimit_Create>;
-  delete?: Maybe<AppSettingsDocAccessFields_ai_perUserMonthlyLimit_Delete>;
-  read?: Maybe<AppSettingsDocAccessFields_ai_perUserMonthlyLimit_Read>;
-  update?: Maybe<AppSettingsDocAccessFields_ai_perUserMonthlyLimit_Update>;
+export type AppSettingsDocAccessFields_ai_perUserDailyTokenLimit = {
+  __typename?: 'AppSettingsDocAccessFields_ai_perUserDailyTokenLimit';
+  create?: Maybe<AppSettingsDocAccessFields_ai_perUserDailyTokenLimit_Create>;
+  delete?: Maybe<AppSettingsDocAccessFields_ai_perUserDailyTokenLimit_Delete>;
+  read?: Maybe<AppSettingsDocAccessFields_ai_perUserDailyTokenLimit_Read>;
+  update?: Maybe<AppSettingsDocAccessFields_ai_perUserDailyTokenLimit_Update>;
 };
 
-export type AppSettingsDocAccessFields_ai_perUserMonthlyLimit_Create = {
-  __typename?: 'AppSettingsDocAccessFields_ai_perUserMonthlyLimit_Create';
+export type AppSettingsDocAccessFields_ai_perUserDailyTokenLimit_Create = {
+  __typename?: 'AppSettingsDocAccessFields_ai_perUserDailyTokenLimit_Create';
   permission: Scalars['Boolean']['output'];
 };
 
-export type AppSettingsDocAccessFields_ai_perUserMonthlyLimit_Delete = {
-  __typename?: 'AppSettingsDocAccessFields_ai_perUserMonthlyLimit_Delete';
+export type AppSettingsDocAccessFields_ai_perUserDailyTokenLimit_Delete = {
+  __typename?: 'AppSettingsDocAccessFields_ai_perUserDailyTokenLimit_Delete';
   permission: Scalars['Boolean']['output'];
 };
 
-export type AppSettingsDocAccessFields_ai_perUserMonthlyLimit_Read = {
-  __typename?: 'AppSettingsDocAccessFields_ai_perUserMonthlyLimit_Read';
+export type AppSettingsDocAccessFields_ai_perUserDailyTokenLimit_Read = {
+  __typename?: 'AppSettingsDocAccessFields_ai_perUserDailyTokenLimit_Read';
   permission: Scalars['Boolean']['output'];
 };
 
-export type AppSettingsDocAccessFields_ai_perUserMonthlyLimit_Update = {
-  __typename?: 'AppSettingsDocAccessFields_ai_perUserMonthlyLimit_Update';
+export type AppSettingsDocAccessFields_ai_perUserDailyTokenLimit_Update = {
+  __typename?: 'AppSettingsDocAccessFields_ai_perUserDailyTokenLimit_Update';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type AppSettingsDocAccessFields_ai_perUserMonthlyTokenLimit = {
+  __typename?: 'AppSettingsDocAccessFields_ai_perUserMonthlyTokenLimit';
+  create?: Maybe<AppSettingsDocAccessFields_ai_perUserMonthlyTokenLimit_Create>;
+  delete?: Maybe<AppSettingsDocAccessFields_ai_perUserMonthlyTokenLimit_Delete>;
+  read?: Maybe<AppSettingsDocAccessFields_ai_perUserMonthlyTokenLimit_Read>;
+  update?: Maybe<AppSettingsDocAccessFields_ai_perUserMonthlyTokenLimit_Update>;
+};
+
+export type AppSettingsDocAccessFields_ai_perUserMonthlyTokenLimit_Create = {
+  __typename?: 'AppSettingsDocAccessFields_ai_perUserMonthlyTokenLimit_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type AppSettingsDocAccessFields_ai_perUserMonthlyTokenLimit_Delete = {
+  __typename?: 'AppSettingsDocAccessFields_ai_perUserMonthlyTokenLimit_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type AppSettingsDocAccessFields_ai_perUserMonthlyTokenLimit_Read = {
+  __typename?: 'AppSettingsDocAccessFields_ai_perUserMonthlyTokenLimit_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type AppSettingsDocAccessFields_ai_perUserMonthlyTokenLimit_Update = {
+  __typename?: 'AppSettingsDocAccessFields_ai_perUserMonthlyTokenLimit_Update';
   permission: Scalars['Boolean']['output'];
 };
 
@@ -2605,9 +2777,10 @@ export type AppSettingsFields_ai_Fields = {
   defaultModel?: Maybe<AppSettingsFields_ai_defaultModel>;
   enabled?: Maybe<AppSettingsFields_ai_enabled>;
   geminiApiKey?: Maybe<AppSettingsFields_ai_geminiApiKey>;
+  hfApiKey?: Maybe<AppSettingsFields_ai_hfApiKey>;
   models?: Maybe<AppSettingsFields_ai_models>;
-  perUserDailyLimit?: Maybe<AppSettingsFields_ai_perUserDailyLimit>;
-  perUserMonthlyLimit?: Maybe<AppSettingsFields_ai_perUserMonthlyLimit>;
+  perUserDailyTokenLimit?: Maybe<AppSettingsFields_ai_perUserDailyTokenLimit>;
+  perUserMonthlyTokenLimit?: Maybe<AppSettingsFields_ai_perUserMonthlyTokenLimit>;
   predictionEnabled?: Maybe<AppSettingsFields_ai_predictionEnabled>;
 };
 
@@ -2733,6 +2906,34 @@ export type AppSettingsFields_ai_geminiApiKey_Update = {
   permission: Scalars['Boolean']['output'];
 };
 
+export type AppSettingsFields_ai_hfApiKey = {
+  __typename?: 'AppSettingsFields_ai_hfApiKey';
+  create?: Maybe<AppSettingsFields_ai_hfApiKey_Create>;
+  delete?: Maybe<AppSettingsFields_ai_hfApiKey_Delete>;
+  read?: Maybe<AppSettingsFields_ai_hfApiKey_Read>;
+  update?: Maybe<AppSettingsFields_ai_hfApiKey_Update>;
+};
+
+export type AppSettingsFields_ai_hfApiKey_Create = {
+  __typename?: 'AppSettingsFields_ai_hfApiKey_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type AppSettingsFields_ai_hfApiKey_Delete = {
+  __typename?: 'AppSettingsFields_ai_hfApiKey_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type AppSettingsFields_ai_hfApiKey_Read = {
+  __typename?: 'AppSettingsFields_ai_hfApiKey_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type AppSettingsFields_ai_hfApiKey_Update = {
+  __typename?: 'AppSettingsFields_ai_hfApiKey_Update';
+  permission: Scalars['Boolean']['output'];
+};
+
 export type AppSettingsFields_ai_models = {
   __typename?: 'AppSettingsFields_ai_models';
   create?: Maybe<AppSettingsFields_ai_models_Create>;
@@ -2754,8 +2955,12 @@ export type AppSettingsFields_ai_models_Delete = {
 
 export type AppSettingsFields_ai_models_Fields = {
   __typename?: 'AppSettingsFields_ai_models_Fields';
+  contextWindow?: Maybe<AppSettingsFields_ai_models_contextWindow>;
+  enabled?: Maybe<AppSettingsFields_ai_models_enabled>;
   id?: Maybe<AppSettingsFields_ai_models_id>;
+  maxUserMonthlyTokens?: Maybe<AppSettingsFields_ai_models_maxUserMonthlyTokens>;
   name?: Maybe<AppSettingsFields_ai_models_name>;
+  provider?: Maybe<AppSettingsFields_ai_models_provider>;
 };
 
 export type AppSettingsFields_ai_models_Read = {
@@ -2765,6 +2970,62 @@ export type AppSettingsFields_ai_models_Read = {
 
 export type AppSettingsFields_ai_models_Update = {
   __typename?: 'AppSettingsFields_ai_models_Update';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type AppSettingsFields_ai_models_contextWindow = {
+  __typename?: 'AppSettingsFields_ai_models_contextWindow';
+  create?: Maybe<AppSettingsFields_ai_models_contextWindow_Create>;
+  delete?: Maybe<AppSettingsFields_ai_models_contextWindow_Delete>;
+  read?: Maybe<AppSettingsFields_ai_models_contextWindow_Read>;
+  update?: Maybe<AppSettingsFields_ai_models_contextWindow_Update>;
+};
+
+export type AppSettingsFields_ai_models_contextWindow_Create = {
+  __typename?: 'AppSettingsFields_ai_models_contextWindow_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type AppSettingsFields_ai_models_contextWindow_Delete = {
+  __typename?: 'AppSettingsFields_ai_models_contextWindow_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type AppSettingsFields_ai_models_contextWindow_Read = {
+  __typename?: 'AppSettingsFields_ai_models_contextWindow_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type AppSettingsFields_ai_models_contextWindow_Update = {
+  __typename?: 'AppSettingsFields_ai_models_contextWindow_Update';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type AppSettingsFields_ai_models_enabled = {
+  __typename?: 'AppSettingsFields_ai_models_enabled';
+  create?: Maybe<AppSettingsFields_ai_models_enabled_Create>;
+  delete?: Maybe<AppSettingsFields_ai_models_enabled_Delete>;
+  read?: Maybe<AppSettingsFields_ai_models_enabled_Read>;
+  update?: Maybe<AppSettingsFields_ai_models_enabled_Update>;
+};
+
+export type AppSettingsFields_ai_models_enabled_Create = {
+  __typename?: 'AppSettingsFields_ai_models_enabled_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type AppSettingsFields_ai_models_enabled_Delete = {
+  __typename?: 'AppSettingsFields_ai_models_enabled_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type AppSettingsFields_ai_models_enabled_Read = {
+  __typename?: 'AppSettingsFields_ai_models_enabled_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type AppSettingsFields_ai_models_enabled_Update = {
+  __typename?: 'AppSettingsFields_ai_models_enabled_Update';
   permission: Scalars['Boolean']['output'];
 };
 
@@ -2796,6 +3057,34 @@ export type AppSettingsFields_ai_models_id_Update = {
   permission: Scalars['Boolean']['output'];
 };
 
+export type AppSettingsFields_ai_models_maxUserMonthlyTokens = {
+  __typename?: 'AppSettingsFields_ai_models_maxUserMonthlyTokens';
+  create?: Maybe<AppSettingsFields_ai_models_maxUserMonthlyTokens_Create>;
+  delete?: Maybe<AppSettingsFields_ai_models_maxUserMonthlyTokens_Delete>;
+  read?: Maybe<AppSettingsFields_ai_models_maxUserMonthlyTokens_Read>;
+  update?: Maybe<AppSettingsFields_ai_models_maxUserMonthlyTokens_Update>;
+};
+
+export type AppSettingsFields_ai_models_maxUserMonthlyTokens_Create = {
+  __typename?: 'AppSettingsFields_ai_models_maxUserMonthlyTokens_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type AppSettingsFields_ai_models_maxUserMonthlyTokens_Delete = {
+  __typename?: 'AppSettingsFields_ai_models_maxUserMonthlyTokens_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type AppSettingsFields_ai_models_maxUserMonthlyTokens_Read = {
+  __typename?: 'AppSettingsFields_ai_models_maxUserMonthlyTokens_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type AppSettingsFields_ai_models_maxUserMonthlyTokens_Update = {
+  __typename?: 'AppSettingsFields_ai_models_maxUserMonthlyTokens_Update';
+  permission: Scalars['Boolean']['output'];
+};
+
 export type AppSettingsFields_ai_models_name = {
   __typename?: 'AppSettingsFields_ai_models_name';
   create?: Maybe<AppSettingsFields_ai_models_name_Create>;
@@ -2824,59 +3113,87 @@ export type AppSettingsFields_ai_models_name_Update = {
   permission: Scalars['Boolean']['output'];
 };
 
-export type AppSettingsFields_ai_perUserDailyLimit = {
-  __typename?: 'AppSettingsFields_ai_perUserDailyLimit';
-  create?: Maybe<AppSettingsFields_ai_perUserDailyLimit_Create>;
-  delete?: Maybe<AppSettingsFields_ai_perUserDailyLimit_Delete>;
-  read?: Maybe<AppSettingsFields_ai_perUserDailyLimit_Read>;
-  update?: Maybe<AppSettingsFields_ai_perUserDailyLimit_Update>;
+export type AppSettingsFields_ai_models_provider = {
+  __typename?: 'AppSettingsFields_ai_models_provider';
+  create?: Maybe<AppSettingsFields_ai_models_provider_Create>;
+  delete?: Maybe<AppSettingsFields_ai_models_provider_Delete>;
+  read?: Maybe<AppSettingsFields_ai_models_provider_Read>;
+  update?: Maybe<AppSettingsFields_ai_models_provider_Update>;
 };
 
-export type AppSettingsFields_ai_perUserDailyLimit_Create = {
-  __typename?: 'AppSettingsFields_ai_perUserDailyLimit_Create';
+export type AppSettingsFields_ai_models_provider_Create = {
+  __typename?: 'AppSettingsFields_ai_models_provider_Create';
   permission: Scalars['Boolean']['output'];
 };
 
-export type AppSettingsFields_ai_perUserDailyLimit_Delete = {
-  __typename?: 'AppSettingsFields_ai_perUserDailyLimit_Delete';
+export type AppSettingsFields_ai_models_provider_Delete = {
+  __typename?: 'AppSettingsFields_ai_models_provider_Delete';
   permission: Scalars['Boolean']['output'];
 };
 
-export type AppSettingsFields_ai_perUserDailyLimit_Read = {
-  __typename?: 'AppSettingsFields_ai_perUserDailyLimit_Read';
+export type AppSettingsFields_ai_models_provider_Read = {
+  __typename?: 'AppSettingsFields_ai_models_provider_Read';
   permission: Scalars['Boolean']['output'];
 };
 
-export type AppSettingsFields_ai_perUserDailyLimit_Update = {
-  __typename?: 'AppSettingsFields_ai_perUserDailyLimit_Update';
+export type AppSettingsFields_ai_models_provider_Update = {
+  __typename?: 'AppSettingsFields_ai_models_provider_Update';
   permission: Scalars['Boolean']['output'];
 };
 
-export type AppSettingsFields_ai_perUserMonthlyLimit = {
-  __typename?: 'AppSettingsFields_ai_perUserMonthlyLimit';
-  create?: Maybe<AppSettingsFields_ai_perUserMonthlyLimit_Create>;
-  delete?: Maybe<AppSettingsFields_ai_perUserMonthlyLimit_Delete>;
-  read?: Maybe<AppSettingsFields_ai_perUserMonthlyLimit_Read>;
-  update?: Maybe<AppSettingsFields_ai_perUserMonthlyLimit_Update>;
+export type AppSettingsFields_ai_perUserDailyTokenLimit = {
+  __typename?: 'AppSettingsFields_ai_perUserDailyTokenLimit';
+  create?: Maybe<AppSettingsFields_ai_perUserDailyTokenLimit_Create>;
+  delete?: Maybe<AppSettingsFields_ai_perUserDailyTokenLimit_Delete>;
+  read?: Maybe<AppSettingsFields_ai_perUserDailyTokenLimit_Read>;
+  update?: Maybe<AppSettingsFields_ai_perUserDailyTokenLimit_Update>;
 };
 
-export type AppSettingsFields_ai_perUserMonthlyLimit_Create = {
-  __typename?: 'AppSettingsFields_ai_perUserMonthlyLimit_Create';
+export type AppSettingsFields_ai_perUserDailyTokenLimit_Create = {
+  __typename?: 'AppSettingsFields_ai_perUserDailyTokenLimit_Create';
   permission: Scalars['Boolean']['output'];
 };
 
-export type AppSettingsFields_ai_perUserMonthlyLimit_Delete = {
-  __typename?: 'AppSettingsFields_ai_perUserMonthlyLimit_Delete';
+export type AppSettingsFields_ai_perUserDailyTokenLimit_Delete = {
+  __typename?: 'AppSettingsFields_ai_perUserDailyTokenLimit_Delete';
   permission: Scalars['Boolean']['output'];
 };
 
-export type AppSettingsFields_ai_perUserMonthlyLimit_Read = {
-  __typename?: 'AppSettingsFields_ai_perUserMonthlyLimit_Read';
+export type AppSettingsFields_ai_perUserDailyTokenLimit_Read = {
+  __typename?: 'AppSettingsFields_ai_perUserDailyTokenLimit_Read';
   permission: Scalars['Boolean']['output'];
 };
 
-export type AppSettingsFields_ai_perUserMonthlyLimit_Update = {
-  __typename?: 'AppSettingsFields_ai_perUserMonthlyLimit_Update';
+export type AppSettingsFields_ai_perUserDailyTokenLimit_Update = {
+  __typename?: 'AppSettingsFields_ai_perUserDailyTokenLimit_Update';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type AppSettingsFields_ai_perUserMonthlyTokenLimit = {
+  __typename?: 'AppSettingsFields_ai_perUserMonthlyTokenLimit';
+  create?: Maybe<AppSettingsFields_ai_perUserMonthlyTokenLimit_Create>;
+  delete?: Maybe<AppSettingsFields_ai_perUserMonthlyTokenLimit_Delete>;
+  read?: Maybe<AppSettingsFields_ai_perUserMonthlyTokenLimit_Read>;
+  update?: Maybe<AppSettingsFields_ai_perUserMonthlyTokenLimit_Update>;
+};
+
+export type AppSettingsFields_ai_perUserMonthlyTokenLimit_Create = {
+  __typename?: 'AppSettingsFields_ai_perUserMonthlyTokenLimit_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type AppSettingsFields_ai_perUserMonthlyTokenLimit_Delete = {
+  __typename?: 'AppSettingsFields_ai_perUserMonthlyTokenLimit_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type AppSettingsFields_ai_perUserMonthlyTokenLimit_Read = {
+  __typename?: 'AppSettingsFields_ai_perUserMonthlyTokenLimit_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type AppSettingsFields_ai_perUserMonthlyTokenLimit_Update = {
+  __typename?: 'AppSettingsFields_ai_perUserMonthlyTokenLimit_Update';
   permission: Scalars['Boolean']['output'];
 };
 
@@ -17903,6 +18220,8 @@ export type Transaction = {
   person?: Maybe<Person>;
   tags?: Maybe<Array<Tag>>;
   title: Scalars['String']['output'];
+  titleEmbedding?: Maybe<Scalars['JSON']['output']>;
+  titleEmbeddingModel?: Maybe<Scalars['String']['output']>;
   toAccount?: Maybe<Account>;
   type: Transaction_type;
   updatedAt?: Maybe<Scalars['DateTime']['output']>;
@@ -18686,6 +19005,27 @@ export type Transaction_tags_operator = {
   not_in?: InputMaybe<Array<InputMaybe<Scalars['JSON']['input']>>>;
 };
 
+export type Transaction_titleEmbeddingModel_operator = {
+  all?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  contains?: InputMaybe<Scalars['String']['input']>;
+  equals?: InputMaybe<Scalars['String']['input']>;
+  exists?: InputMaybe<Scalars['Boolean']['input']>;
+  in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  like?: InputMaybe<Scalars['String']['input']>;
+  not_equals?: InputMaybe<Scalars['String']['input']>;
+  not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+};
+
+export type Transaction_titleEmbedding_operator = {
+  contains?: InputMaybe<Scalars['JSON']['input']>;
+  equals?: InputMaybe<Scalars['JSON']['input']>;
+  exists?: InputMaybe<Scalars['Boolean']['input']>;
+  intersects?: InputMaybe<Scalars['JSON']['input']>;
+  like?: InputMaybe<Scalars['JSON']['input']>;
+  not_equals?: InputMaybe<Scalars['JSON']['input']>;
+  within?: InputMaybe<Scalars['JSON']['input']>;
+};
+
 export type Transaction_title_operator = {
   all?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
   contains?: InputMaybe<Scalars['String']['input']>;
@@ -18766,6 +19106,8 @@ export type Transaction_where = {
   person?: InputMaybe<Transaction_person_operator>;
   tags?: InputMaybe<Transaction_tags_operator>;
   title?: InputMaybe<Transaction_title_operator>;
+  titleEmbedding?: InputMaybe<Transaction_titleEmbedding_operator>;
+  titleEmbeddingModel?: InputMaybe<Transaction_titleEmbeddingModel_operator>;
   toAccount?: InputMaybe<Transaction_toAccount_operator>;
   type?: InputMaybe<Transaction_type_operator>;
   updatedAt?: InputMaybe<Transaction_updatedAt_operator>;
@@ -18788,6 +19130,8 @@ export type Transaction_where_and = {
   person?: InputMaybe<Transaction_person_operator>;
   tags?: InputMaybe<Transaction_tags_operator>;
   title?: InputMaybe<Transaction_title_operator>;
+  titleEmbedding?: InputMaybe<Transaction_titleEmbedding_operator>;
+  titleEmbeddingModel?: InputMaybe<Transaction_titleEmbeddingModel_operator>;
   toAccount?: InputMaybe<Transaction_toAccount_operator>;
   type?: InputMaybe<Transaction_type_operator>;
   updatedAt?: InputMaybe<Transaction_updatedAt_operator>;
@@ -18810,6 +19154,8 @@ export type Transaction_where_or = {
   person?: InputMaybe<Transaction_person_operator>;
   tags?: InputMaybe<Transaction_tags_operator>;
   title?: InputMaybe<Transaction_title_operator>;
+  titleEmbedding?: InputMaybe<Transaction_titleEmbedding_operator>;
+  titleEmbeddingModel?: InputMaybe<Transaction_titleEmbeddingModel_operator>;
   toAccount?: InputMaybe<Transaction_toAccount_operator>;
   type?: InputMaybe<Transaction_type_operator>;
   updatedAt?: InputMaybe<Transaction_updatedAt_operator>;
@@ -18871,6 +19217,8 @@ export type TransactionsDocAccessFields = {
   person?: Maybe<TransactionsDocAccessFields_person>;
   tags?: Maybe<TransactionsDocAccessFields_tags>;
   title?: Maybe<TransactionsDocAccessFields_title>;
+  titleEmbedding?: Maybe<TransactionsDocAccessFields_titleEmbedding>;
+  titleEmbeddingModel?: Maybe<TransactionsDocAccessFields_titleEmbeddingModel>;
   toAccount?: Maybe<TransactionsDocAccessFields_toAccount>;
   type?: Maybe<TransactionsDocAccessFields_type>;
   updatedAt?: Maybe<TransactionsDocAccessFields_updatedAt>;
@@ -19249,6 +19597,62 @@ export type TransactionsDocAccessFields_title = {
   update?: Maybe<TransactionsDocAccessFields_title_Update>;
 };
 
+export type TransactionsDocAccessFields_titleEmbedding = {
+  __typename?: 'TransactionsDocAccessFields_titleEmbedding';
+  create?: Maybe<TransactionsDocAccessFields_titleEmbedding_Create>;
+  delete?: Maybe<TransactionsDocAccessFields_titleEmbedding_Delete>;
+  read?: Maybe<TransactionsDocAccessFields_titleEmbedding_Read>;
+  update?: Maybe<TransactionsDocAccessFields_titleEmbedding_Update>;
+};
+
+export type TransactionsDocAccessFields_titleEmbeddingModel = {
+  __typename?: 'TransactionsDocAccessFields_titleEmbeddingModel';
+  create?: Maybe<TransactionsDocAccessFields_titleEmbeddingModel_Create>;
+  delete?: Maybe<TransactionsDocAccessFields_titleEmbeddingModel_Delete>;
+  read?: Maybe<TransactionsDocAccessFields_titleEmbeddingModel_Read>;
+  update?: Maybe<TransactionsDocAccessFields_titleEmbeddingModel_Update>;
+};
+
+export type TransactionsDocAccessFields_titleEmbeddingModel_Create = {
+  __typename?: 'TransactionsDocAccessFields_titleEmbeddingModel_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type TransactionsDocAccessFields_titleEmbeddingModel_Delete = {
+  __typename?: 'TransactionsDocAccessFields_titleEmbeddingModel_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type TransactionsDocAccessFields_titleEmbeddingModel_Read = {
+  __typename?: 'TransactionsDocAccessFields_titleEmbeddingModel_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type TransactionsDocAccessFields_titleEmbeddingModel_Update = {
+  __typename?: 'TransactionsDocAccessFields_titleEmbeddingModel_Update';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type TransactionsDocAccessFields_titleEmbedding_Create = {
+  __typename?: 'TransactionsDocAccessFields_titleEmbedding_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type TransactionsDocAccessFields_titleEmbedding_Delete = {
+  __typename?: 'TransactionsDocAccessFields_titleEmbedding_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type TransactionsDocAccessFields_titleEmbedding_Read = {
+  __typename?: 'TransactionsDocAccessFields_titleEmbedding_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type TransactionsDocAccessFields_titleEmbedding_Update = {
+  __typename?: 'TransactionsDocAccessFields_titleEmbedding_Update';
+  permission: Scalars['Boolean']['output'];
+};
+
 export type TransactionsDocAccessFields_title_Create = {
   __typename?: 'TransactionsDocAccessFields_title_Create';
   permission: Scalars['Boolean']['output'];
@@ -19397,6 +19801,8 @@ export type TransactionsFields = {
   person?: Maybe<TransactionsFields_person>;
   tags?: Maybe<TransactionsFields_tags>;
   title?: Maybe<TransactionsFields_title>;
+  titleEmbedding?: Maybe<TransactionsFields_titleEmbedding>;
+  titleEmbeddingModel?: Maybe<TransactionsFields_titleEmbeddingModel>;
   toAccount?: Maybe<TransactionsFields_toAccount>;
   type?: Maybe<TransactionsFields_type>;
   updatedAt?: Maybe<TransactionsFields_updatedAt>;
@@ -19775,6 +20181,62 @@ export type TransactionsFields_title = {
   update?: Maybe<TransactionsFields_title_Update>;
 };
 
+export type TransactionsFields_titleEmbedding = {
+  __typename?: 'TransactionsFields_titleEmbedding';
+  create?: Maybe<TransactionsFields_titleEmbedding_Create>;
+  delete?: Maybe<TransactionsFields_titleEmbedding_Delete>;
+  read?: Maybe<TransactionsFields_titleEmbedding_Read>;
+  update?: Maybe<TransactionsFields_titleEmbedding_Update>;
+};
+
+export type TransactionsFields_titleEmbeddingModel = {
+  __typename?: 'TransactionsFields_titleEmbeddingModel';
+  create?: Maybe<TransactionsFields_titleEmbeddingModel_Create>;
+  delete?: Maybe<TransactionsFields_titleEmbeddingModel_Delete>;
+  read?: Maybe<TransactionsFields_titleEmbeddingModel_Read>;
+  update?: Maybe<TransactionsFields_titleEmbeddingModel_Update>;
+};
+
+export type TransactionsFields_titleEmbeddingModel_Create = {
+  __typename?: 'TransactionsFields_titleEmbeddingModel_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type TransactionsFields_titleEmbeddingModel_Delete = {
+  __typename?: 'TransactionsFields_titleEmbeddingModel_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type TransactionsFields_titleEmbeddingModel_Read = {
+  __typename?: 'TransactionsFields_titleEmbeddingModel_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type TransactionsFields_titleEmbeddingModel_Update = {
+  __typename?: 'TransactionsFields_titleEmbeddingModel_Update';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type TransactionsFields_titleEmbedding_Create = {
+  __typename?: 'TransactionsFields_titleEmbedding_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type TransactionsFields_titleEmbedding_Delete = {
+  __typename?: 'TransactionsFields_titleEmbedding_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type TransactionsFields_titleEmbedding_Read = {
+  __typename?: 'TransactionsFields_titleEmbedding_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type TransactionsFields_titleEmbedding_Update = {
+  __typename?: 'TransactionsFields_titleEmbedding_Update';
+  permission: Scalars['Boolean']['output'];
+};
+
 export type TransactionsFields_title_Create = {
   __typename?: 'TransactionsFields_title_Create';
   permission: Scalars['Boolean']['output'];
@@ -19961,13 +20423,16 @@ export type UsersettingsArgs = {
 
 export type UserSetting = {
   __typename?: 'UserSetting';
+  allowFallback?: Maybe<Scalars['Boolean']['output']>;
   categoryAiMethod?: Maybe<UserSetting_categoryAiMethod>;
   createdAt?: Maybe<Scalars['DateTime']['output']>;
   currency?: Maybe<Scalars['String']['output']>;
   defaultAccount?: Maybe<Account>;
   geminiApiKey?: Maybe<Scalars['String']['output']>;
+  hfApiKey?: Maybe<Scalars['String']['output']>;
   id: Scalars['String']['output'];
   locale?: Maybe<Scalars['String']['output']>;
+  preferredModel?: Maybe<Scalars['String']['output']>;
   theme?: Maybe<UserSetting_theme>;
   timezone?: Maybe<Scalars['String']['output']>;
   updatedAt?: Maybe<Scalars['DateTime']['output']>;
@@ -19975,7 +20440,7 @@ export type UserSetting = {
 };
 
 export enum UserSettingUpdate_categoryAiMethod_MutationInput {
-  gemini = 'gemini',
+  cloud = 'cloud',
   minilm = 'minilm'
 }
 
@@ -19985,18 +20450,24 @@ export enum UserSettingUpdate_theme_MutationInput {
   system = 'system'
 }
 
+export type UserSetting_allowFallback_operator = {
+  equals?: InputMaybe<Scalars['Boolean']['input']>;
+  exists?: InputMaybe<Scalars['Boolean']['input']>;
+  not_equals?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
 export enum UserSetting_categoryAiMethod {
-  gemini = 'gemini',
+  cloud = 'cloud',
   minilm = 'minilm'
 }
 
 export enum UserSetting_categoryAiMethod_Input {
-  gemini = 'gemini',
+  cloud = 'cloud',
   minilm = 'minilm'
 }
 
 export enum UserSetting_categoryAiMethod_MutationInput {
-  gemini = 'gemini',
+  cloud = 'cloud',
   minilm = 'minilm'
 }
 
@@ -20051,6 +20522,17 @@ export type UserSetting_geminiApiKey_operator = {
   not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
 };
 
+export type UserSetting_hfApiKey_operator = {
+  all?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  contains?: InputMaybe<Scalars['String']['input']>;
+  equals?: InputMaybe<Scalars['String']['input']>;
+  exists?: InputMaybe<Scalars['Boolean']['input']>;
+  in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  like?: InputMaybe<Scalars['String']['input']>;
+  not_equals?: InputMaybe<Scalars['String']['input']>;
+  not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+};
+
 export type UserSetting_id_operator = {
   all?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
   contains?: InputMaybe<Scalars['String']['input']>;
@@ -20063,6 +20545,17 @@ export type UserSetting_id_operator = {
 };
 
 export type UserSetting_locale_operator = {
+  all?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  contains?: InputMaybe<Scalars['String']['input']>;
+  equals?: InputMaybe<Scalars['String']['input']>;
+  exists?: InputMaybe<Scalars['Boolean']['input']>;
+  in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  like?: InputMaybe<Scalars['String']['input']>;
+  not_equals?: InputMaybe<Scalars['String']['input']>;
+  not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+};
+
+export type UserSetting_preferredModel_operator = {
   all?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
   contains?: InputMaybe<Scalars['String']['input']>;
   equals?: InputMaybe<Scalars['String']['input']>;
@@ -20133,13 +20626,16 @@ export type UserSetting_user_operator = {
 export type UserSetting_where = {
   AND?: InputMaybe<Array<InputMaybe<UserSetting_where_and>>>;
   OR?: InputMaybe<Array<InputMaybe<UserSetting_where_or>>>;
+  allowFallback?: InputMaybe<UserSetting_allowFallback_operator>;
   categoryAiMethod?: InputMaybe<UserSetting_categoryAiMethod_operator>;
   createdAt?: InputMaybe<UserSetting_createdAt_operator>;
   currency?: InputMaybe<UserSetting_currency_operator>;
   defaultAccount?: InputMaybe<UserSetting_defaultAccount_operator>;
   geminiApiKey?: InputMaybe<UserSetting_geminiApiKey_operator>;
+  hfApiKey?: InputMaybe<UserSetting_hfApiKey_operator>;
   id?: InputMaybe<UserSetting_id_operator>;
   locale?: InputMaybe<UserSetting_locale_operator>;
+  preferredModel?: InputMaybe<UserSetting_preferredModel_operator>;
   theme?: InputMaybe<UserSetting_theme_operator>;
   timezone?: InputMaybe<UserSetting_timezone_operator>;
   updatedAt?: InputMaybe<UserSetting_updatedAt_operator>;
@@ -20149,13 +20645,16 @@ export type UserSetting_where = {
 export type UserSetting_where_and = {
   AND?: InputMaybe<Array<InputMaybe<UserSetting_where_and>>>;
   OR?: InputMaybe<Array<InputMaybe<UserSetting_where_or>>>;
+  allowFallback?: InputMaybe<UserSetting_allowFallback_operator>;
   categoryAiMethod?: InputMaybe<UserSetting_categoryAiMethod_operator>;
   createdAt?: InputMaybe<UserSetting_createdAt_operator>;
   currency?: InputMaybe<UserSetting_currency_operator>;
   defaultAccount?: InputMaybe<UserSetting_defaultAccount_operator>;
   geminiApiKey?: InputMaybe<UserSetting_geminiApiKey_operator>;
+  hfApiKey?: InputMaybe<UserSetting_hfApiKey_operator>;
   id?: InputMaybe<UserSetting_id_operator>;
   locale?: InputMaybe<UserSetting_locale_operator>;
+  preferredModel?: InputMaybe<UserSetting_preferredModel_operator>;
   theme?: InputMaybe<UserSetting_theme_operator>;
   timezone?: InputMaybe<UserSetting_timezone_operator>;
   updatedAt?: InputMaybe<UserSetting_updatedAt_operator>;
@@ -20165,13 +20664,16 @@ export type UserSetting_where_and = {
 export type UserSetting_where_or = {
   AND?: InputMaybe<Array<InputMaybe<UserSetting_where_and>>>;
   OR?: InputMaybe<Array<InputMaybe<UserSetting_where_or>>>;
+  allowFallback?: InputMaybe<UserSetting_allowFallback_operator>;
   categoryAiMethod?: InputMaybe<UserSetting_categoryAiMethod_operator>;
   createdAt?: InputMaybe<UserSetting_createdAt_operator>;
   currency?: InputMaybe<UserSetting_currency_operator>;
   defaultAccount?: InputMaybe<UserSetting_defaultAccount_operator>;
   geminiApiKey?: InputMaybe<UserSetting_geminiApiKey_operator>;
+  hfApiKey?: InputMaybe<UserSetting_hfApiKey_operator>;
   id?: InputMaybe<UserSetting_id_operator>;
   locale?: InputMaybe<UserSetting_locale_operator>;
+  preferredModel?: InputMaybe<UserSetting_preferredModel_operator>;
   theme?: InputMaybe<UserSetting_theme_operator>;
   timezone?: InputMaybe<UserSetting_timezone_operator>;
   updatedAt?: InputMaybe<UserSetting_updatedAt_operator>;
@@ -20219,16 +20721,47 @@ export type UserSettingsDeleteDocAccess = {
 
 export type UserSettingsDocAccessFields = {
   __typename?: 'UserSettingsDocAccessFields';
+  allowFallback?: Maybe<UserSettingsDocAccessFields_allowFallback>;
   categoryAiMethod?: Maybe<UserSettingsDocAccessFields_categoryAiMethod>;
   createdAt?: Maybe<UserSettingsDocAccessFields_createdAt>;
   currency?: Maybe<UserSettingsDocAccessFields_currency>;
   defaultAccount?: Maybe<UserSettingsDocAccessFields_defaultAccount>;
   geminiApiKey?: Maybe<UserSettingsDocAccessFields_geminiApiKey>;
+  hfApiKey?: Maybe<UserSettingsDocAccessFields_hfApiKey>;
   locale?: Maybe<UserSettingsDocAccessFields_locale>;
+  preferredModel?: Maybe<UserSettingsDocAccessFields_preferredModel>;
   theme?: Maybe<UserSettingsDocAccessFields_theme>;
   timezone?: Maybe<UserSettingsDocAccessFields_timezone>;
   updatedAt?: Maybe<UserSettingsDocAccessFields_updatedAt>;
   user?: Maybe<UserSettingsDocAccessFields_user>;
+};
+
+export type UserSettingsDocAccessFields_allowFallback = {
+  __typename?: 'UserSettingsDocAccessFields_allowFallback';
+  create?: Maybe<UserSettingsDocAccessFields_allowFallback_Create>;
+  delete?: Maybe<UserSettingsDocAccessFields_allowFallback_Delete>;
+  read?: Maybe<UserSettingsDocAccessFields_allowFallback_Read>;
+  update?: Maybe<UserSettingsDocAccessFields_allowFallback_Update>;
+};
+
+export type UserSettingsDocAccessFields_allowFallback_Create = {
+  __typename?: 'UserSettingsDocAccessFields_allowFallback_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type UserSettingsDocAccessFields_allowFallback_Delete = {
+  __typename?: 'UserSettingsDocAccessFields_allowFallback_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type UserSettingsDocAccessFields_allowFallback_Read = {
+  __typename?: 'UserSettingsDocAccessFields_allowFallback_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type UserSettingsDocAccessFields_allowFallback_Update = {
+  __typename?: 'UserSettingsDocAccessFields_allowFallback_Update';
+  permission: Scalars['Boolean']['output'];
 };
 
 export type UserSettingsDocAccessFields_categoryAiMethod = {
@@ -20371,6 +20904,34 @@ export type UserSettingsDocAccessFields_geminiApiKey_Update = {
   permission: Scalars['Boolean']['output'];
 };
 
+export type UserSettingsDocAccessFields_hfApiKey = {
+  __typename?: 'UserSettingsDocAccessFields_hfApiKey';
+  create?: Maybe<UserSettingsDocAccessFields_hfApiKey_Create>;
+  delete?: Maybe<UserSettingsDocAccessFields_hfApiKey_Delete>;
+  read?: Maybe<UserSettingsDocAccessFields_hfApiKey_Read>;
+  update?: Maybe<UserSettingsDocAccessFields_hfApiKey_Update>;
+};
+
+export type UserSettingsDocAccessFields_hfApiKey_Create = {
+  __typename?: 'UserSettingsDocAccessFields_hfApiKey_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type UserSettingsDocAccessFields_hfApiKey_Delete = {
+  __typename?: 'UserSettingsDocAccessFields_hfApiKey_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type UserSettingsDocAccessFields_hfApiKey_Read = {
+  __typename?: 'UserSettingsDocAccessFields_hfApiKey_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type UserSettingsDocAccessFields_hfApiKey_Update = {
+  __typename?: 'UserSettingsDocAccessFields_hfApiKey_Update';
+  permission: Scalars['Boolean']['output'];
+};
+
 export type UserSettingsDocAccessFields_locale = {
   __typename?: 'UserSettingsDocAccessFields_locale';
   create?: Maybe<UserSettingsDocAccessFields_locale_Create>;
@@ -20396,6 +20957,34 @@ export type UserSettingsDocAccessFields_locale_Read = {
 
 export type UserSettingsDocAccessFields_locale_Update = {
   __typename?: 'UserSettingsDocAccessFields_locale_Update';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type UserSettingsDocAccessFields_preferredModel = {
+  __typename?: 'UserSettingsDocAccessFields_preferredModel';
+  create?: Maybe<UserSettingsDocAccessFields_preferredModel_Create>;
+  delete?: Maybe<UserSettingsDocAccessFields_preferredModel_Delete>;
+  read?: Maybe<UserSettingsDocAccessFields_preferredModel_Read>;
+  update?: Maybe<UserSettingsDocAccessFields_preferredModel_Update>;
+};
+
+export type UserSettingsDocAccessFields_preferredModel_Create = {
+  __typename?: 'UserSettingsDocAccessFields_preferredModel_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type UserSettingsDocAccessFields_preferredModel_Delete = {
+  __typename?: 'UserSettingsDocAccessFields_preferredModel_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type UserSettingsDocAccessFields_preferredModel_Read = {
+  __typename?: 'UserSettingsDocAccessFields_preferredModel_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type UserSettingsDocAccessFields_preferredModel_Update = {
+  __typename?: 'UserSettingsDocAccessFields_preferredModel_Update';
   permission: Scalars['Boolean']['output'];
 };
 
@@ -20513,16 +21102,47 @@ export type UserSettingsDocAccessFields_user_Update = {
 
 export type UserSettingsFields = {
   __typename?: 'UserSettingsFields';
+  allowFallback?: Maybe<UserSettingsFields_allowFallback>;
   categoryAiMethod?: Maybe<UserSettingsFields_categoryAiMethod>;
   createdAt?: Maybe<UserSettingsFields_createdAt>;
   currency?: Maybe<UserSettingsFields_currency>;
   defaultAccount?: Maybe<UserSettingsFields_defaultAccount>;
   geminiApiKey?: Maybe<UserSettingsFields_geminiApiKey>;
+  hfApiKey?: Maybe<UserSettingsFields_hfApiKey>;
   locale?: Maybe<UserSettingsFields_locale>;
+  preferredModel?: Maybe<UserSettingsFields_preferredModel>;
   theme?: Maybe<UserSettingsFields_theme>;
   timezone?: Maybe<UserSettingsFields_timezone>;
   updatedAt?: Maybe<UserSettingsFields_updatedAt>;
   user?: Maybe<UserSettingsFields_user>;
+};
+
+export type UserSettingsFields_allowFallback = {
+  __typename?: 'UserSettingsFields_allowFallback';
+  create?: Maybe<UserSettingsFields_allowFallback_Create>;
+  delete?: Maybe<UserSettingsFields_allowFallback_Delete>;
+  read?: Maybe<UserSettingsFields_allowFallback_Read>;
+  update?: Maybe<UserSettingsFields_allowFallback_Update>;
+};
+
+export type UserSettingsFields_allowFallback_Create = {
+  __typename?: 'UserSettingsFields_allowFallback_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type UserSettingsFields_allowFallback_Delete = {
+  __typename?: 'UserSettingsFields_allowFallback_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type UserSettingsFields_allowFallback_Read = {
+  __typename?: 'UserSettingsFields_allowFallback_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type UserSettingsFields_allowFallback_Update = {
+  __typename?: 'UserSettingsFields_allowFallback_Update';
+  permission: Scalars['Boolean']['output'];
 };
 
 export type UserSettingsFields_categoryAiMethod = {
@@ -20665,6 +21285,34 @@ export type UserSettingsFields_geminiApiKey_Update = {
   permission: Scalars['Boolean']['output'];
 };
 
+export type UserSettingsFields_hfApiKey = {
+  __typename?: 'UserSettingsFields_hfApiKey';
+  create?: Maybe<UserSettingsFields_hfApiKey_Create>;
+  delete?: Maybe<UserSettingsFields_hfApiKey_Delete>;
+  read?: Maybe<UserSettingsFields_hfApiKey_Read>;
+  update?: Maybe<UserSettingsFields_hfApiKey_Update>;
+};
+
+export type UserSettingsFields_hfApiKey_Create = {
+  __typename?: 'UserSettingsFields_hfApiKey_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type UserSettingsFields_hfApiKey_Delete = {
+  __typename?: 'UserSettingsFields_hfApiKey_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type UserSettingsFields_hfApiKey_Read = {
+  __typename?: 'UserSettingsFields_hfApiKey_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type UserSettingsFields_hfApiKey_Update = {
+  __typename?: 'UserSettingsFields_hfApiKey_Update';
+  permission: Scalars['Boolean']['output'];
+};
+
 export type UserSettingsFields_locale = {
   __typename?: 'UserSettingsFields_locale';
   create?: Maybe<UserSettingsFields_locale_Create>;
@@ -20690,6 +21338,34 @@ export type UserSettingsFields_locale_Read = {
 
 export type UserSettingsFields_locale_Update = {
   __typename?: 'UserSettingsFields_locale_Update';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type UserSettingsFields_preferredModel = {
+  __typename?: 'UserSettingsFields_preferredModel';
+  create?: Maybe<UserSettingsFields_preferredModel_Create>;
+  delete?: Maybe<UserSettingsFields_preferredModel_Delete>;
+  read?: Maybe<UserSettingsFields_preferredModel_Read>;
+  update?: Maybe<UserSettingsFields_preferredModel_Update>;
+};
+
+export type UserSettingsFields_preferredModel_Create = {
+  __typename?: 'UserSettingsFields_preferredModel_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type UserSettingsFields_preferredModel_Delete = {
+  __typename?: 'UserSettingsFields_preferredModel_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type UserSettingsFields_preferredModel_Read = {
+  __typename?: 'UserSettingsFields_preferredModel_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type UserSettingsFields_preferredModel_Update = {
+  __typename?: 'UserSettingsFields_preferredModel_Update';
   permission: Scalars['Boolean']['output'];
 };
 
@@ -22034,15 +22710,20 @@ export type mutationAppSetting_AiInput = {
   defaultModel?: InputMaybe<Scalars['String']['input']>;
   enabled?: InputMaybe<Scalars['Boolean']['input']>;
   geminiApiKey?: InputMaybe<Scalars['String']['input']>;
+  hfApiKey?: InputMaybe<Scalars['String']['input']>;
   models?: InputMaybe<Array<InputMaybe<mutationAppSetting_Ai_ModelsInput>>>;
-  perUserDailyLimit?: InputMaybe<Scalars['Float']['input']>;
-  perUserMonthlyLimit?: InputMaybe<Scalars['Float']['input']>;
+  perUserDailyTokenLimit?: InputMaybe<Scalars['Float']['input']>;
+  perUserMonthlyTokenLimit?: InputMaybe<Scalars['Float']['input']>;
   predictionEnabled?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 export type mutationAppSetting_Ai_ModelsInput = {
+  contextWindow?: InputMaybe<Scalars['Float']['input']>;
+  enabled?: InputMaybe<Scalars['Boolean']['input']>;
   id?: InputMaybe<Scalars['String']['input']>;
+  maxUserMonthlyTokens?: InputMaybe<Scalars['Float']['input']>;
   name: Scalars['String']['input'];
+  provider: AppSetting_Ai_Models_provider_MutationInput;
 };
 
 export type mutationCategoryInput = {
@@ -22542,6 +23223,8 @@ export type mutationTransactionInput = {
   person?: InputMaybe<Scalars['String']['input']>;
   tags?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
   title: Scalars['String']['input'];
+  titleEmbedding?: InputMaybe<Scalars['JSON']['input']>;
+  titleEmbeddingModel?: InputMaybe<Scalars['String']['input']>;
   toAccount?: InputMaybe<Scalars['String']['input']>;
   type: Transaction_type_MutationInput;
   updatedAt?: InputMaybe<Scalars['String']['input']>;
@@ -22581,6 +23264,8 @@ export type mutationTransactionUpdateInput = {
   person?: InputMaybe<Scalars['String']['input']>;
   tags?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
   title?: InputMaybe<Scalars['String']['input']>;
+  titleEmbedding?: InputMaybe<Scalars['JSON']['input']>;
+  titleEmbeddingModel?: InputMaybe<Scalars['String']['input']>;
   toAccount?: InputMaybe<Scalars['String']['input']>;
   type?: InputMaybe<TransactionUpdate_type_MutationInput>;
   updatedAt?: InputMaybe<Scalars['String']['input']>;
@@ -22605,12 +23290,15 @@ export type mutationUserInput = {
 };
 
 export type mutationUserSettingInput = {
+  allowFallback?: InputMaybe<Scalars['Boolean']['input']>;
   categoryAiMethod?: InputMaybe<UserSetting_categoryAiMethod_MutationInput>;
   createdAt?: InputMaybe<Scalars['String']['input']>;
   currency?: InputMaybe<Scalars['String']['input']>;
   defaultAccount?: InputMaybe<Scalars['String']['input']>;
   geminiApiKey?: InputMaybe<Scalars['String']['input']>;
+  hfApiKey?: InputMaybe<Scalars['String']['input']>;
   locale?: InputMaybe<Scalars['String']['input']>;
+  preferredModel?: InputMaybe<Scalars['String']['input']>;
   theme?: InputMaybe<UserSetting_theme_MutationInput>;
   timezone?: InputMaybe<Scalars['String']['input']>;
   updatedAt?: InputMaybe<Scalars['String']['input']>;
@@ -22618,12 +23306,15 @@ export type mutationUserSettingInput = {
 };
 
 export type mutationUserSettingUpdateInput = {
+  allowFallback?: InputMaybe<Scalars['Boolean']['input']>;
   categoryAiMethod?: InputMaybe<UserSettingUpdate_categoryAiMethod_MutationInput>;
   createdAt?: InputMaybe<Scalars['String']['input']>;
   currency?: InputMaybe<Scalars['String']['input']>;
   defaultAccount?: InputMaybe<Scalars['String']['input']>;
   geminiApiKey?: InputMaybe<Scalars['String']['input']>;
+  hfApiKey?: InputMaybe<Scalars['String']['input']>;
   locale?: InputMaybe<Scalars['String']['input']>;
+  preferredModel?: InputMaybe<Scalars['String']['input']>;
   theme?: InputMaybe<UserSettingUpdate_theme_MutationInput>;
   timezone?: InputMaybe<Scalars['String']['input']>;
   updatedAt?: InputMaybe<Scalars['String']['input']>;
@@ -23101,12 +23792,19 @@ export type GetMonthlyCalendarQueryVariables = Exact<{
 
 export type GetMonthlyCalendarQuery = { __typename?: 'Query', monthlyCalendar?: { __typename?: 'MonthlyCalendarResult', data?: Array<{ __typename?: 'CalendarDay', date: string, income: number, expenses: number, transfers: number, balance: number, transactionCount: number } | null> | null, meta: { __typename?: 'MonthlyCalendarMeta', month: number, year: number, monthName: string, timezone: string, totalIncome: number, totalExpenses: number, totalTransfers: number, balance: number } } | null };
 
-export type AuthUserFieldsFragment = { __typename?: 'User', id: string, email: any, name?: string | null, role?: User_role | null, createdAt?: any | null, updatedAt?: any | null, avatar?: { __typename?: 'Media', id: string, url?: string | null, thumbnailURL?: string | null } | null, settings?: { __typename?: 'User_Settings', hasNextPage: boolean, docs: Array<{ __typename?: 'UserSetting', id: string, currency?: string | null, timezone?: string | null, locale?: string | null, theme?: UserSetting_theme | null, geminiApiKey?: string | null, categoryAiMethod?: UserSetting_categoryAiMethod | null, defaultAccount?: { __typename?: 'Account', id: string, name: string, icon: string } | null }> } | null };
+export type AuthUserFieldsFragment = { __typename?: 'User', id: string, email: any, name?: string | null, role?: User_role | null, createdAt?: any | null, updatedAt?: any | null, avatar?: { __typename?: 'Media', id: string, url?: string | null, thumbnailURL?: string | null } | null, settings?: { __typename?: 'User_Settings', hasNextPage: boolean, docs: Array<{ __typename?: 'UserSetting', id: string, currency?: string | null, timezone?: string | null, locale?: string | null, theme?: UserSetting_theme | null, geminiApiKey?: string | null, hfApiKey?: string | null, preferredModel?: string | null, allowFallback?: boolean | null, categoryAiMethod?: UserSetting_categoryAiMethod | null, defaultAccount?: { __typename?: 'Account', id: string, name: string, icon: string } | null }> } | null };
+
+export type AppSettingsAiFieldsFragment = { __typename?: 'AppSetting', ai?: { __typename?: 'AppSetting_Ai', enabled?: boolean | null, allowUserApiKey?: boolean | null, defaultModel?: string | null, models?: Array<{ __typename?: 'AppSetting_Ai_Models', id?: string | null, name?: string | null, provider?: AppSetting_Ai_Models_provider | null, enabled?: boolean | null, contextWindow?: number | null }> | null } | null };
+
+export type GetSessionQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetSessionQuery = { __typename?: 'Query', meUser?: { __typename?: 'usersMe', exp?: number | null, collection?: string | null, user?: { __typename?: 'User', id: string, email: any, name?: string | null, role?: User_role | null, createdAt?: any | null, updatedAt?: any | null, avatar?: { __typename?: 'Media', id: string, url?: string | null, thumbnailURL?: string | null } | null, settings?: { __typename?: 'User_Settings', hasNextPage: boolean, docs: Array<{ __typename?: 'UserSetting', id: string, currency?: string | null, timezone?: string | null, locale?: string | null, theme?: UserSetting_theme | null, geminiApiKey?: string | null, hfApiKey?: string | null, preferredModel?: string | null, allowFallback?: boolean | null, categoryAiMethod?: UserSetting_categoryAiMethod | null, defaultAccount?: { __typename?: 'Account', id: string, name: string, icon: string } | null }> } | null } | null } | null, AppSetting?: { __typename?: 'AppSetting', ai?: { __typename?: 'AppSetting_Ai', enabled?: boolean | null, allowUserApiKey?: boolean | null, defaultModel?: string | null, models?: Array<{ __typename?: 'AppSetting_Ai_Models', id?: string | null, name?: string | null, provider?: AppSetting_Ai_Models_provider | null, enabled?: boolean | null, contextWindow?: number | null }> | null } | null } | null };
 
 export type MeUserQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type MeUserQuery = { __typename?: 'Query', meUser?: { __typename?: 'usersMe', exp?: number | null, collection?: string | null, user?: { __typename?: 'User', id: string, email: any, name?: string | null, role?: User_role | null, createdAt?: any | null, updatedAt?: any | null, avatar?: { __typename?: 'Media', id: string, url?: string | null, thumbnailURL?: string | null } | null, settings?: { __typename?: 'User_Settings', hasNextPage: boolean, docs: Array<{ __typename?: 'UserSetting', id: string, currency?: string | null, timezone?: string | null, locale?: string | null, theme?: UserSetting_theme | null, geminiApiKey?: string | null, categoryAiMethod?: UserSetting_categoryAiMethod | null, defaultAccount?: { __typename?: 'Account', id: string, name: string, icon: string } | null }> } | null } | null } | null };
+export type MeUserQuery = { __typename?: 'Query', meUser?: { __typename?: 'usersMe', exp?: number | null, collection?: string | null, user?: { __typename?: 'User', id: string, email: any, name?: string | null, role?: User_role | null, createdAt?: any | null, updatedAt?: any | null, avatar?: { __typename?: 'Media', id: string, url?: string | null, thumbnailURL?: string | null } | null, settings?: { __typename?: 'User_Settings', hasNextPage: boolean, docs: Array<{ __typename?: 'UserSetting', id: string, currency?: string | null, timezone?: string | null, locale?: string | null, theme?: UserSetting_theme | null, geminiApiKey?: string | null, hfApiKey?: string | null, preferredModel?: string | null, allowFallback?: boolean | null, categoryAiMethod?: UserSetting_categoryAiMethod | null, defaultAccount?: { __typename?: 'Account', id: string, name: string, icon: string } | null }> } | null } | null } | null };
 
 export type LoginUserMutationVariables = Exact<{
   email: Scalars['String']['input'];
@@ -23114,7 +23812,7 @@ export type LoginUserMutationVariables = Exact<{
 }>;
 
 
-export type LoginUserMutation = { __typename?: 'Mutation', loginUser?: { __typename?: 'usersLoginResult', token?: string | null, exp?: number | null, user?: { __typename?: 'User', id: string, email: any, name?: string | null, role?: User_role | null, createdAt?: any | null, updatedAt?: any | null, avatar?: { __typename?: 'Media', id: string, url?: string | null, thumbnailURL?: string | null } | null, settings?: { __typename?: 'User_Settings', hasNextPage: boolean, docs: Array<{ __typename?: 'UserSetting', id: string, currency?: string | null, timezone?: string | null, locale?: string | null, theme?: UserSetting_theme | null, geminiApiKey?: string | null, categoryAiMethod?: UserSetting_categoryAiMethod | null, defaultAccount?: { __typename?: 'Account', id: string, name: string, icon: string } | null }> } | null } | null } | null };
+export type LoginUserMutation = { __typename?: 'Mutation', loginUser?: { __typename?: 'usersLoginResult', token?: string | null, exp?: number | null, user?: { __typename?: 'User', id: string, email: any, name?: string | null, role?: User_role | null, createdAt?: any | null, updatedAt?: any | null, avatar?: { __typename?: 'Media', id: string, url?: string | null, thumbnailURL?: string | null } | null, settings?: { __typename?: 'User_Settings', hasNextPage: boolean, docs: Array<{ __typename?: 'UserSetting', id: string, currency?: string | null, timezone?: string | null, locale?: string | null, theme?: UserSetting_theme | null, geminiApiKey?: string | null, hfApiKey?: string | null, preferredModel?: string | null, allowFallback?: boolean | null, categoryAiMethod?: UserSetting_categoryAiMethod | null, defaultAccount?: { __typename?: 'Account', id: string, name: string, icon: string } | null }> } | null } | null } | null };
 
 export type LogoutUserMutationVariables = Exact<{ [key: string]: never; }>;
 
@@ -23406,14 +24104,14 @@ export type DeleteTransactionMutationVariables = Exact<{
 
 export type DeleteTransactionMutation = { __typename?: 'Mutation', deleteTransaction?: { __typename?: 'Transaction', id: string } | null };
 
-export type UserSettingsFieldsFragment = { __typename?: 'UserSetting', id: string, currency?: string | null, timezone?: string | null, locale?: string | null, theme?: UserSetting_theme | null, geminiApiKey?: string | null, categoryAiMethod?: UserSetting_categoryAiMethod | null, createdAt?: any | null, updatedAt?: any | null, defaultAccount?: { __typename?: 'Account', id: string, name: string, icon: string } | null };
+export type UserSettingsFieldsFragment = { __typename?: 'UserSetting', id: string, currency?: string | null, timezone?: string | null, locale?: string | null, theme?: UserSetting_theme | null, geminiApiKey?: string | null, hfApiKey?: string | null, preferredModel?: string | null, allowFallback?: boolean | null, categoryAiMethod?: UserSetting_categoryAiMethod | null, createdAt?: any | null, updatedAt?: any | null, defaultAccount?: { __typename?: 'Account', id: string, name: string, icon: string } | null };
 
 export type GetUserSettingsQueryVariables = Exact<{
   userId?: InputMaybe<Scalars['JSON']['input']>;
 }>;
 
 
-export type GetUserSettingsQuery = { __typename?: 'Query', UserSettings?: { __typename?: 'UserSettings', docs: Array<{ __typename?: 'UserSetting', id: string, currency?: string | null, timezone?: string | null, locale?: string | null, theme?: UserSetting_theme | null, geminiApiKey?: string | null, categoryAiMethod?: UserSetting_categoryAiMethod | null, createdAt?: any | null, updatedAt?: any | null, defaultAccount?: { __typename?: 'Account', id: string, name: string, icon: string } | null }> } | null };
+export type GetUserSettingsQuery = { __typename?: 'Query', UserSettings?: { __typename?: 'UserSettings', docs: Array<{ __typename?: 'UserSetting', id: string, currency?: string | null, timezone?: string | null, locale?: string | null, theme?: UserSetting_theme | null, geminiApiKey?: string | null, hfApiKey?: string | null, preferredModel?: string | null, allowFallback?: boolean | null, categoryAiMethod?: UserSetting_categoryAiMethod | null, createdAt?: any | null, updatedAt?: any | null, defaultAccount?: { __typename?: 'Account', id: string, name: string, icon: string } | null }> } | null };
 
 export type UpdateUserSettingsMutationVariables = Exact<{
   id: Scalars['String']['input'];
@@ -23421,7 +24119,7 @@ export type UpdateUserSettingsMutationVariables = Exact<{
 }>;
 
 
-export type UpdateUserSettingsMutation = { __typename?: 'Mutation', updateUserSetting?: { __typename?: 'UserSetting', id: string, currency?: string | null, timezone?: string | null, locale?: string | null, theme?: UserSetting_theme | null, geminiApiKey?: string | null, categoryAiMethod?: UserSetting_categoryAiMethod | null, createdAt?: any | null, updatedAt?: any | null, defaultAccount?: { __typename?: 'Account', id: string, name: string, icon: string } | null } | null };
+export type UpdateUserSettingsMutation = { __typename?: 'Mutation', updateUserSetting?: { __typename?: 'UserSetting', id: string, currency?: string | null, timezone?: string | null, locale?: string | null, theme?: UserSetting_theme | null, geminiApiKey?: string | null, hfApiKey?: string | null, preferredModel?: string | null, allowFallback?: boolean | null, categoryAiMethod?: UserSetting_categoryAiMethod | null, createdAt?: any | null, updatedAt?: any | null, defaultAccount?: { __typename?: 'Account', id: string, name: string, icon: string } | null } | null };
 
 export type UpdateUserMutationVariables = Exact<{
   id: Scalars['String']['input'];
@@ -23432,7 +24130,8 @@ export type UpdateUserMutationVariables = Exact<{
 export type UpdateUserMutation = { __typename?: 'Mutation', updateUser?: { __typename?: 'User', id: string, name?: string | null, email: any, updatedAt?: any | null, avatar?: { __typename?: 'Media', id: string, url?: string | null, thumbnailURL?: string | null } | null } | null };
 
 export const AccountFieldsFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"AccountFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Account"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}},{"kind":"Field","name":{"kind":"Name","value":"bgColor"}},{"kind":"Field","name":{"kind":"Name","value":"color"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"balance"}},{"kind":"Field","name":{"kind":"Name","value":"totalTransactions"}},{"kind":"Field","name":{"kind":"Name","value":"lastTransactionAt"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"thumbnailURL"}}]}}]}}]} as unknown as DocumentNode<AccountFieldsFragment, unknown>;
-export const AuthUserFieldsFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"AuthUserFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"User"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"thumbnailURL"}}]}},{"kind":"Field","name":{"kind":"Name","value":"settings"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"docs"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"currency"}},{"kind":"Field","name":{"kind":"Name","value":"timezone"}},{"kind":"Field","name":{"kind":"Name","value":"locale"}},{"kind":"Field","name":{"kind":"Name","value":"theme"}},{"kind":"Field","name":{"kind":"Name","value":"geminiApiKey"}},{"kind":"Field","name":{"kind":"Name","value":"categoryAiMethod"}},{"kind":"Field","name":{"kind":"Name","value":"defaultAccount"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"hasNextPage"}}]}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode<AuthUserFieldsFragment, unknown>;
+export const AuthUserFieldsFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"AuthUserFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"User"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"thumbnailURL"}}]}},{"kind":"Field","name":{"kind":"Name","value":"settings"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"docs"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"currency"}},{"kind":"Field","name":{"kind":"Name","value":"timezone"}},{"kind":"Field","name":{"kind":"Name","value":"locale"}},{"kind":"Field","name":{"kind":"Name","value":"theme"}},{"kind":"Field","name":{"kind":"Name","value":"geminiApiKey"}},{"kind":"Field","name":{"kind":"Name","value":"hfApiKey"}},{"kind":"Field","name":{"kind":"Name","value":"preferredModel"}},{"kind":"Field","name":{"kind":"Name","value":"allowFallback"}},{"kind":"Field","name":{"kind":"Name","value":"categoryAiMethod"}},{"kind":"Field","name":{"kind":"Name","value":"defaultAccount"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"hasNextPage"}}]}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode<AuthUserFieldsFragment, unknown>;
+export const AppSettingsAiFieldsFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"AppSettingsAiFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"AppSetting"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"ai"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"enabled"}},{"kind":"Field","name":{"kind":"Name","value":"allowUserApiKey"}},{"kind":"Field","name":{"kind":"Name","value":"defaultModel"}},{"kind":"Field","name":{"kind":"Name","value":"models"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"provider"}},{"kind":"Field","name":{"kind":"Name","value":"enabled"}},{"kind":"Field","name":{"kind":"Name","value":"contextWindow"}}]}}]}}]}}]} as unknown as DocumentNode<AppSettingsAiFieldsFragment, unknown>;
 export const CategoryFieldsFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"CategoryFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Category"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}},{"kind":"Field","name":{"kind":"Name","value":"color"}},{"kind":"Field","name":{"kind":"Name","value":"bgColor"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"user"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}},{"kind":"Field","name":{"kind":"Name","value":"parent"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}},{"kind":"Field","name":{"kind":"Name","value":"color"}}]}}]}}]} as unknown as DocumentNode<CategoryFieldsFragment, unknown>;
 export const McpApiKeyFieldsFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"McpApiKeyFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"PayloadMcpApiKey"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"label"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"enableAPIKey"}},{"kind":"Field","name":{"kind":"Name","value":"apiKey"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"accounts"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"find"}},{"kind":"Field","name":{"kind":"Name","value":"create"}},{"kind":"Field","name":{"kind":"Name","value":"update"}},{"kind":"Field","name":{"kind":"Name","value":"delete"}}]}},{"kind":"Field","name":{"kind":"Name","value":"people"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"find"}},{"kind":"Field","name":{"kind":"Name","value":"create"}},{"kind":"Field","name":{"kind":"Name","value":"update"}},{"kind":"Field","name":{"kind":"Name","value":"delete"}}]}},{"kind":"Field","name":{"kind":"Name","value":"categories"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"find"}},{"kind":"Field","name":{"kind":"Name","value":"create"}},{"kind":"Field","name":{"kind":"Name","value":"update"}},{"kind":"Field","name":{"kind":"Name","value":"delete"}}]}},{"kind":"Field","name":{"kind":"Name","value":"tags"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"find"}},{"kind":"Field","name":{"kind":"Name","value":"create"}},{"kind":"Field","name":{"kind":"Name","value":"update"}},{"kind":"Field","name":{"kind":"Name","value":"delete"}}]}},{"kind":"Field","name":{"kind":"Name","value":"transactions"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"find"}},{"kind":"Field","name":{"kind":"Name","value":"create"}},{"kind":"Field","name":{"kind":"Name","value":"update"}},{"kind":"Field","name":{"kind":"Name","value":"delete"}}]}},{"kind":"Field","name":{"kind":"Name","value":"transactionLinks"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"find"}},{"kind":"Field","name":{"kind":"Name","value":"create"}},{"kind":"Field","name":{"kind":"Name","value":"update"}},{"kind":"Field","name":{"kind":"Name","value":"delete"}}]}},{"kind":"Field","name":{"kind":"Name","value":"reminders"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"find"}},{"kind":"Field","name":{"kind":"Name","value":"create"}},{"kind":"Field","name":{"kind":"Name","value":"update"}},{"kind":"Field","name":{"kind":"Name","value":"delete"}}]}},{"kind":"Field","name":{"kind":"Name","value":"userSettings"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"find"}},{"kind":"Field","name":{"kind":"Name","value":"update"}}]}},{"kind":"Field","name":{"kind":"Name","value":"payload_mcp_tool"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"getDashboardSummary"}},{"kind":"Field","name":{"kind":"Name","value":"getMonthlyCategories"}},{"kind":"Field","name":{"kind":"Name","value":"getMonthlyTags"}},{"kind":"Field","name":{"kind":"Name","value":"getCurrentUser"}},{"kind":"Field","name":{"kind":"Name","value":"getMonthlyPeople"}}]}},{"kind":"Field","name":{"kind":"Name","value":"payload_mcp_resource"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"currencies"}},{"kind":"Field","name":{"kind":"Name","value":"currency"}},{"kind":"Field","name":{"kind":"Name","value":"timezones"}},{"kind":"Field","name":{"kind":"Name","value":"timezone"}}]}}]}}]} as unknown as DocumentNode<McpApiKeyFieldsFragment, unknown>;
 export const PersonFieldsFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PersonFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Person"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"phone"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"thumbnailURL"}}]}},{"kind":"Field","name":{"kind":"Name","value":"balance"}},{"kind":"Field","name":{"kind":"Name","value":"totalTransactions"}},{"kind":"Field","name":{"kind":"Name","value":"lastTransactionAt"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode<PersonFieldsFragment, unknown>;
@@ -23446,7 +24145,7 @@ export const TransactionPersonFieldsFragmentDoc = {"kind":"Document","definition
 export const TransactionTagFieldsFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"TransactionTagFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Tag"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}},{"kind":"Field","name":{"kind":"Name","value":"color"}},{"kind":"Field","name":{"kind":"Name","value":"bgColor"}}]}}]} as unknown as DocumentNode<TransactionTagFieldsFragment, unknown>;
 export const TransactionAttachmentFieldsFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"TransactionAttachmentFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Media"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"thumbnailURL"}},{"kind":"Field","name":{"kind":"Name","value":"mimeType"}},{"kind":"Field","name":{"kind":"Name","value":"filesize"}},{"kind":"Field","name":{"kind":"Name","value":"filename"}},{"kind":"Field","name":{"kind":"Name","value":"width"}},{"kind":"Field","name":{"kind":"Name","value":"height"}}]}}]} as unknown as DocumentNode<TransactionAttachmentFieldsFragment, unknown>;
 export const TransactionFieldsFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"TransactionFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Transaction"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"amount"}},{"kind":"Field","name":{"kind":"Name","value":"date"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"note"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"category"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"TransactionCategoryFields"}}]}},{"kind":"Field","name":{"kind":"Name","value":"account"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"TransactionAccountFields"}}]}},{"kind":"Field","name":{"kind":"Name","value":"toAccount"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"TransactionAccountFields"}}]}},{"kind":"Field","name":{"kind":"Name","value":"person"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"TransactionPersonFields"}}]}},{"kind":"Field","name":{"kind":"Name","value":"tags"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"TransactionTagFields"}}]}},{"kind":"Field","name":{"kind":"Name","value":"attachments"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"TransactionAttachmentFields"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"TransactionCategoryFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Category"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}},{"kind":"Field","name":{"kind":"Name","value":"color"}},{"kind":"Field","name":{"kind":"Name","value":"bgColor"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"TransactionAccountFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Account"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}},{"kind":"Field","name":{"kind":"Name","value":"bgColor"}},{"kind":"Field","name":{"kind":"Name","value":"color"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"thumbnailURL"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"TransactionPersonFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Person"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"phone"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"thumbnailURL"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"TransactionTagFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Tag"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}},{"kind":"Field","name":{"kind":"Name","value":"color"}},{"kind":"Field","name":{"kind":"Name","value":"bgColor"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"TransactionAttachmentFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Media"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"thumbnailURL"}},{"kind":"Field","name":{"kind":"Name","value":"mimeType"}},{"kind":"Field","name":{"kind":"Name","value":"filesize"}},{"kind":"Field","name":{"kind":"Name","value":"filename"}},{"kind":"Field","name":{"kind":"Name","value":"width"}},{"kind":"Field","name":{"kind":"Name","value":"height"}}]}}]} as unknown as DocumentNode<TransactionFieldsFragment, unknown>;
-export const UserSettingsFieldsFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserSettingsFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"UserSetting"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"currency"}},{"kind":"Field","name":{"kind":"Name","value":"timezone"}},{"kind":"Field","name":{"kind":"Name","value":"locale"}},{"kind":"Field","name":{"kind":"Name","value":"theme"}},{"kind":"Field","name":{"kind":"Name","value":"geminiApiKey"}},{"kind":"Field","name":{"kind":"Name","value":"categoryAiMethod"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"defaultAccount"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}}]}}]}}]} as unknown as DocumentNode<UserSettingsFieldsFragment, unknown>;
+export const UserSettingsFieldsFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserSettingsFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"UserSetting"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"currency"}},{"kind":"Field","name":{"kind":"Name","value":"timezone"}},{"kind":"Field","name":{"kind":"Name","value":"locale"}},{"kind":"Field","name":{"kind":"Name","value":"theme"}},{"kind":"Field","name":{"kind":"Name","value":"geminiApiKey"}},{"kind":"Field","name":{"kind":"Name","value":"hfApiKey"}},{"kind":"Field","name":{"kind":"Name","value":"preferredModel"}},{"kind":"Field","name":{"kind":"Name","value":"allowFallback"}},{"kind":"Field","name":{"kind":"Name","value":"categoryAiMethod"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"defaultAccount"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}}]}}]}}]} as unknown as DocumentNode<UserSettingsFieldsFragment, unknown>;
 export const GetAccountsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetAccounts"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"page"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"limit"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"sort"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"Accounts"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"page"},"value":{"kind":"Variable","name":{"kind":"Name","value":"page"}}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"Variable","name":{"kind":"Name","value":"limit"}}},{"kind":"Argument","name":{"kind":"Name","value":"sort"},"value":{"kind":"Variable","name":{"kind":"Name","value":"sort"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"docs"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"AccountFields"}}]}},{"kind":"Field","name":{"kind":"Name","value":"totalDocs"}},{"kind":"Field","name":{"kind":"Name","value":"page"}},{"kind":"Field","name":{"kind":"Name","value":"totalPages"}},{"kind":"Field","name":{"kind":"Name","value":"hasNextPage"}},{"kind":"Field","name":{"kind":"Name","value":"hasPrevPage"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"AccountFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Account"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}},{"kind":"Field","name":{"kind":"Name","value":"bgColor"}},{"kind":"Field","name":{"kind":"Name","value":"color"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"balance"}},{"kind":"Field","name":{"kind":"Name","value":"totalTransactions"}},{"kind":"Field","name":{"kind":"Name","value":"lastTransactionAt"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"thumbnailURL"}}]}}]}}]} as unknown as DocumentNode<GetAccountsQuery, GetAccountsQueryVariables>;
 export const GetAccountDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetAccount"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"Account"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"AccountFields"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"AccountFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Account"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}},{"kind":"Field","name":{"kind":"Name","value":"bgColor"}},{"kind":"Field","name":{"kind":"Name","value":"color"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"balance"}},{"kind":"Field","name":{"kind":"Name","value":"totalTransactions"}},{"kind":"Field","name":{"kind":"Name","value":"lastTransactionAt"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"thumbnailURL"}}]}}]}}]} as unknown as DocumentNode<GetAccountQuery, GetAccountQueryVariables>;
 export const CreateAccountDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateAccount"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"data"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"mutationAccountInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createAccount"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"data"},"value":{"kind":"Variable","name":{"kind":"Name","value":"data"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"AccountFields"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"AccountFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Account"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}},{"kind":"Field","name":{"kind":"Name","value":"bgColor"}},{"kind":"Field","name":{"kind":"Name","value":"color"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"balance"}},{"kind":"Field","name":{"kind":"Name","value":"totalTransactions"}},{"kind":"Field","name":{"kind":"Name","value":"lastTransactionAt"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"thumbnailURL"}}]}}]}}]} as unknown as DocumentNode<CreateAccountMutation, CreateAccountMutationVariables>;
@@ -23462,8 +24161,9 @@ export const GetMonthlyTagsDocument = {"kind":"Document","definitions":[{"kind":
 export const GetMonthlyPeopleDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetMonthlyPeople"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"month"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"year"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"monthlyPeople"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"month"},"value":{"kind":"Variable","name":{"kind":"Name","value":"month"}}},{"kind":"Argument","name":{"kind":"Name","value":"year"},"value":{"kind":"Variable","name":{"kind":"Name","value":"year"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"data"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"balance"}},{"kind":"Field","name":{"kind":"Name","value":"totalAmount"}},{"kind":"Field","name":{"kind":"Name","value":"totalTransactionCount"}},{"kind":"Field","name":{"kind":"Name","value":"expenseAmount"}},{"kind":"Field","name":{"kind":"Name","value":"incomeAmount"}}]}},{"kind":"Field","name":{"kind":"Name","value":"meta"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"month"}},{"kind":"Field","name":{"kind":"Name","value":"year"}},{"kind":"Field","name":{"kind":"Name","value":"monthName"}},{"kind":"Field","name":{"kind":"Name","value":"totalExpenses"}},{"kind":"Field","name":{"kind":"Name","value":"totalIncome"}}]}}]}}]}}]} as unknown as DocumentNode<GetMonthlyPeopleQuery, GetMonthlyPeopleQueryVariables>;
 export const GetWeeklyExpensesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetWeeklyExpenses"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"weeklyExpenses"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"days"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"sun"}},{"kind":"Field","name":{"kind":"Name","value":"mon"}},{"kind":"Field","name":{"kind":"Name","value":"tue"}},{"kind":"Field","name":{"kind":"Name","value":"wed"}},{"kind":"Field","name":{"kind":"Name","value":"thu"}},{"kind":"Field","name":{"kind":"Name","value":"fri"}},{"kind":"Field","name":{"kind":"Name","value":"sat"}}]}},{"kind":"Field","name":{"kind":"Name","value":"dailyData"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"date"}},{"kind":"Field","name":{"kind":"Name","value":"day"}},{"kind":"Field","name":{"kind":"Name","value":"total"}}]}},{"kind":"Field","name":{"kind":"Name","value":"timezone"}}]}}]}}]} as unknown as DocumentNode<GetWeeklyExpensesQuery, GetWeeklyExpensesQueryVariables>;
 export const GetMonthlyCalendarDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetMonthlyCalendar"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"month"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"year"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"monthlyCalendar"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"month"},"value":{"kind":"Variable","name":{"kind":"Name","value":"month"}}},{"kind":"Argument","name":{"kind":"Name","value":"year"},"value":{"kind":"Variable","name":{"kind":"Name","value":"year"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"data"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"date"}},{"kind":"Field","name":{"kind":"Name","value":"income"}},{"kind":"Field","name":{"kind":"Name","value":"expenses"}},{"kind":"Field","name":{"kind":"Name","value":"transfers"}},{"kind":"Field","name":{"kind":"Name","value":"balance"}},{"kind":"Field","name":{"kind":"Name","value":"transactionCount"}}]}},{"kind":"Field","name":{"kind":"Name","value":"meta"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"month"}},{"kind":"Field","name":{"kind":"Name","value":"year"}},{"kind":"Field","name":{"kind":"Name","value":"monthName"}},{"kind":"Field","name":{"kind":"Name","value":"timezone"}},{"kind":"Field","name":{"kind":"Name","value":"totalIncome"}},{"kind":"Field","name":{"kind":"Name","value":"totalExpenses"}},{"kind":"Field","name":{"kind":"Name","value":"totalTransfers"}},{"kind":"Field","name":{"kind":"Name","value":"balance"}}]}}]}}]}}]} as unknown as DocumentNode<GetMonthlyCalendarQuery, GetMonthlyCalendarQueryVariables>;
-export const MeUserDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"MeUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"meUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"user"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"AuthUserFields"}}]}},{"kind":"Field","name":{"kind":"Name","value":"exp"}},{"kind":"Field","name":{"kind":"Name","value":"collection"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"AuthUserFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"User"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"thumbnailURL"}}]}},{"kind":"Field","name":{"kind":"Name","value":"settings"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"docs"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"currency"}},{"kind":"Field","name":{"kind":"Name","value":"timezone"}},{"kind":"Field","name":{"kind":"Name","value":"locale"}},{"kind":"Field","name":{"kind":"Name","value":"theme"}},{"kind":"Field","name":{"kind":"Name","value":"geminiApiKey"}},{"kind":"Field","name":{"kind":"Name","value":"categoryAiMethod"}},{"kind":"Field","name":{"kind":"Name","value":"defaultAccount"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"hasNextPage"}}]}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode<MeUserQuery, MeUserQueryVariables>;
-export const LoginUserDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"LoginUser"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"email"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"password"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"loginUser"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"email"},"value":{"kind":"Variable","name":{"kind":"Name","value":"email"}}},{"kind":"Argument","name":{"kind":"Name","value":"password"},"value":{"kind":"Variable","name":{"kind":"Name","value":"password"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"token"}},{"kind":"Field","name":{"kind":"Name","value":"exp"}},{"kind":"Field","name":{"kind":"Name","value":"user"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"AuthUserFields"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"AuthUserFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"User"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"thumbnailURL"}}]}},{"kind":"Field","name":{"kind":"Name","value":"settings"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"docs"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"currency"}},{"kind":"Field","name":{"kind":"Name","value":"timezone"}},{"kind":"Field","name":{"kind":"Name","value":"locale"}},{"kind":"Field","name":{"kind":"Name","value":"theme"}},{"kind":"Field","name":{"kind":"Name","value":"geminiApiKey"}},{"kind":"Field","name":{"kind":"Name","value":"categoryAiMethod"}},{"kind":"Field","name":{"kind":"Name","value":"defaultAccount"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"hasNextPage"}}]}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode<LoginUserMutation, LoginUserMutationVariables>;
+export const GetSessionDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetSession"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"meUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"user"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"AuthUserFields"}}]}},{"kind":"Field","name":{"kind":"Name","value":"exp"}},{"kind":"Field","name":{"kind":"Name","value":"collection"}}]}},{"kind":"Field","name":{"kind":"Name","value":"AppSetting"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"AppSettingsAiFields"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"AuthUserFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"User"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"thumbnailURL"}}]}},{"kind":"Field","name":{"kind":"Name","value":"settings"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"docs"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"currency"}},{"kind":"Field","name":{"kind":"Name","value":"timezone"}},{"kind":"Field","name":{"kind":"Name","value":"locale"}},{"kind":"Field","name":{"kind":"Name","value":"theme"}},{"kind":"Field","name":{"kind":"Name","value":"geminiApiKey"}},{"kind":"Field","name":{"kind":"Name","value":"hfApiKey"}},{"kind":"Field","name":{"kind":"Name","value":"preferredModel"}},{"kind":"Field","name":{"kind":"Name","value":"allowFallback"}},{"kind":"Field","name":{"kind":"Name","value":"categoryAiMethod"}},{"kind":"Field","name":{"kind":"Name","value":"defaultAccount"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"hasNextPage"}}]}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"AppSettingsAiFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"AppSetting"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"ai"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"enabled"}},{"kind":"Field","name":{"kind":"Name","value":"allowUserApiKey"}},{"kind":"Field","name":{"kind":"Name","value":"defaultModel"}},{"kind":"Field","name":{"kind":"Name","value":"models"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"provider"}},{"kind":"Field","name":{"kind":"Name","value":"enabled"}},{"kind":"Field","name":{"kind":"Name","value":"contextWindow"}}]}}]}}]}}]} as unknown as DocumentNode<GetSessionQuery, GetSessionQueryVariables>;
+export const MeUserDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"MeUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"meUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"user"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"AuthUserFields"}}]}},{"kind":"Field","name":{"kind":"Name","value":"exp"}},{"kind":"Field","name":{"kind":"Name","value":"collection"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"AuthUserFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"User"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"thumbnailURL"}}]}},{"kind":"Field","name":{"kind":"Name","value":"settings"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"docs"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"currency"}},{"kind":"Field","name":{"kind":"Name","value":"timezone"}},{"kind":"Field","name":{"kind":"Name","value":"locale"}},{"kind":"Field","name":{"kind":"Name","value":"theme"}},{"kind":"Field","name":{"kind":"Name","value":"geminiApiKey"}},{"kind":"Field","name":{"kind":"Name","value":"hfApiKey"}},{"kind":"Field","name":{"kind":"Name","value":"preferredModel"}},{"kind":"Field","name":{"kind":"Name","value":"allowFallback"}},{"kind":"Field","name":{"kind":"Name","value":"categoryAiMethod"}},{"kind":"Field","name":{"kind":"Name","value":"defaultAccount"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"hasNextPage"}}]}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode<MeUserQuery, MeUserQueryVariables>;
+export const LoginUserDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"LoginUser"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"email"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"password"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"loginUser"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"email"},"value":{"kind":"Variable","name":{"kind":"Name","value":"email"}}},{"kind":"Argument","name":{"kind":"Name","value":"password"},"value":{"kind":"Variable","name":{"kind":"Name","value":"password"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"token"}},{"kind":"Field","name":{"kind":"Name","value":"exp"}},{"kind":"Field","name":{"kind":"Name","value":"user"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"AuthUserFields"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"AuthUserFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"User"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"thumbnailURL"}}]}},{"kind":"Field","name":{"kind":"Name","value":"settings"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"docs"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"currency"}},{"kind":"Field","name":{"kind":"Name","value":"timezone"}},{"kind":"Field","name":{"kind":"Name","value":"locale"}},{"kind":"Field","name":{"kind":"Name","value":"theme"}},{"kind":"Field","name":{"kind":"Name","value":"geminiApiKey"}},{"kind":"Field","name":{"kind":"Name","value":"hfApiKey"}},{"kind":"Field","name":{"kind":"Name","value":"preferredModel"}},{"kind":"Field","name":{"kind":"Name","value":"allowFallback"}},{"kind":"Field","name":{"kind":"Name","value":"categoryAiMethod"}},{"kind":"Field","name":{"kind":"Name","value":"defaultAccount"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"hasNextPage"}}]}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode<LoginUserMutation, LoginUserMutationVariables>;
 export const LogoutUserDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"LogoutUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"logoutUser"}}]}}]} as unknown as DocumentNode<LogoutUserMutation, LogoutUserMutationVariables>;
 export const RefreshTokenUserDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"RefreshTokenUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"refreshTokenUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"refreshedToken"}},{"kind":"Field","name":{"kind":"Name","value":"exp"}}]}}]}}]} as unknown as DocumentNode<RefreshTokenUserMutation, RefreshTokenUserMutationVariables>;
 export const GetCategoriesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetCategories"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"page"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"limit"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"sort"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"where"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Category_where"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"Categories"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"page"},"value":{"kind":"Variable","name":{"kind":"Name","value":"page"}}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"Variable","name":{"kind":"Name","value":"limit"}}},{"kind":"Argument","name":{"kind":"Name","value":"sort"},"value":{"kind":"Variable","name":{"kind":"Name","value":"sort"}}},{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"Variable","name":{"kind":"Name","value":"where"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"docs"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"CategoryFields"}}]}},{"kind":"Field","name":{"kind":"Name","value":"totalDocs"}},{"kind":"Field","name":{"kind":"Name","value":"page"}},{"kind":"Field","name":{"kind":"Name","value":"totalPages"}},{"kind":"Field","name":{"kind":"Name","value":"hasNextPage"}},{"kind":"Field","name":{"kind":"Name","value":"hasPrevPage"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"CategoryFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Category"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}},{"kind":"Field","name":{"kind":"Name","value":"color"}},{"kind":"Field","name":{"kind":"Name","value":"bgColor"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"user"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}},{"kind":"Field","name":{"kind":"Name","value":"parent"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}},{"kind":"Field","name":{"kind":"Name","value":"color"}}]}}]}}]} as unknown as DocumentNode<GetCategoriesQuery, GetCategoriesQueryVariables>;
@@ -23500,6 +24200,6 @@ export const GetTransactionDocument = {"kind":"Document","definitions":[{"kind":
 export const CreateTransactionDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateTransaction"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"data"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"mutationTransactionInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createTransaction"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"data"},"value":{"kind":"Variable","name":{"kind":"Name","value":"data"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"TransactionFields"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"TransactionCategoryFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Category"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}},{"kind":"Field","name":{"kind":"Name","value":"color"}},{"kind":"Field","name":{"kind":"Name","value":"bgColor"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"TransactionAccountFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Account"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}},{"kind":"Field","name":{"kind":"Name","value":"bgColor"}},{"kind":"Field","name":{"kind":"Name","value":"color"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"thumbnailURL"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"TransactionPersonFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Person"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"phone"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"thumbnailURL"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"TransactionTagFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Tag"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}},{"kind":"Field","name":{"kind":"Name","value":"color"}},{"kind":"Field","name":{"kind":"Name","value":"bgColor"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"TransactionAttachmentFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Media"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"thumbnailURL"}},{"kind":"Field","name":{"kind":"Name","value":"mimeType"}},{"kind":"Field","name":{"kind":"Name","value":"filesize"}},{"kind":"Field","name":{"kind":"Name","value":"filename"}},{"kind":"Field","name":{"kind":"Name","value":"width"}},{"kind":"Field","name":{"kind":"Name","value":"height"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"TransactionFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Transaction"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"amount"}},{"kind":"Field","name":{"kind":"Name","value":"date"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"note"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"category"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"TransactionCategoryFields"}}]}},{"kind":"Field","name":{"kind":"Name","value":"account"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"TransactionAccountFields"}}]}},{"kind":"Field","name":{"kind":"Name","value":"toAccount"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"TransactionAccountFields"}}]}},{"kind":"Field","name":{"kind":"Name","value":"person"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"TransactionPersonFields"}}]}},{"kind":"Field","name":{"kind":"Name","value":"tags"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"TransactionTagFields"}}]}},{"kind":"Field","name":{"kind":"Name","value":"attachments"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"TransactionAttachmentFields"}}]}}]}}]} as unknown as DocumentNode<CreateTransactionMutation, CreateTransactionMutationVariables>;
 export const UpdateTransactionDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateTransaction"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"data"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"mutationTransactionUpdateInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateTransaction"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}},{"kind":"Argument","name":{"kind":"Name","value":"data"},"value":{"kind":"Variable","name":{"kind":"Name","value":"data"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"TransactionFields"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"TransactionCategoryFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Category"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}},{"kind":"Field","name":{"kind":"Name","value":"color"}},{"kind":"Field","name":{"kind":"Name","value":"bgColor"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"TransactionAccountFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Account"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}},{"kind":"Field","name":{"kind":"Name","value":"bgColor"}},{"kind":"Field","name":{"kind":"Name","value":"color"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"thumbnailURL"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"TransactionPersonFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Person"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"phone"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"thumbnailURL"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"TransactionTagFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Tag"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}},{"kind":"Field","name":{"kind":"Name","value":"color"}},{"kind":"Field","name":{"kind":"Name","value":"bgColor"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"TransactionAttachmentFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Media"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"thumbnailURL"}},{"kind":"Field","name":{"kind":"Name","value":"mimeType"}},{"kind":"Field","name":{"kind":"Name","value":"filesize"}},{"kind":"Field","name":{"kind":"Name","value":"filename"}},{"kind":"Field","name":{"kind":"Name","value":"width"}},{"kind":"Field","name":{"kind":"Name","value":"height"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"TransactionFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Transaction"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"amount"}},{"kind":"Field","name":{"kind":"Name","value":"date"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"note"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"category"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"TransactionCategoryFields"}}]}},{"kind":"Field","name":{"kind":"Name","value":"account"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"TransactionAccountFields"}}]}},{"kind":"Field","name":{"kind":"Name","value":"toAccount"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"TransactionAccountFields"}}]}},{"kind":"Field","name":{"kind":"Name","value":"person"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"TransactionPersonFields"}}]}},{"kind":"Field","name":{"kind":"Name","value":"tags"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"TransactionTagFields"}}]}},{"kind":"Field","name":{"kind":"Name","value":"attachments"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"TransactionAttachmentFields"}}]}}]}}]} as unknown as DocumentNode<UpdateTransactionMutation, UpdateTransactionMutationVariables>;
 export const DeleteTransactionDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"DeleteTransaction"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deleteTransaction"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]} as unknown as DocumentNode<DeleteTransactionMutation, DeleteTransactionMutationVariables>;
-export const GetUserSettingsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetUserSettings"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"userId"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"JSON"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"UserSettings"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"IntValue","value":"1"}},{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"user"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"equals"},"value":{"kind":"Variable","name":{"kind":"Name","value":"userId"}}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"docs"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserSettingsFields"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserSettingsFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"UserSetting"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"currency"}},{"kind":"Field","name":{"kind":"Name","value":"timezone"}},{"kind":"Field","name":{"kind":"Name","value":"locale"}},{"kind":"Field","name":{"kind":"Name","value":"theme"}},{"kind":"Field","name":{"kind":"Name","value":"geminiApiKey"}},{"kind":"Field","name":{"kind":"Name","value":"categoryAiMethod"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"defaultAccount"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}}]}}]}}]} as unknown as DocumentNode<GetUserSettingsQuery, GetUserSettingsQueryVariables>;
-export const UpdateUserSettingsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateUserSettings"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"data"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"mutationUserSettingUpdateInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateUserSetting"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}},{"kind":"Argument","name":{"kind":"Name","value":"data"},"value":{"kind":"Variable","name":{"kind":"Name","value":"data"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserSettingsFields"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserSettingsFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"UserSetting"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"currency"}},{"kind":"Field","name":{"kind":"Name","value":"timezone"}},{"kind":"Field","name":{"kind":"Name","value":"locale"}},{"kind":"Field","name":{"kind":"Name","value":"theme"}},{"kind":"Field","name":{"kind":"Name","value":"geminiApiKey"}},{"kind":"Field","name":{"kind":"Name","value":"categoryAiMethod"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"defaultAccount"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}}]}}]}}]} as unknown as DocumentNode<UpdateUserSettingsMutation, UpdateUserSettingsMutationVariables>;
+export const GetUserSettingsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetUserSettings"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"userId"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"JSON"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"UserSettings"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"IntValue","value":"1"}},{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"user"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"equals"},"value":{"kind":"Variable","name":{"kind":"Name","value":"userId"}}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"docs"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserSettingsFields"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserSettingsFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"UserSetting"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"currency"}},{"kind":"Field","name":{"kind":"Name","value":"timezone"}},{"kind":"Field","name":{"kind":"Name","value":"locale"}},{"kind":"Field","name":{"kind":"Name","value":"theme"}},{"kind":"Field","name":{"kind":"Name","value":"geminiApiKey"}},{"kind":"Field","name":{"kind":"Name","value":"hfApiKey"}},{"kind":"Field","name":{"kind":"Name","value":"preferredModel"}},{"kind":"Field","name":{"kind":"Name","value":"allowFallback"}},{"kind":"Field","name":{"kind":"Name","value":"categoryAiMethod"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"defaultAccount"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}}]}}]}}]} as unknown as DocumentNode<GetUserSettingsQuery, GetUserSettingsQueryVariables>;
+export const UpdateUserSettingsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateUserSettings"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"data"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"mutationUserSettingUpdateInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateUserSetting"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}},{"kind":"Argument","name":{"kind":"Name","value":"data"},"value":{"kind":"Variable","name":{"kind":"Name","value":"data"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserSettingsFields"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserSettingsFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"UserSetting"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"currency"}},{"kind":"Field","name":{"kind":"Name","value":"timezone"}},{"kind":"Field","name":{"kind":"Name","value":"locale"}},{"kind":"Field","name":{"kind":"Name","value":"theme"}},{"kind":"Field","name":{"kind":"Name","value":"geminiApiKey"}},{"kind":"Field","name":{"kind":"Name","value":"hfApiKey"}},{"kind":"Field","name":{"kind":"Name","value":"preferredModel"}},{"kind":"Field","name":{"kind":"Name","value":"allowFallback"}},{"kind":"Field","name":{"kind":"Name","value":"categoryAiMethod"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"defaultAccount"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}}]}}]}}]} as unknown as DocumentNode<UpdateUserSettingsMutation, UpdateUserSettingsMutationVariables>;
 export const UpdateUserDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateUser"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"data"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"mutationUserUpdateInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateUser"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}},{"kind":"Argument","name":{"kind":"Name","value":"data"},"value":{"kind":"Variable","name":{"kind":"Name","value":"data"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"thumbnailURL"}}]}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}}]} as unknown as DocumentNode<UpdateUserMutation, UpdateUserMutationVariables>;

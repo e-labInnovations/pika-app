@@ -5,6 +5,9 @@ fragment UserSettingsFields on UserSetting {
   locale
   theme
   geminiApiKey
+  hfApiKey
+  preferredModel
+  allowFallback
   categoryAiMethod
   createdAt
   updatedAt

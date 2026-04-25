@@ -5,6 +5,7 @@ import {
   ActivityIndicator,
   Platform,
   ScrollView,
+  Switch,
   Text,
   TextInput,
   TouchableOpacity,
@@ -14,7 +15,10 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { API_URL } from "@/lib/constants";
 import { showAlert } from "@/components/ui/AlertDialog";
 import { DynamicIcon } from "@/components/Icon";
+import { GeminiLogo } from "@/components/icons/GeminiLogo";
+import { HuggingFaceLogo } from "@/components/icons/HuggingFaceLogo";
 import { Skeleton } from "@/components/ui/Skeleton";
+import { ModelPickerSheet } from "@/components/settings/ModelPickerSheet";
 import { useAuth } from "@/context/AuthContext";
 import { useColors } from "@/theme/colors";
 import {
@@ -23,7 +27,7 @@ import {
 } from "@/services/gql/user-settings/user-settings.service";
 import { UserSettingUpdate_categoryAiMethod_MutationInput } from "@/services/gql/types/graphql";
 
-type CategoryAiMethod = "minilm" | "gemini";
+type CategoryAiMethod = "minilm" | "cloud";
 
 const CATEGORY_METHOD_OPTIONS: {
   value: CategoryAiMethod;
@@ -35,18 +39,25 @@ const CATEGORY_METHOD_OPTIONS: {
   {
     value: "minilm",
     label: "Local (MiniLM)",
-    description: "Fast and free. Runs on our server with a small on-device-style model.",
+    description:
+      "Fast and free. Runs on our server with a small on-device-style model.",
     icon: "cpu",
     color: "#10b981",
   },
   {
-    value: "gemini",
-    label: "Cloud (Gemini)",
-    description: "Smarter for edge cases. Counts against your AI request quota.",
+    value: "cloud",
+    label: "Cloud (AI Model)",
+    description:
+      "Smarter for edge cases. Counts against your AI request quota.",
     icon: "sparkles",
     color: "#8b5cf6",
   },
 ];
+
+const PROVIDER_LABELS: Record<string, string> = {
+  gemini: "Gemini",
+  huggingface: "HuggingFace",
+};
 
 // ── Section label ─────────────────────────────────────────────────────────────
 
@@ -61,6 +72,166 @@ function SectionLabel({ label, topPad }: { label: string; topPad?: boolean }) {
   );
 }
 
+// ── API Key Row ────────────────────────────────────────────────────────────────
+
+function ApiKeyRow({
+  label,
+  subtitle,
+  logo,
+  placeholder,
+  value,
+  onChange,
+  onSave,
+  saving,
+  dirty,
+  docUrl,
+  docLabel,
+  C,
+}: {
+  label: string;
+  subtitle: string;
+  logo: React.ReactNode;
+  placeholder: string;
+  value: string;
+  onChange: (v: string) => void;
+  onSave: () => void;
+  saving: boolean;
+  dirty: boolean;
+  docUrl?: string;
+  docLabel?: string;
+  C: ReturnType<typeof useColors>;
+}) {
+  return (
+    <View
+      style={{
+        borderRadius: 16,
+        backgroundColor: C.surfaceMid,
+        padding: 16,
+        gap: 12,
+      }}
+    >
+      <View style={{ flexDirection: "row", alignItems: "center", gap: 12 }}>
+        <View
+          style={{
+            width: 36,
+            height: 36,
+            borderRadius: 10,
+            backgroundColor: C.surfaceHigh,
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          {logo}
+        </View>
+        <View style={{ flex: 1 }}>
+          <Text style={{ fontSize: 14, fontWeight: "600", color: C.onSurface }}>
+            {label}
+          </Text>
+          <Text style={{ fontSize: 12, color: C.onSurfaceVariant }}>
+            {subtitle}
+          </Text>
+        </View>
+      </View>
+
+      <View
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+          gap: 8,
+          paddingHorizontal: 12,
+          borderRadius: 12,
+          backgroundColor: C.surfaceHigh,
+          height: 46,
+        }}
+      >
+        <TextInput
+          value={value}
+          onChangeText={onChange}
+          placeholder={placeholder}
+          autoCapitalize="none"
+          autoCorrect={false}
+          spellCheck={false}
+          style={{ flex: 1, fontSize: 14, color: C.onSurface }}
+          placeholderTextColor={C.onSurfaceVariant + "80"}
+        />
+        {dirty && (
+          <TouchableOpacity
+            onPress={onSave}
+            disabled={saving}
+            activeOpacity={0.75}
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              gap: 5,
+              paddingHorizontal: 10,
+              paddingVertical: 6,
+              borderRadius: 8,
+              backgroundColor: C.primary,
+            }}
+          >
+            {saving ? (
+              <ActivityIndicator size="small" color="#fff" />
+            ) : (
+              <>
+                <DynamicIcon name="check" size={13} color="#fff" />
+                <Text
+                  style={{ fontSize: 12, fontWeight: "700", color: "#fff" }}
+                >
+                  Save
+                </Text>
+              </>
+            )}
+          </TouchableOpacity>
+        )}
+      </View>
+
+      <Text
+        style={{
+          fontSize: 11,
+          color: C.onSurfaceVariant,
+          opacity: 0.7,
+          paddingHorizontal: 2,
+        }}
+      >
+        Stored securely on your account
+      </Text>
+
+      {docUrl && docLabel && (
+        <TouchableOpacity
+          onPress={() => WebBrowser.openBrowserAsync(docUrl)}
+          activeOpacity={0.75}
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            gap: 10,
+            paddingVertical: 11,
+            paddingHorizontal: 12,
+            borderRadius: 12,
+            backgroundColor: C.surfaceHigh,
+          }}
+        >
+          <DynamicIcon name="book-open" size={14} color={C.onSurfaceVariant} />
+          <Text
+            style={{
+              flex: 1,
+              fontSize: 12,
+              fontWeight: "600",
+              color: C.onSurface,
+            }}
+          >
+            {docLabel}
+          </Text>
+          <DynamicIcon
+            name="external-link"
+            size={12}
+            color={C.onSurfaceVariant}
+          />
+        </TouchableOpacity>
+      )}
+    </View>
+  );
+}
+
 // ── Main screen ───────────────────────────────────────────────────────────────
 
 export default function AiSettingsScreen() {
@@ -68,50 +239,152 @@ export default function AiSettingsScreen() {
   const insets = useSafeAreaInsets();
   const topPad = insets.top || (Platform.OS === "ios" ? 44 : 24);
 
-  const { user } = useAuth();
+  const { user, appSettings } = useAuth();
   const { data: userSettings, loading: settingsLoading } = useGetUserSettings(
     user?.id,
   );
   const { updateUserSettings } = useUpdateUserSettings();
 
-  // Gemini key state
+  // API key state
   const [geminiKey, setGeminiKey] = useState("");
   const [savingGemini, setSavingGemini] = useState(false);
+  const [hfKey, setHfKey] = useState("");
+  const [savingHf, setSavingHf] = useState(false);
 
-  // Category AI method state (persists to user-settings)
+  // Model preference state
+  const [preferredModel, setPreferredModel] = useState<string>("");
+  const [allowFallback, setAllowFallback] = useState(true);
+  const [savingModel, setSavingModel] = useState(false);
+  const [savingFallback, setSavingFallback] = useState(false);
+  const [modelPickerVisible, setModelPickerVisible] = useState(false);
+
+  // Category AI method state
   const savedCategoryMethod: CategoryAiMethod =
-    (userSettings?.categoryAiMethod as CategoryAiMethod | null | undefined) ?? "minilm";
-  const [categoryMethod, setCategoryMethod] = useState<CategoryAiMethod>("minilm");
+    (userSettings?.categoryAiMethod as CategoryAiMethod | null | undefined) ??
+    "minilm";
+  const [categoryMethod, setCategoryMethod] =
+    useState<CategoryAiMethod>("minilm");
   const [savingCategoryMethod, setSavingCategoryMethod] = useState(false);
 
   useEffect(() => {
     if (userSettings) {
       setGeminiKey(userSettings.geminiApiKey ?? "");
+      setHfKey(userSettings.hfApiKey ?? "");
+      setPreferredModel(userSettings.preferredModel ?? "");
+      setAllowFallback(userSettings.allowFallback !== false);
       setCategoryMethod(
-        (userSettings.categoryAiMethod as CategoryAiMethod | null | undefined) ?? "minilm",
+        (userSettings.categoryAiMethod as CategoryAiMethod | null | undefined) ??
+          "minilm",
       );
     }
-  }, [userSettings?.id, userSettings?.geminiApiKey, userSettings?.categoryAiMethod]);
+  }, [
+    userSettings?.id,
+    userSettings?.geminiApiKey,
+    userSettings?.hfApiKey,
+    userSettings?.preferredModel,
+    userSettings?.allowFallback,
+    userSettings?.categoryAiMethod,
+  ]);
+
+  // Available enabled models from app settings
+  const availableModels = (appSettings?.ai?.models ?? []).filter(
+    (m) => m.enabled !== false && m.id,
+  );
+
+  const defaultModel = appSettings?.ai?.defaultModel ?? "";
+
+  // ── Save handlers ──────────────────────────────────────────────────────────
+
+  const handleSaveKey = async (
+    field: "geminiApiKey" | "hfApiKey",
+    value: string,
+    setSaving: (v: boolean) => void,
+  ) => {
+    if (!userSettings?.id || value === (field === "geminiApiKey" ? (userSettings.geminiApiKey ?? "") : (userSettings.hfApiKey ?? ""))) return;
+    setSaving(true);
+    try {
+      await updateUserSettings({ id: userSettings.id, data: { [field]: value } });
+    } catch (err: any) {
+      showAlert({
+        title: "Error",
+        message:
+          err?.graphQLErrors?.[0]?.message ?? err?.message ?? "Failed to save.",
+      });
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handlePickModel = async (modelId: string) => {
+    if (!userSettings?.id || savingModel || modelId === (userSettings.preferredModel ?? "")) {
+      setPreferredModel(modelId);
+      return;
+    }
+    setPreferredModel(modelId);
+    setSavingModel(true);
+    try {
+      await updateUserSettings({
+        id: userSettings.id,
+        data: { preferredModel: modelId || null },
+      });
+    } catch (err: any) {
+      setPreferredModel(userSettings.preferredModel ?? "");
+      showAlert({
+        title: "Error",
+        message:
+          err?.graphQLErrors?.[0]?.message ??
+          err?.message ??
+          "Failed to update model.",
+      });
+    } finally {
+      setSavingModel(false);
+    }
+  };
+
+  const handleToggleFallback = async (next: boolean) => {
+    if (!userSettings?.id || savingFallback) return;
+    setAllowFallback(next);
+    setSavingFallback(true);
+    try {
+      await updateUserSettings({
+        id: userSettings.id,
+        data: { allowFallback: next },
+      });
+    } catch (err: any) {
+      setAllowFallback(userSettings.allowFallback !== false);
+      showAlert({
+        title: "Error",
+        message:
+          err?.graphQLErrors?.[0]?.message ?? err?.message ?? "Failed to save.",
+      });
+    } finally {
+      setSavingFallback(false);
+    }
+  };
 
   const handlePickCategoryMethod = async (next: CategoryAiMethod) => {
-    if (!userSettings?.id || savingCategoryMethod || next === savedCategoryMethod) {
+    if (
+      !userSettings?.id ||
+      savingCategoryMethod ||
+      next === savedCategoryMethod
+    ) {
       setCategoryMethod(next);
       return;
     }
-    setCategoryMethod(next); // optimistic
+    setCategoryMethod(next);
     setSavingCategoryMethod(true);
     try {
       await updateUserSettings({
         id: userSettings.id,
         data: {
           categoryAiMethod:
-            next === "gemini"
-              ? UserSettingUpdate_categoryAiMethod_MutationInput.gemini
+            next === "cloud"
+              ? UserSettingUpdate_categoryAiMethod_MutationInput.cloud
               : UserSettingUpdate_categoryAiMethod_MutationInput.minilm,
         },
       });
     } catch (err: any) {
-      setCategoryMethod(savedCategoryMethod); // revert on failure
+      setCategoryMethod(savedCategoryMethod);
       showAlert({
         title: "Error",
         message:
@@ -124,29 +397,10 @@ export default function AiSettingsScreen() {
     }
   };
 
-  const savedGemini = userSettings?.geminiApiKey ?? "";
-  const geminiChanged = geminiKey !== savedGemini;
-
-  const handleSaveGemini = async () => {
-    if (!userSettings?.id || savingGemini) return;
-    setSavingGemini(true);
-    try {
-      await updateUserSettings({
-        id: userSettings.id,
-        data: { geminiApiKey: geminiKey },
-      });
-    } catch (err: any) {
-      showAlert({
-        title: "Error",
-        message:
-          err?.graphQLErrors?.[0]?.message ?? err?.message ?? "Failed to save.",
-      });
-    } finally {
-      setSavingGemini(false);
-    }
-  };
-
   const loading = settingsLoading && !userSettings;
+
+  const savedGemini = userSettings?.geminiApiKey ?? "";
+  const savedHf = userSettings?.hfApiKey ?? "";
 
   return (
     <View style={{ flex: 1, backgroundColor: C.surface }}>
@@ -189,7 +443,6 @@ export default function AiSettingsScreen() {
       </View>
 
       {loading ? (
-        /* Skeleton */
         <View style={{ paddingHorizontal: 16, gap: 8 }}>
           <View style={{ height: 8 }} />
           <Skeleton height={11} width="25%" radius={6} />
@@ -217,6 +470,7 @@ export default function AiSettingsScreen() {
           <Skeleton height={11} width="30%" radius={6} />
           <View style={{ height: 2 }} />
           <Skeleton height={60} radius={16} />
+          <Skeleton height={60} radius={16} />
         </View>
       ) : (
         <ScrollView
@@ -227,150 +481,142 @@ export default function AiSettingsScreen() {
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
         >
-          {/* ── Gemini API Key ──────────────────────────────────────────────── */}
-          <SectionLabel label="Gemini API Key" />
+          {/* ── API Keys ──────────────────────────────────────────────────── */}
+          <SectionLabel label="API Keys" />
+          <View style={{ gap: 8 }}>
+            <ApiKeyRow
+              label="Gemini API Key"
+              subtitle="Used for Gemini models"
+              logo={<GeminiLogo size={20} />}
+              placeholder="AIzaSy..."
+              value={geminiKey}
+              onChange={setGeminiKey}
+              onSave={() =>
+                handleSaveKey("geminiApiKey", geminiKey, setSavingGemini)
+              }
+              saving={savingGemini}
+              dirty={geminiKey !== savedGemini}
+              docUrl={`${API_URL}/gemini-api-key`}
+              docLabel="How to get your Gemini API key"
+              C={C}
+            />
+            <ApiKeyRow
+              label="HuggingFace API Key"
+              subtitle="Used for HuggingFace models"
+              logo={<HuggingFaceLogo size={20} />}
+              placeholder="hf_..."
+              value={hfKey}
+              onChange={setHfKey}
+              onSave={() => handleSaveKey("hfApiKey", hfKey, setSavingHf)}
+              saving={savingHf}
+              dirty={hfKey !== savedHf}
+              docUrl={`${API_URL}/hf-api-key`}
+              docLabel="How to get your HuggingFace API key"
+              C={C}
+            />
+          </View>
+
+          {/* ── Model Preference ───────────────────────────────────────────── */}
+          <SectionLabel label="Model Preference" topPad />
           <View
             style={{
               borderRadius: 16,
               backgroundColor: C.surfaceMid,
-              padding: 16,
-              gap: 12,
+              overflow: "hidden",
             }}
           >
-            <View
-              style={{ flexDirection: "row", alignItems: "center", gap: 12 }}
-            >
-              <View
-                style={{
-                  width: 36,
-                  height: 36,
-                  borderRadius: 10,
-                  backgroundColor: "#8b5cf620",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                <DynamicIcon name="sparkles" size={17} color="#8b5cf6" />
-              </View>
-              <View style={{ flex: 1 }}>
-                <Text
-                  style={{
-                    fontSize: 14,
-                    fontWeight: "600",
-                    color: C.onSurface,
-                  }}
-                >
-                  Gemini API Key
-                </Text>
-                <Text style={{ fontSize: 12, color: C.onSurfaceVariant }}>
-                  Powers AI transaction parsing
-                </Text>
-              </View>
-            </View>
-
-            <View
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                gap: 8,
-                paddingHorizontal: 12,
-                borderRadius: 12,
-                backgroundColor: C.surfaceHigh,
-                height: 46,
-              }}
-            >
-              <TextInput
-                value={geminiKey}
-                onChangeText={setGeminiKey}
-                placeholder="AIzaSy..."
-                autoCapitalize="none"
-                autoCorrect={false}
-                spellCheck={false}
-                style={{ flex: 1, fontSize: 14, color: C.onSurface }}
-                placeholderTextColor={C.onSurfaceVariant + "80"}
-              />
-              {geminiChanged && (
-                <TouchableOpacity
-                  onPress={handleSaveGemini}
-                  disabled={savingGemini}
-                  activeOpacity={0.75}
-                  style={{
-                    flexDirection: "row",
-                    alignItems: "center",
-                    gap: 5,
-                    paddingHorizontal: 10,
-                    paddingVertical: 6,
-                    borderRadius: 8,
-                    backgroundColor: C.primary,
-                  }}
-                >
-                  {savingGemini ? (
-                    <ActivityIndicator size="small" color="#fff" />
-                  ) : (
-                    <>
-                      <DynamicIcon name="check" size={13} color="#fff" />
-                      <Text
-                        style={{
-                          fontSize: 12,
-                          fontWeight: "700",
-                          color: "#fff",
-                        }}
-                      >
-                        Save
-                      </Text>
-                    </>
-                  )}
-                </TouchableOpacity>
-              )}
-            </View>
-
-            <Text
-              style={{
-                fontSize: 11,
-                color: C.onSurfaceVariant,
-                opacity: 0.7,
-                paddingHorizontal: 2,
-              }}
-            >
-              Stored securely on your account
-            </Text>
-
-            {/* How to get a personal Gemini key — doc link */}
+            {/* Model selector trigger */}
             <TouchableOpacity
-              onPress={() => WebBrowser.openBrowserAsync(`${API_URL}/gemini-api-key`)}
+              onPress={() => setModelPickerVisible(true)}
+              disabled={savingModel}
               activeOpacity={0.75}
               style={{
                 flexDirection: "row",
                 alignItems: "center",
-                gap: 10,
-                paddingVertical: 11,
-                paddingHorizontal: 12,
-                borderRadius: 12,
-                backgroundColor: C.surfaceHigh,
+                gap: 12,
+                padding: 14,
               }}
             >
-              <DynamicIcon
-                name="book-open"
-                size={14}
-                color={C.onSurfaceVariant}
-              />
-              <Text
-                style={{
-                  flex: 1,
-                  fontSize: 12,
-                  fontWeight: "600",
-                  color: C.onSurface,
-                }}
-              >
-                How to get your Gemini API key
-              </Text>
-              <DynamicIcon
-                name="external-link"
-                size={12}
-                color={C.onSurfaceVariant}
-              />
+              <View style={{ flex: 1 }}>
+                <Text
+                  style={{ fontSize: 13, fontWeight: "600", color: C.onSurface }}
+                >
+                  {(() => {
+                    if (!preferredModel) return "App default";
+                    const m = availableModels.find((x) => x.id === preferredModel);
+                    return m?.name ?? preferredModel;
+                  })()}
+                </Text>
+                <Text style={{ fontSize: 11, color: C.onSurfaceVariant, marginTop: 1 }}>
+                  {(() => {
+                    if (!preferredModel)
+                      return defaultModel ? `Default: ${defaultModel}` : "No default set";
+                    const m = availableModels.find((x) => x.id === preferredModel);
+                    const provider = m?.provider ?? "gemini";
+                    return PROVIDER_LABELS[provider] ?? provider;
+                  })()}
+                </Text>
+              </View>
+              {savingModel ? (
+                <ActivityIndicator size="small" color={C.primary} />
+              ) : (
+                <DynamicIcon name="chevron-right" size={18} color={C.onSurfaceVariant} />
+              )}
             </TouchableOpacity>
+
+            {/* Divider */}
+            <View
+              style={{
+                height: 1,
+                backgroundColor: C.outlineVariant,
+                opacity: 0.3,
+                marginHorizontal: 14,
+              }}
+            />
+
+            {/* Allow fallback toggle */}
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                gap: 12,
+                paddingHorizontal: 14,
+                paddingVertical: 12,
+              }}
+            >
+              <View style={{ flex: 1 }}>
+                <Text
+                  style={{ fontSize: 13, fontWeight: "600", color: C.onSurface }}
+                >
+                  Allow fallback
+                </Text>
+                <Text
+                  style={{ fontSize: 11, color: C.onSurfaceVariant, marginTop: 2 }}
+                >
+                  If no key for chosen model's provider, fall back to app default.
+                </Text>
+              </View>
+              {savingFallback ? (
+                <ActivityIndicator size="small" color={C.primary} />
+              ) : (
+                <Switch
+                  value={allowFallback}
+                  onValueChange={handleToggleFallback}
+                  trackColor={{ false: C.outlineVariant, true: C.primary }}
+                  thumbColor="#fff"
+                />
+              )}
+            </View>
           </View>
+
+          <ModelPickerSheet
+            visible={modelPickerVisible}
+            onClose={() => setModelPickerVisible(false)}
+            models={availableModels}
+            selectedId={preferredModel}
+            defaultModel={defaultModel}
+            onSelect={handlePickModel}
+          />
 
           {/* ── Category Suggestions ───────────────────────────────────────── */}
           <SectionLabel label="Category Suggestions" topPad />
@@ -424,7 +670,11 @@ export default function AiSettingsScreen() {
                       justifyContent: "center",
                     }}
                   >
-                    <DynamicIcon name={opt.icon} size={17} color={opt.color} />
+                    <DynamicIcon
+                      name={opt.icon}
+                      size={17}
+                      color={opt.color}
+                    />
                   </View>
                   <View style={{ flex: 1 }}>
                     <Text
@@ -455,7 +705,9 @@ export default function AiSettingsScreen() {
                         height: 20,
                         borderRadius: 10,
                         borderWidth: 2,
-                        borderColor: selected ? opt.color : C.outlineVariant,
+                        borderColor: selected
+                          ? opt.color
+                          : C.outlineVariant,
                         backgroundColor: selected ? opt.color : "transparent",
                         alignItems: "center",
                         justifyContent: "center",
@@ -500,7 +752,11 @@ export default function AiSettingsScreen() {
             </View>
             <View style={{ flex: 1 }}>
               <Text
-                style={{ fontSize: 14, fontWeight: "600", color: C.onSurface }}
+                style={{
+                  fontSize: 14,
+                  fontWeight: "600",
+                  color: C.onSurface,
+                }}
               >
                 MCP API Keys
               </Text>

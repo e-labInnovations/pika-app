@@ -10,15 +10,18 @@ import React, {
   useState,
 } from "react";
 import {
-  authApi,
-  type PayloadUser,
-  type PayloadUserSettings,
-} from "../lib/auth-api";
-import { API_URL } from "../lib/constants";
+  useGetSession,
+  useLoginUser,
+  useLogoutUser,
+  type AuthUser,
+  type AuthSettings,
+  type AppSettings,
+} from "../services/gql/auth/auth.service";
 import {
   apolloClient,
   setUnauthenticatedHandler,
 } from "../services/gql/client";
+import { API_URL } from "../lib/constants";
 import { storage } from "../lib/storage";
 import { tokenManager } from "../lib/token-manager";
 
@@ -28,9 +31,11 @@ SplashScreen.preventAutoHideAsync();
 // ── Types ────────────────────────────────────────────────────────────────────
 
 type AuthContextType = {
-  user: PayloadUser | null;
+  user: AuthUser | null;
   /** Derived from user — never out of sync */
-  settings: PayloadUserSettings | null;
+  settings: AuthSettings | null;
+  /** App-level settings (available AI models, feature flags, etc.) */
+  appSettings: AppSettings | null;
   /** True only during initial session rehydration */
   isLoading: boolean;
   /** True during login / logout / token exchange operations */
@@ -43,9 +48,9 @@ type AuthContextType = {
   refreshUser: () => Promise<void>;
 };
 
-// ── Helpers ───────────────────────────────────────────────────────────────────
+// ── Helpers ──────────────────────────────────────────────────────────────────
 
-function extractSettings(user: PayloadUser): PayloadUserSettings | null {
+function extractSettings(user: AuthUser): AuthSettings | null {
   return user.settings?.docs?.[0] ?? null;
 }
 
@@ -56,23 +61,33 @@ const AuthContext = createContext<AuthContextType | null>(null);
 // ── Provider ─────────────────────────────────────────────────────────────────
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<PayloadUser | null>(null);
+  const [user, setUser] = useState<AuthUser | null>(null);
+  const [appSettings, setAppSettings] = useState<AppSettings | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isAuthenticating, setIsAuthenticating] = useState(false);
+
+  const { fetchSession } = useGetSession();
+  const { login: loginMutation } = useLoginUser();
+  const { logout: logoutMutation } = useLogoutUser();
 
   // Derived — always in sync with user, no separate setState needed
   const settings = user ? extractSettings(user) : null;
 
   // ── Helpers ────────────────────────────────────────────────────────────────
 
-  const applyUser = useCallback((u: PayloadUser) => {
-    setUser(u);
-  }, []);
+  const applySession = useCallback(
+    (u: AuthUser, as: AppSettings | null) => {
+      setUser(u);
+      setAppSettings(as);
+    },
+    [],
+  );
 
   const clearSession = useCallback(async () => {
     await storage.clear();
     apolloClient.clearStore();
     setUser(null);
+    setAppSettings(null);
   }, []);
 
   // ── Logout ─────────────────────────────────────────────────────────────────
@@ -80,18 +95,32 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const logout = useCallback(async () => {
     setIsAuthenticating(true);
     try {
-      authApi.logout(); // fire-and-forget
+      logoutMutation(); // fire-and-forget
       await clearSession();
       router.replace("/sign-in");
     } finally {
       setIsAuthenticating(false);
     }
-  }, [clearSession]);
+  }, [clearSession, logoutMutation]);
 
   // Register with Apollo so 401s trigger logout
   useEffect(() => {
     setUnauthenticatedHandler(logout);
   }, [logout]);
+
+  // ── Session fetch helper ───────────────────────────────────────────────────
+
+  const loadSession = useCallback(async (): Promise<boolean> => {
+    try {
+      const session = await fetchSession();
+      if (!session.user) return false;
+      await storage.setUser(session.user);
+      applySession(session.user, session.appSettings);
+      return true;
+    } catch {
+      return false;
+    }
+  }, [fetchSession, applySession]);
 
   // ── Session rehydration ────────────────────────────────────────────────────
 
@@ -100,14 +129,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     async function rehydrate() {
       try {
-        const savedUser = await storage.getUser<PayloadUser>();
-        if (!savedUser) return;
-
         const token = await storage.getToken();
-        if (!token) {
-          await clearSession();
-          return;
-        }
+        if (!token) return;
 
         const validToken = await tokenManager.getValidToken();
         if (!validToken) {
@@ -115,13 +138,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           return;
         }
 
-        const tokenStatus = await authApi.checkToken();
-        if (tokenStatus === "invalid") {
-          await clearSession();
-          return;
-        }
+        // Use stored user for instant UI, then refresh in background
+        const savedUser = await storage.getUser<AuthUser>();
+        if (savedUser && !cancelled) setUser(savedUser);
 
-        if (!cancelled) applyUser(savedUser);
+        // Fetch fresh session (user + appSettings) from server
+        const ok = await loadSession();
+        if (!ok && !cancelled) await clearSession();
       } catch {
         // Network down on startup — keep user logged in, screens surface errors
       } finally {
@@ -141,16 +164,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     async (email: string, password: string) => {
       setIsAuthenticating(true);
       try {
-        const data = await authApi.login(email, password);
+        const data = await loginMutation({ email, password });
         await storage.setToken(data.token);
         await storage.setExp(data.exp);
         await storage.setUser(data.user);
-        applyUser(data.user);
+        // Apply user immediately for fast UX, then fetch appSettings
+        applySession(data.user, null);
+        loadSession(); // background — appSettings arrive shortly
       } finally {
         setIsAuthenticating(false);
       }
     },
-    [applyUser],
+    [loginMutation, applySession, loadSession],
   );
 
   // ── Shared OAuth token completion ──────────────────────────────────────────
@@ -162,19 +187,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         await storage.setToken(token);
         if (exp) await storage.setExp(exp);
 
-        const fetchedUser = await authApi.me(token);
-        if (!fetchedUser) {
+        const ok = await loadSession();
+        if (!ok) {
           await clearSession();
           throw new Error("Sign-in failed: could not load profile.");
         }
-
-        await storage.setUser(fetchedUser);
-        applyUser(fetchedUser);
       } finally {
         setIsAuthenticating(false);
       }
     },
-    [applyUser, clearSession],
+    [loadSession, clearSession],
   );
 
   // ── Google OAuth ───────────────────────────────────────────────────────────
@@ -206,17 +228,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // ── Refresh user ───────────────────────────────────────────────────────────
 
   const refreshUser = useCallback(async () => {
-    const fetchedUser = await authApi.me();
-    if (!fetchedUser) return;
-    await storage.setUser(fetchedUser);
-    applyUser(fetchedUser);
-  }, [applyUser]);
+    await loadSession();
+  }, [loadSession]);
 
   return (
     <AuthContext.Provider
       value={{
         user,
         settings,
+        appSettings,
         isLoading,
         isAuthenticating,
         isAuthenticated: !!user,
