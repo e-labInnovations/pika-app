@@ -1,11 +1,12 @@
+import "../lib/patch-share-intent-module";
 import "../global.css";
 
 import { ApolloProvider } from "@apollo/client/react";
-import { router, Slot, Stack } from "expo-router";
+import { router, Stack } from "expo-router";
 import { readAsStringAsync, EncodingType } from "expo-file-system/legacy";
 import { ShareIntentProvider, useShareIntent } from "expo-share-intent";
 import * as SplashScreen from "expo-splash-screen";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { AuthProvider, useAuth } from "../context/AuthContext";
 import {
   ShareIntentBridgeProvider,
@@ -19,28 +20,56 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 SplashScreen.preventAutoHideAsync();
 
 function ShareIntentListener() {
-  const { hasShareIntent, shareIntent, resetShareIntent } = useShareIntent();
+  const { hasShareIntent, shareIntent, error, resetShareIntent } = useShareIntent();
   const { setPending } = usePendingShare();
+  const { isAuthenticated, isLoading } = useAuth();
+  const [queuedIntent, setQueuedIntent] = useState<typeof shareIntent | null>(null);
 
+  // Queue the intent when it arrives; on native error (e.g. WhatsApp private
+  // content URI causing a SecurityException) just clean up without crashing.
   useEffect(() => {
-    if (!hasShareIntent || !shareIntent) return;
+    if (error) {
+      resetShareIntent();
+      return;
+    }
+    if (hasShareIntent && shareIntent) {
+      setQueuedIntent(shareIntent);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hasShareIntent, error]);
+
+  // Process the queued intent only once auth is fully settled and the
+  // navigator is mounted. This fixes cold-start crashes where router.push
+  // was called before Routes rendered (isLoading was still true).
+  useEffect(() => {
+    if (isLoading || !isAuthenticated || !queuedIntent) return;
+
+    const intent = queuedIntent;
+    setQueuedIntent(null);
 
     async function handle() {
       try {
-        if (shareIntent.files?.length) {
-          const file = shareIntent.files[0];
+        if (intent.files?.length) {
+          const file = intent.files[0];
           const uri = file.path;
-          const base64 = await readAsStringAsync(uri, {
-            encoding: EncodingType.Base64,
-          });
+          let base64: string;
+          try {
+            base64 = await readAsStringAsync(uri, {
+              encoding: EncodingType.Base64,
+            });
+          } catch {
+            // Content URI from a restricted provider (e.g. WhatsApp) cannot
+            // be read by our process — skip rather than crash.
+            return;
+          }
           setPending({
             type: "image",
             uri,
             base64,
             mimeType: file.mimeType ?? "image/jpeg",
           });
-        } else if (shareIntent.text) {
-          setPending({ type: "text", text: shareIntent.text });
+        } else if (intent.text) {
+          setPending({ type: "text", text: intent.text });
         } else {
           return;
         }
@@ -52,7 +81,7 @@ function ShareIntentListener() {
 
     handle();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [hasShareIntent]);
+  }, [isLoading, isAuthenticated, queuedIntent]);
 
   return null;
 }
