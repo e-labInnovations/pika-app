@@ -3,6 +3,7 @@ mutation TextToTransaction($text: String!, $model: String) {
     data
     model
     latencyMs
+    promptId
     usage {
       promptTokenCount
       candidatesTokenCount
@@ -16,6 +17,7 @@ mutation ImageToTransaction($image: String!, $mimeType: String, $model: String) 
     data
     model
     latencyMs
+    promptId
     usage {
       promptTokenCount
       candidatesTokenCount

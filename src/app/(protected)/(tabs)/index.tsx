@@ -117,10 +117,10 @@ export default function HomeScreen() {
       <AIAssistantSheet
         visible={aiOpen}
         onClose={() => setAiOpen(false)}
-        onUseDetails={(values, image) => {
+        onUseDetails={(values, image, promptId) => {
           // Park the parsed values in the shared AI-prefill bridge; Add picks
           // them up on mount (see add.tsx useEffect).
-          setAIPrefill({ values, image });
+          setAIPrefill({ values, image, promptId });
           setAiOpen(false);
           router.push("/add");
         }}

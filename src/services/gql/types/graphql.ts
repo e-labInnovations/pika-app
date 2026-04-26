@@ -52,6 +52,8 @@ export type AITransactionResult = {
   data?: Maybe<Scalars['AITransactionData']['output']>;
   latencyMs: Scalars['Float']['output'];
   model: Scalars['String']['output'];
+  /** ID of the saved ai-prompts record for this inference */
+  promptId?: Maybe<Scalars['String']['output']>;
   usage: AIUsageMeta;
 };
 
@@ -65,6 +67,7 @@ export type AIUsageMeta = {
 export type Access = {
   __typename?: 'Access';
   accounts?: Maybe<accountsAccess>;
+  ai_prompts?: Maybe<ai_promptsAccess>;
   ai_usages?: Maybe<ai_usagesAccess>;
   app_settings?: Maybe<app_settingsAccess>;
   canAccessAdmin: Scalars['Boolean']['output'];
@@ -1119,6 +1122,914 @@ export type AccountsUpdateAccess = {
 
 export type AccountsUpdateDocAccess = {
   __typename?: 'AccountsUpdateDocAccess';
+  permission: Scalars['Boolean']['output'];
+  where?: Maybe<Scalars['JSONObject']['output']>;
+};
+
+export type AiPrompt = {
+  __typename?: 'AiPrompt';
+  createdAt?: Maybe<Scalars['DateTime']['output']>;
+  id: Scalars['String']['output'];
+  inputImageBase64?: Maybe<Scalars['String']['output']>;
+  inputImageMimeType?: Maybe<Scalars['String']['output']>;
+  inputText?: Maybe<Scalars['String']['output']>;
+  inputType: AiPrompt_inputType;
+  model?: Maybe<Scalars['String']['output']>;
+  systemPrompt?: Maybe<Scalars['String']['output']>;
+  transaction?: Maybe<Transaction>;
+  updatedAt?: Maybe<Scalars['DateTime']['output']>;
+  user: User;
+  userPrompt?: Maybe<Scalars['String']['output']>;
+};
+
+export enum AiPromptUpdate_inputType_MutationInput {
+  image = 'image',
+  text = 'text'
+}
+
+export type AiPrompt_createdAt_operator = {
+  equals?: InputMaybe<Scalars['DateTime']['input']>;
+  exists?: InputMaybe<Scalars['Boolean']['input']>;
+  greater_than?: InputMaybe<Scalars['DateTime']['input']>;
+  greater_than_equal?: InputMaybe<Scalars['DateTime']['input']>;
+  less_than?: InputMaybe<Scalars['DateTime']['input']>;
+  less_than_equal?: InputMaybe<Scalars['DateTime']['input']>;
+  like?: InputMaybe<Scalars['DateTime']['input']>;
+  not_equals?: InputMaybe<Scalars['DateTime']['input']>;
+};
+
+export type AiPrompt_id_operator = {
+  all?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  contains?: InputMaybe<Scalars['String']['input']>;
+  equals?: InputMaybe<Scalars['String']['input']>;
+  exists?: InputMaybe<Scalars['Boolean']['input']>;
+  in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  like?: InputMaybe<Scalars['String']['input']>;
+  not_equals?: InputMaybe<Scalars['String']['input']>;
+  not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+};
+
+export type AiPrompt_inputImageBase64_operator = {
+  contains?: InputMaybe<Scalars['String']['input']>;
+  equals?: InputMaybe<Scalars['String']['input']>;
+  exists?: InputMaybe<Scalars['Boolean']['input']>;
+  like?: InputMaybe<Scalars['String']['input']>;
+  not_equals?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type AiPrompt_inputImageMimeType_operator = {
+  all?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  contains?: InputMaybe<Scalars['String']['input']>;
+  equals?: InputMaybe<Scalars['String']['input']>;
+  exists?: InputMaybe<Scalars['Boolean']['input']>;
+  in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  like?: InputMaybe<Scalars['String']['input']>;
+  not_equals?: InputMaybe<Scalars['String']['input']>;
+  not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+};
+
+export type AiPrompt_inputText_operator = {
+  contains?: InputMaybe<Scalars['String']['input']>;
+  equals?: InputMaybe<Scalars['String']['input']>;
+  exists?: InputMaybe<Scalars['Boolean']['input']>;
+  like?: InputMaybe<Scalars['String']['input']>;
+  not_equals?: InputMaybe<Scalars['String']['input']>;
+};
+
+export enum AiPrompt_inputType {
+  image = 'image',
+  text = 'text'
+}
+
+export enum AiPrompt_inputType_Input {
+  image = 'image',
+  text = 'text'
+}
+
+export enum AiPrompt_inputType_MutationInput {
+  image = 'image',
+  text = 'text'
+}
+
+export type AiPrompt_inputType_operator = {
+  all?: InputMaybe<Array<InputMaybe<AiPrompt_inputType_Input>>>;
+  equals?: InputMaybe<AiPrompt_inputType_Input>;
+  in?: InputMaybe<Array<InputMaybe<AiPrompt_inputType_Input>>>;
+  not_equals?: InputMaybe<AiPrompt_inputType_Input>;
+  not_in?: InputMaybe<Array<InputMaybe<AiPrompt_inputType_Input>>>;
+};
+
+export type AiPrompt_model_operator = {
+  all?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  contains?: InputMaybe<Scalars['String']['input']>;
+  equals?: InputMaybe<Scalars['String']['input']>;
+  exists?: InputMaybe<Scalars['Boolean']['input']>;
+  in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  like?: InputMaybe<Scalars['String']['input']>;
+  not_equals?: InputMaybe<Scalars['String']['input']>;
+  not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+};
+
+export type AiPrompt_systemPrompt_operator = {
+  contains?: InputMaybe<Scalars['String']['input']>;
+  equals?: InputMaybe<Scalars['String']['input']>;
+  exists?: InputMaybe<Scalars['Boolean']['input']>;
+  like?: InputMaybe<Scalars['String']['input']>;
+  not_equals?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type AiPrompt_transaction_operator = {
+  all?: InputMaybe<Array<InputMaybe<Scalars['JSON']['input']>>>;
+  equals?: InputMaybe<Scalars['JSON']['input']>;
+  exists?: InputMaybe<Scalars['Boolean']['input']>;
+  in?: InputMaybe<Array<InputMaybe<Scalars['JSON']['input']>>>;
+  not_equals?: InputMaybe<Scalars['JSON']['input']>;
+  not_in?: InputMaybe<Array<InputMaybe<Scalars['JSON']['input']>>>;
+};
+
+export type AiPrompt_updatedAt_operator = {
+  equals?: InputMaybe<Scalars['DateTime']['input']>;
+  exists?: InputMaybe<Scalars['Boolean']['input']>;
+  greater_than?: InputMaybe<Scalars['DateTime']['input']>;
+  greater_than_equal?: InputMaybe<Scalars['DateTime']['input']>;
+  less_than?: InputMaybe<Scalars['DateTime']['input']>;
+  less_than_equal?: InputMaybe<Scalars['DateTime']['input']>;
+  like?: InputMaybe<Scalars['DateTime']['input']>;
+  not_equals?: InputMaybe<Scalars['DateTime']['input']>;
+};
+
+export type AiPrompt_userPrompt_operator = {
+  contains?: InputMaybe<Scalars['String']['input']>;
+  equals?: InputMaybe<Scalars['String']['input']>;
+  exists?: InputMaybe<Scalars['Boolean']['input']>;
+  like?: InputMaybe<Scalars['String']['input']>;
+  not_equals?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type AiPrompt_user_operator = {
+  all?: InputMaybe<Array<InputMaybe<Scalars['JSON']['input']>>>;
+  equals?: InputMaybe<Scalars['JSON']['input']>;
+  in?: InputMaybe<Array<InputMaybe<Scalars['JSON']['input']>>>;
+  not_equals?: InputMaybe<Scalars['JSON']['input']>;
+  not_in?: InputMaybe<Array<InputMaybe<Scalars['JSON']['input']>>>;
+};
+
+export type AiPrompt_where = {
+  AND?: InputMaybe<Array<InputMaybe<AiPrompt_where_and>>>;
+  OR?: InputMaybe<Array<InputMaybe<AiPrompt_where_or>>>;
+  createdAt?: InputMaybe<AiPrompt_createdAt_operator>;
+  id?: InputMaybe<AiPrompt_id_operator>;
+  inputImageBase64?: InputMaybe<AiPrompt_inputImageBase64_operator>;
+  inputImageMimeType?: InputMaybe<AiPrompt_inputImageMimeType_operator>;
+  inputText?: InputMaybe<AiPrompt_inputText_operator>;
+  inputType?: InputMaybe<AiPrompt_inputType_operator>;
+  model?: InputMaybe<AiPrompt_model_operator>;
+  systemPrompt?: InputMaybe<AiPrompt_systemPrompt_operator>;
+  transaction?: InputMaybe<AiPrompt_transaction_operator>;
+  updatedAt?: InputMaybe<AiPrompt_updatedAt_operator>;
+  user?: InputMaybe<AiPrompt_user_operator>;
+  userPrompt?: InputMaybe<AiPrompt_userPrompt_operator>;
+};
+
+export type AiPrompt_where_and = {
+  AND?: InputMaybe<Array<InputMaybe<AiPrompt_where_and>>>;
+  OR?: InputMaybe<Array<InputMaybe<AiPrompt_where_or>>>;
+  createdAt?: InputMaybe<AiPrompt_createdAt_operator>;
+  id?: InputMaybe<AiPrompt_id_operator>;
+  inputImageBase64?: InputMaybe<AiPrompt_inputImageBase64_operator>;
+  inputImageMimeType?: InputMaybe<AiPrompt_inputImageMimeType_operator>;
+  inputText?: InputMaybe<AiPrompt_inputText_operator>;
+  inputType?: InputMaybe<AiPrompt_inputType_operator>;
+  model?: InputMaybe<AiPrompt_model_operator>;
+  systemPrompt?: InputMaybe<AiPrompt_systemPrompt_operator>;
+  transaction?: InputMaybe<AiPrompt_transaction_operator>;
+  updatedAt?: InputMaybe<AiPrompt_updatedAt_operator>;
+  user?: InputMaybe<AiPrompt_user_operator>;
+  userPrompt?: InputMaybe<AiPrompt_userPrompt_operator>;
+};
+
+export type AiPrompt_where_or = {
+  AND?: InputMaybe<Array<InputMaybe<AiPrompt_where_and>>>;
+  OR?: InputMaybe<Array<InputMaybe<AiPrompt_where_or>>>;
+  createdAt?: InputMaybe<AiPrompt_createdAt_operator>;
+  id?: InputMaybe<AiPrompt_id_operator>;
+  inputImageBase64?: InputMaybe<AiPrompt_inputImageBase64_operator>;
+  inputImageMimeType?: InputMaybe<AiPrompt_inputImageMimeType_operator>;
+  inputText?: InputMaybe<AiPrompt_inputText_operator>;
+  inputType?: InputMaybe<AiPrompt_inputType_operator>;
+  model?: InputMaybe<AiPrompt_model_operator>;
+  systemPrompt?: InputMaybe<AiPrompt_systemPrompt_operator>;
+  transaction?: InputMaybe<AiPrompt_transaction_operator>;
+  updatedAt?: InputMaybe<AiPrompt_updatedAt_operator>;
+  user?: InputMaybe<AiPrompt_user_operator>;
+  userPrompt?: InputMaybe<AiPrompt_userPrompt_operator>;
+};
+
+export type AiPrompts = {
+  __typename?: 'AiPrompts';
+  docs: Array<AiPrompt>;
+  hasNextPage: Scalars['Boolean']['output'];
+  hasPrevPage: Scalars['Boolean']['output'];
+  limit: Scalars['Int']['output'];
+  nextPage?: Maybe<Scalars['Int']['output']>;
+  offset?: Maybe<Scalars['Int']['output']>;
+  page: Scalars['Int']['output'];
+  pagingCounter: Scalars['Int']['output'];
+  prevPage?: Maybe<Scalars['Int']['output']>;
+  totalDocs: Scalars['Int']['output'];
+  totalPages: Scalars['Int']['output'];
+};
+
+export type AiPromptsCreateAccess = {
+  __typename?: 'AiPromptsCreateAccess';
+  permission: Scalars['Boolean']['output'];
+  where?: Maybe<Scalars['JSONObject']['output']>;
+};
+
+export type AiPromptsCreateDocAccess = {
+  __typename?: 'AiPromptsCreateDocAccess';
+  permission: Scalars['Boolean']['output'];
+  where?: Maybe<Scalars['JSONObject']['output']>;
+};
+
+export type AiPromptsDeleteAccess = {
+  __typename?: 'AiPromptsDeleteAccess';
+  permission: Scalars['Boolean']['output'];
+  where?: Maybe<Scalars['JSONObject']['output']>;
+};
+
+export type AiPromptsDeleteDocAccess = {
+  __typename?: 'AiPromptsDeleteDocAccess';
+  permission: Scalars['Boolean']['output'];
+  where?: Maybe<Scalars['JSONObject']['output']>;
+};
+
+export type AiPromptsDocAccessFields = {
+  __typename?: 'AiPromptsDocAccessFields';
+  createdAt?: Maybe<AiPromptsDocAccessFields_createdAt>;
+  inputImageBase64?: Maybe<AiPromptsDocAccessFields_inputImageBase64>;
+  inputImageMimeType?: Maybe<AiPromptsDocAccessFields_inputImageMimeType>;
+  inputText?: Maybe<AiPromptsDocAccessFields_inputText>;
+  inputType?: Maybe<AiPromptsDocAccessFields_inputType>;
+  model?: Maybe<AiPromptsDocAccessFields_model>;
+  systemPrompt?: Maybe<AiPromptsDocAccessFields_systemPrompt>;
+  transaction?: Maybe<AiPromptsDocAccessFields_transaction>;
+  updatedAt?: Maybe<AiPromptsDocAccessFields_updatedAt>;
+  user?: Maybe<AiPromptsDocAccessFields_user>;
+  userPrompt?: Maybe<AiPromptsDocAccessFields_userPrompt>;
+};
+
+export type AiPromptsDocAccessFields_createdAt = {
+  __typename?: 'AiPromptsDocAccessFields_createdAt';
+  create?: Maybe<AiPromptsDocAccessFields_createdAt_Create>;
+  delete?: Maybe<AiPromptsDocAccessFields_createdAt_Delete>;
+  read?: Maybe<AiPromptsDocAccessFields_createdAt_Read>;
+  update?: Maybe<AiPromptsDocAccessFields_createdAt_Update>;
+};
+
+export type AiPromptsDocAccessFields_createdAt_Create = {
+  __typename?: 'AiPromptsDocAccessFields_createdAt_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type AiPromptsDocAccessFields_createdAt_Delete = {
+  __typename?: 'AiPromptsDocAccessFields_createdAt_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type AiPromptsDocAccessFields_createdAt_Read = {
+  __typename?: 'AiPromptsDocAccessFields_createdAt_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type AiPromptsDocAccessFields_createdAt_Update = {
+  __typename?: 'AiPromptsDocAccessFields_createdAt_Update';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type AiPromptsDocAccessFields_inputImageBase64 = {
+  __typename?: 'AiPromptsDocAccessFields_inputImageBase64';
+  create?: Maybe<AiPromptsDocAccessFields_inputImageBase64_Create>;
+  delete?: Maybe<AiPromptsDocAccessFields_inputImageBase64_Delete>;
+  read?: Maybe<AiPromptsDocAccessFields_inputImageBase64_Read>;
+  update?: Maybe<AiPromptsDocAccessFields_inputImageBase64_Update>;
+};
+
+export type AiPromptsDocAccessFields_inputImageBase64_Create = {
+  __typename?: 'AiPromptsDocAccessFields_inputImageBase64_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type AiPromptsDocAccessFields_inputImageBase64_Delete = {
+  __typename?: 'AiPromptsDocAccessFields_inputImageBase64_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type AiPromptsDocAccessFields_inputImageBase64_Read = {
+  __typename?: 'AiPromptsDocAccessFields_inputImageBase64_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type AiPromptsDocAccessFields_inputImageBase64_Update = {
+  __typename?: 'AiPromptsDocAccessFields_inputImageBase64_Update';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type AiPromptsDocAccessFields_inputImageMimeType = {
+  __typename?: 'AiPromptsDocAccessFields_inputImageMimeType';
+  create?: Maybe<AiPromptsDocAccessFields_inputImageMimeType_Create>;
+  delete?: Maybe<AiPromptsDocAccessFields_inputImageMimeType_Delete>;
+  read?: Maybe<AiPromptsDocAccessFields_inputImageMimeType_Read>;
+  update?: Maybe<AiPromptsDocAccessFields_inputImageMimeType_Update>;
+};
+
+export type AiPromptsDocAccessFields_inputImageMimeType_Create = {
+  __typename?: 'AiPromptsDocAccessFields_inputImageMimeType_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type AiPromptsDocAccessFields_inputImageMimeType_Delete = {
+  __typename?: 'AiPromptsDocAccessFields_inputImageMimeType_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type AiPromptsDocAccessFields_inputImageMimeType_Read = {
+  __typename?: 'AiPromptsDocAccessFields_inputImageMimeType_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type AiPromptsDocAccessFields_inputImageMimeType_Update = {
+  __typename?: 'AiPromptsDocAccessFields_inputImageMimeType_Update';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type AiPromptsDocAccessFields_inputText = {
+  __typename?: 'AiPromptsDocAccessFields_inputText';
+  create?: Maybe<AiPromptsDocAccessFields_inputText_Create>;
+  delete?: Maybe<AiPromptsDocAccessFields_inputText_Delete>;
+  read?: Maybe<AiPromptsDocAccessFields_inputText_Read>;
+  update?: Maybe<AiPromptsDocAccessFields_inputText_Update>;
+};
+
+export type AiPromptsDocAccessFields_inputText_Create = {
+  __typename?: 'AiPromptsDocAccessFields_inputText_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type AiPromptsDocAccessFields_inputText_Delete = {
+  __typename?: 'AiPromptsDocAccessFields_inputText_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type AiPromptsDocAccessFields_inputText_Read = {
+  __typename?: 'AiPromptsDocAccessFields_inputText_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type AiPromptsDocAccessFields_inputText_Update = {
+  __typename?: 'AiPromptsDocAccessFields_inputText_Update';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type AiPromptsDocAccessFields_inputType = {
+  __typename?: 'AiPromptsDocAccessFields_inputType';
+  create?: Maybe<AiPromptsDocAccessFields_inputType_Create>;
+  delete?: Maybe<AiPromptsDocAccessFields_inputType_Delete>;
+  read?: Maybe<AiPromptsDocAccessFields_inputType_Read>;
+  update?: Maybe<AiPromptsDocAccessFields_inputType_Update>;
+};
+
+export type AiPromptsDocAccessFields_inputType_Create = {
+  __typename?: 'AiPromptsDocAccessFields_inputType_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type AiPromptsDocAccessFields_inputType_Delete = {
+  __typename?: 'AiPromptsDocAccessFields_inputType_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type AiPromptsDocAccessFields_inputType_Read = {
+  __typename?: 'AiPromptsDocAccessFields_inputType_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type AiPromptsDocAccessFields_inputType_Update = {
+  __typename?: 'AiPromptsDocAccessFields_inputType_Update';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type AiPromptsDocAccessFields_model = {
+  __typename?: 'AiPromptsDocAccessFields_model';
+  create?: Maybe<AiPromptsDocAccessFields_model_Create>;
+  delete?: Maybe<AiPromptsDocAccessFields_model_Delete>;
+  read?: Maybe<AiPromptsDocAccessFields_model_Read>;
+  update?: Maybe<AiPromptsDocAccessFields_model_Update>;
+};
+
+export type AiPromptsDocAccessFields_model_Create = {
+  __typename?: 'AiPromptsDocAccessFields_model_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type AiPromptsDocAccessFields_model_Delete = {
+  __typename?: 'AiPromptsDocAccessFields_model_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type AiPromptsDocAccessFields_model_Read = {
+  __typename?: 'AiPromptsDocAccessFields_model_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type AiPromptsDocAccessFields_model_Update = {
+  __typename?: 'AiPromptsDocAccessFields_model_Update';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type AiPromptsDocAccessFields_systemPrompt = {
+  __typename?: 'AiPromptsDocAccessFields_systemPrompt';
+  create?: Maybe<AiPromptsDocAccessFields_systemPrompt_Create>;
+  delete?: Maybe<AiPromptsDocAccessFields_systemPrompt_Delete>;
+  read?: Maybe<AiPromptsDocAccessFields_systemPrompt_Read>;
+  update?: Maybe<AiPromptsDocAccessFields_systemPrompt_Update>;
+};
+
+export type AiPromptsDocAccessFields_systemPrompt_Create = {
+  __typename?: 'AiPromptsDocAccessFields_systemPrompt_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type AiPromptsDocAccessFields_systemPrompt_Delete = {
+  __typename?: 'AiPromptsDocAccessFields_systemPrompt_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type AiPromptsDocAccessFields_systemPrompt_Read = {
+  __typename?: 'AiPromptsDocAccessFields_systemPrompt_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type AiPromptsDocAccessFields_systemPrompt_Update = {
+  __typename?: 'AiPromptsDocAccessFields_systemPrompt_Update';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type AiPromptsDocAccessFields_transaction = {
+  __typename?: 'AiPromptsDocAccessFields_transaction';
+  create?: Maybe<AiPromptsDocAccessFields_transaction_Create>;
+  delete?: Maybe<AiPromptsDocAccessFields_transaction_Delete>;
+  read?: Maybe<AiPromptsDocAccessFields_transaction_Read>;
+  update?: Maybe<AiPromptsDocAccessFields_transaction_Update>;
+};
+
+export type AiPromptsDocAccessFields_transaction_Create = {
+  __typename?: 'AiPromptsDocAccessFields_transaction_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type AiPromptsDocAccessFields_transaction_Delete = {
+  __typename?: 'AiPromptsDocAccessFields_transaction_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type AiPromptsDocAccessFields_transaction_Read = {
+  __typename?: 'AiPromptsDocAccessFields_transaction_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type AiPromptsDocAccessFields_transaction_Update = {
+  __typename?: 'AiPromptsDocAccessFields_transaction_Update';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type AiPromptsDocAccessFields_updatedAt = {
+  __typename?: 'AiPromptsDocAccessFields_updatedAt';
+  create?: Maybe<AiPromptsDocAccessFields_updatedAt_Create>;
+  delete?: Maybe<AiPromptsDocAccessFields_updatedAt_Delete>;
+  read?: Maybe<AiPromptsDocAccessFields_updatedAt_Read>;
+  update?: Maybe<AiPromptsDocAccessFields_updatedAt_Update>;
+};
+
+export type AiPromptsDocAccessFields_updatedAt_Create = {
+  __typename?: 'AiPromptsDocAccessFields_updatedAt_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type AiPromptsDocAccessFields_updatedAt_Delete = {
+  __typename?: 'AiPromptsDocAccessFields_updatedAt_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type AiPromptsDocAccessFields_updatedAt_Read = {
+  __typename?: 'AiPromptsDocAccessFields_updatedAt_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type AiPromptsDocAccessFields_updatedAt_Update = {
+  __typename?: 'AiPromptsDocAccessFields_updatedAt_Update';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type AiPromptsDocAccessFields_user = {
+  __typename?: 'AiPromptsDocAccessFields_user';
+  create?: Maybe<AiPromptsDocAccessFields_user_Create>;
+  delete?: Maybe<AiPromptsDocAccessFields_user_Delete>;
+  read?: Maybe<AiPromptsDocAccessFields_user_Read>;
+  update?: Maybe<AiPromptsDocAccessFields_user_Update>;
+};
+
+export type AiPromptsDocAccessFields_userPrompt = {
+  __typename?: 'AiPromptsDocAccessFields_userPrompt';
+  create?: Maybe<AiPromptsDocAccessFields_userPrompt_Create>;
+  delete?: Maybe<AiPromptsDocAccessFields_userPrompt_Delete>;
+  read?: Maybe<AiPromptsDocAccessFields_userPrompt_Read>;
+  update?: Maybe<AiPromptsDocAccessFields_userPrompt_Update>;
+};
+
+export type AiPromptsDocAccessFields_userPrompt_Create = {
+  __typename?: 'AiPromptsDocAccessFields_userPrompt_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type AiPromptsDocAccessFields_userPrompt_Delete = {
+  __typename?: 'AiPromptsDocAccessFields_userPrompt_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type AiPromptsDocAccessFields_userPrompt_Read = {
+  __typename?: 'AiPromptsDocAccessFields_userPrompt_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type AiPromptsDocAccessFields_userPrompt_Update = {
+  __typename?: 'AiPromptsDocAccessFields_userPrompt_Update';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type AiPromptsDocAccessFields_user_Create = {
+  __typename?: 'AiPromptsDocAccessFields_user_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type AiPromptsDocAccessFields_user_Delete = {
+  __typename?: 'AiPromptsDocAccessFields_user_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type AiPromptsDocAccessFields_user_Read = {
+  __typename?: 'AiPromptsDocAccessFields_user_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type AiPromptsDocAccessFields_user_Update = {
+  __typename?: 'AiPromptsDocAccessFields_user_Update';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type AiPromptsFields = {
+  __typename?: 'AiPromptsFields';
+  createdAt?: Maybe<AiPromptsFields_createdAt>;
+  inputImageBase64?: Maybe<AiPromptsFields_inputImageBase64>;
+  inputImageMimeType?: Maybe<AiPromptsFields_inputImageMimeType>;
+  inputText?: Maybe<AiPromptsFields_inputText>;
+  inputType?: Maybe<AiPromptsFields_inputType>;
+  model?: Maybe<AiPromptsFields_model>;
+  systemPrompt?: Maybe<AiPromptsFields_systemPrompt>;
+  transaction?: Maybe<AiPromptsFields_transaction>;
+  updatedAt?: Maybe<AiPromptsFields_updatedAt>;
+  user?: Maybe<AiPromptsFields_user>;
+  userPrompt?: Maybe<AiPromptsFields_userPrompt>;
+};
+
+export type AiPromptsFields_createdAt = {
+  __typename?: 'AiPromptsFields_createdAt';
+  create?: Maybe<AiPromptsFields_createdAt_Create>;
+  delete?: Maybe<AiPromptsFields_createdAt_Delete>;
+  read?: Maybe<AiPromptsFields_createdAt_Read>;
+  update?: Maybe<AiPromptsFields_createdAt_Update>;
+};
+
+export type AiPromptsFields_createdAt_Create = {
+  __typename?: 'AiPromptsFields_createdAt_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type AiPromptsFields_createdAt_Delete = {
+  __typename?: 'AiPromptsFields_createdAt_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type AiPromptsFields_createdAt_Read = {
+  __typename?: 'AiPromptsFields_createdAt_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type AiPromptsFields_createdAt_Update = {
+  __typename?: 'AiPromptsFields_createdAt_Update';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type AiPromptsFields_inputImageBase64 = {
+  __typename?: 'AiPromptsFields_inputImageBase64';
+  create?: Maybe<AiPromptsFields_inputImageBase64_Create>;
+  delete?: Maybe<AiPromptsFields_inputImageBase64_Delete>;
+  read?: Maybe<AiPromptsFields_inputImageBase64_Read>;
+  update?: Maybe<AiPromptsFields_inputImageBase64_Update>;
+};
+
+export type AiPromptsFields_inputImageBase64_Create = {
+  __typename?: 'AiPromptsFields_inputImageBase64_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type AiPromptsFields_inputImageBase64_Delete = {
+  __typename?: 'AiPromptsFields_inputImageBase64_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type AiPromptsFields_inputImageBase64_Read = {
+  __typename?: 'AiPromptsFields_inputImageBase64_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type AiPromptsFields_inputImageBase64_Update = {
+  __typename?: 'AiPromptsFields_inputImageBase64_Update';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type AiPromptsFields_inputImageMimeType = {
+  __typename?: 'AiPromptsFields_inputImageMimeType';
+  create?: Maybe<AiPromptsFields_inputImageMimeType_Create>;
+  delete?: Maybe<AiPromptsFields_inputImageMimeType_Delete>;
+  read?: Maybe<AiPromptsFields_inputImageMimeType_Read>;
+  update?: Maybe<AiPromptsFields_inputImageMimeType_Update>;
+};
+
+export type AiPromptsFields_inputImageMimeType_Create = {
+  __typename?: 'AiPromptsFields_inputImageMimeType_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type AiPromptsFields_inputImageMimeType_Delete = {
+  __typename?: 'AiPromptsFields_inputImageMimeType_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type AiPromptsFields_inputImageMimeType_Read = {
+  __typename?: 'AiPromptsFields_inputImageMimeType_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type AiPromptsFields_inputImageMimeType_Update = {
+  __typename?: 'AiPromptsFields_inputImageMimeType_Update';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type AiPromptsFields_inputText = {
+  __typename?: 'AiPromptsFields_inputText';
+  create?: Maybe<AiPromptsFields_inputText_Create>;
+  delete?: Maybe<AiPromptsFields_inputText_Delete>;
+  read?: Maybe<AiPromptsFields_inputText_Read>;
+  update?: Maybe<AiPromptsFields_inputText_Update>;
+};
+
+export type AiPromptsFields_inputText_Create = {
+  __typename?: 'AiPromptsFields_inputText_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type AiPromptsFields_inputText_Delete = {
+  __typename?: 'AiPromptsFields_inputText_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type AiPromptsFields_inputText_Read = {
+  __typename?: 'AiPromptsFields_inputText_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type AiPromptsFields_inputText_Update = {
+  __typename?: 'AiPromptsFields_inputText_Update';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type AiPromptsFields_inputType = {
+  __typename?: 'AiPromptsFields_inputType';
+  create?: Maybe<AiPromptsFields_inputType_Create>;
+  delete?: Maybe<AiPromptsFields_inputType_Delete>;
+  read?: Maybe<AiPromptsFields_inputType_Read>;
+  update?: Maybe<AiPromptsFields_inputType_Update>;
+};
+
+export type AiPromptsFields_inputType_Create = {
+  __typename?: 'AiPromptsFields_inputType_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type AiPromptsFields_inputType_Delete = {
+  __typename?: 'AiPromptsFields_inputType_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type AiPromptsFields_inputType_Read = {
+  __typename?: 'AiPromptsFields_inputType_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type AiPromptsFields_inputType_Update = {
+  __typename?: 'AiPromptsFields_inputType_Update';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type AiPromptsFields_model = {
+  __typename?: 'AiPromptsFields_model';
+  create?: Maybe<AiPromptsFields_model_Create>;
+  delete?: Maybe<AiPromptsFields_model_Delete>;
+  read?: Maybe<AiPromptsFields_model_Read>;
+  update?: Maybe<AiPromptsFields_model_Update>;
+};
+
+export type AiPromptsFields_model_Create = {
+  __typename?: 'AiPromptsFields_model_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type AiPromptsFields_model_Delete = {
+  __typename?: 'AiPromptsFields_model_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type AiPromptsFields_model_Read = {
+  __typename?: 'AiPromptsFields_model_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type AiPromptsFields_model_Update = {
+  __typename?: 'AiPromptsFields_model_Update';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type AiPromptsFields_systemPrompt = {
+  __typename?: 'AiPromptsFields_systemPrompt';
+  create?: Maybe<AiPromptsFields_systemPrompt_Create>;
+  delete?: Maybe<AiPromptsFields_systemPrompt_Delete>;
+  read?: Maybe<AiPromptsFields_systemPrompt_Read>;
+  update?: Maybe<AiPromptsFields_systemPrompt_Update>;
+};
+
+export type AiPromptsFields_systemPrompt_Create = {
+  __typename?: 'AiPromptsFields_systemPrompt_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type AiPromptsFields_systemPrompt_Delete = {
+  __typename?: 'AiPromptsFields_systemPrompt_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type AiPromptsFields_systemPrompt_Read = {
+  __typename?: 'AiPromptsFields_systemPrompt_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type AiPromptsFields_systemPrompt_Update = {
+  __typename?: 'AiPromptsFields_systemPrompt_Update';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type AiPromptsFields_transaction = {
+  __typename?: 'AiPromptsFields_transaction';
+  create?: Maybe<AiPromptsFields_transaction_Create>;
+  delete?: Maybe<AiPromptsFields_transaction_Delete>;
+  read?: Maybe<AiPromptsFields_transaction_Read>;
+  update?: Maybe<AiPromptsFields_transaction_Update>;
+};
+
+export type AiPromptsFields_transaction_Create = {
+  __typename?: 'AiPromptsFields_transaction_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type AiPromptsFields_transaction_Delete = {
+  __typename?: 'AiPromptsFields_transaction_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type AiPromptsFields_transaction_Read = {
+  __typename?: 'AiPromptsFields_transaction_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type AiPromptsFields_transaction_Update = {
+  __typename?: 'AiPromptsFields_transaction_Update';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type AiPromptsFields_updatedAt = {
+  __typename?: 'AiPromptsFields_updatedAt';
+  create?: Maybe<AiPromptsFields_updatedAt_Create>;
+  delete?: Maybe<AiPromptsFields_updatedAt_Delete>;
+  read?: Maybe<AiPromptsFields_updatedAt_Read>;
+  update?: Maybe<AiPromptsFields_updatedAt_Update>;
+};
+
+export type AiPromptsFields_updatedAt_Create = {
+  __typename?: 'AiPromptsFields_updatedAt_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type AiPromptsFields_updatedAt_Delete = {
+  __typename?: 'AiPromptsFields_updatedAt_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type AiPromptsFields_updatedAt_Read = {
+  __typename?: 'AiPromptsFields_updatedAt_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type AiPromptsFields_updatedAt_Update = {
+  __typename?: 'AiPromptsFields_updatedAt_Update';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type AiPromptsFields_user = {
+  __typename?: 'AiPromptsFields_user';
+  create?: Maybe<AiPromptsFields_user_Create>;
+  delete?: Maybe<AiPromptsFields_user_Delete>;
+  read?: Maybe<AiPromptsFields_user_Read>;
+  update?: Maybe<AiPromptsFields_user_Update>;
+};
+
+export type AiPromptsFields_userPrompt = {
+  __typename?: 'AiPromptsFields_userPrompt';
+  create?: Maybe<AiPromptsFields_userPrompt_Create>;
+  delete?: Maybe<AiPromptsFields_userPrompt_Delete>;
+  read?: Maybe<AiPromptsFields_userPrompt_Read>;
+  update?: Maybe<AiPromptsFields_userPrompt_Update>;
+};
+
+export type AiPromptsFields_userPrompt_Create = {
+  __typename?: 'AiPromptsFields_userPrompt_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type AiPromptsFields_userPrompt_Delete = {
+  __typename?: 'AiPromptsFields_userPrompt_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type AiPromptsFields_userPrompt_Read = {
+  __typename?: 'AiPromptsFields_userPrompt_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type AiPromptsFields_userPrompt_Update = {
+  __typename?: 'AiPromptsFields_userPrompt_Update';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type AiPromptsFields_user_Create = {
+  __typename?: 'AiPromptsFields_user_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type AiPromptsFields_user_Delete = {
+  __typename?: 'AiPromptsFields_user_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type AiPromptsFields_user_Read = {
+  __typename?: 'AiPromptsFields_user_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type AiPromptsFields_user_Update = {
+  __typename?: 'AiPromptsFields_user_Update';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type AiPromptsReadAccess = {
+  __typename?: 'AiPromptsReadAccess';
+  permission: Scalars['Boolean']['output'];
+  where?: Maybe<Scalars['JSONObject']['output']>;
+};
+
+export type AiPromptsReadDocAccess = {
+  __typename?: 'AiPromptsReadDocAccess';
+  permission: Scalars['Boolean']['output'];
+  where?: Maybe<Scalars['JSONObject']['output']>;
+};
+
+export type AiPromptsUpdateAccess = {
+  __typename?: 'AiPromptsUpdateAccess';
+  permission: Scalars['Boolean']['output'];
+  where?: Maybe<Scalars['JSONObject']['output']>;
+};
+
+export type AiPromptsUpdateDocAccess = {
+  __typename?: 'AiPromptsUpdateDocAccess';
   permission: Scalars['Boolean']['output'];
   where?: Maybe<Scalars['JSONObject']['output']>;
 };
@@ -5610,6 +6521,7 @@ export type MonthlyTagsResult = {
 export type Mutation = {
   __typename?: 'Mutation';
   createAccount?: Maybe<Account>;
+  createAiPrompt?: Maybe<AiPrompt>;
   createAiUsage?: Maybe<AiUsage>;
   createCategory?: Maybe<Category>;
   createMedia?: Maybe<Media>;
@@ -5628,6 +6540,7 @@ export type Mutation = {
   createUser?: Maybe<User>;
   createUserSetting?: Maybe<UserSetting>;
   deleteAccount?: Maybe<Account>;
+  deleteAiPrompt?: Maybe<AiPrompt>;
   deleteAiUsage?: Maybe<AiUsage>;
   deleteCategory?: Maybe<Category>;
   deleteMedia?: Maybe<Media>;
@@ -5646,6 +6559,7 @@ export type Mutation = {
   deleteUser?: Maybe<User>;
   deleteUserSetting?: Maybe<UserSetting>;
   duplicateAccount?: Maybe<Account>;
+  duplicateAiPrompt?: Maybe<AiPrompt>;
   duplicateAiUsage?: Maybe<AiUsage>;
   duplicateCategory?: Maybe<Category>;
   duplicateMedia?: Maybe<Media>;
@@ -5674,6 +6588,7 @@ export type Mutation = {
   textToTransaction?: Maybe<AITransactionResult>;
   unlockUser: Scalars['Boolean']['output'];
   updateAccount?: Maybe<Account>;
+  updateAiPrompt?: Maybe<AiPrompt>;
   updateAiUsage?: Maybe<AiUsage>;
   updateAppSetting?: Maybe<AppSetting>;
   updateCategory?: Maybe<Category>;
@@ -5698,6 +6613,12 @@ export type Mutation = {
 
 export type MutationcreateAccountArgs = {
   data: mutationAccountInput;
+  draft?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+
+export type MutationcreateAiPromptArgs = {
+  data: mutationAiPromptInput;
   draft?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
@@ -5810,6 +6731,12 @@ export type MutationdeleteAccountArgs = {
 };
 
 
+export type MutationdeleteAiPromptArgs = {
+  id: Scalars['String']['input'];
+  trash?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+
 export type MutationdeleteAiUsageArgs = {
   id: Scalars['String']['input'];
   trash?: InputMaybe<Scalars['Boolean']['input']>;
@@ -5914,6 +6841,12 @@ export type MutationdeleteUserSettingArgs = {
 
 export type MutationduplicateAccountArgs = {
   data: mutationAccountInput;
+  id: Scalars['String']['input'];
+};
+
+
+export type MutationduplicateAiPromptArgs = {
+  data: mutationAiPromptInput;
   id: Scalars['String']['input'];
 };
 
@@ -6076,6 +7009,15 @@ export type MutationunlockUserArgs = {
 export type MutationupdateAccountArgs = {
   autosave?: InputMaybe<Scalars['Boolean']['input']>;
   data: mutationAccountUpdateInput;
+  draft?: InputMaybe<Scalars['Boolean']['input']>;
+  id: Scalars['String']['input'];
+  trash?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+
+export type MutationupdateAiPromptArgs = {
+  autosave?: InputMaybe<Scalars['Boolean']['input']>;
+  data: mutationAiPromptUpdateInput;
   draft?: InputMaybe<Scalars['Boolean']['input']>;
   id: Scalars['String']['input'];
   trash?: InputMaybe<Scalars['Boolean']['input']>;
@@ -8694,6 +9636,7 @@ export type PayloadLockedDocumentUpdate_DocumentRelationshipInput = {
 
 export enum PayloadLockedDocumentUpdate_DocumentRelationshipInputRelationTo {
   accounts = 'accounts',
+  ai_prompts = 'ai_prompts',
   ai_usages = 'ai_usages',
   categories = 'categories',
   media = 'media',
@@ -8720,7 +9663,7 @@ export enum PayloadLockedDocumentUpdate_UserRelationshipInputRelationTo {
   users = 'users'
 }
 
-export type PayloadLockedDocument_Document = Account | AiUsage | Category | Media | OauthAccount | OauthCode | Page | PayloadMcpApiKey | Person | Reminder | Tag | Transaction | TransactionLink | User | UserSetting;
+export type PayloadLockedDocument_Document = Account | AiPrompt | AiUsage | Category | Media | OauthAccount | OauthCode | Page | PayloadMcpApiKey | Person | Reminder | Tag | Transaction | TransactionLink | User | UserSetting;
 
 export type PayloadLockedDocument_DocumentRelationshipInput = {
   relationTo?: InputMaybe<PayloadLockedDocument_DocumentRelationshipInputRelationTo>;
@@ -8729,6 +9672,7 @@ export type PayloadLockedDocument_DocumentRelationshipInput = {
 
 export enum PayloadLockedDocument_DocumentRelationshipInputRelationTo {
   accounts = 'accounts',
+  ai_prompts = 'ai_prompts',
   ai_usages = 'ai_usages',
   categories = 'categories',
   media = 'media',
@@ -8747,6 +9691,7 @@ export enum PayloadLockedDocument_DocumentRelationshipInputRelationTo {
 
 export enum PayloadLockedDocument_Document_RelationTo {
   accounts = 'accounts',
+  ai_prompts = 'ai_prompts',
   ai_usages = 'ai_usages',
   categories = 'categories',
   media = 'media',
@@ -8810,6 +9755,7 @@ export type PayloadLockedDocument_document_Relation = {
 
 export enum PayloadLockedDocument_document_Relation_RelationTo {
   accounts = 'accounts',
+  ai_prompts = 'ai_prompts',
   ai_usages = 'ai_usages',
   categories = 'categories',
   media = 'media',
@@ -15111,6 +16057,8 @@ export type Query = {
   Access?: Maybe<Access>;
   Account?: Maybe<Account>;
   Accounts?: Maybe<Accounts>;
+  AiPrompt?: Maybe<AiPrompt>;
+  AiPrompts?: Maybe<AiPrompts>;
   AiUsage?: Maybe<AiUsage>;
   AiUsages?: Maybe<AiUsages>;
   AppSetting?: Maybe<AppSetting>;
@@ -15147,6 +16095,7 @@ export type Query = {
   Users?: Maybe<Users>;
   allMedia?: Maybe<allMedia>;
   countAccounts?: Maybe<countAccounts>;
+  countAiPrompts?: Maybe<countAiPrompts>;
   countAiUsages?: Maybe<countAiUsages>;
   countCategories?: Maybe<countCategories>;
   countOauthAccounts?: Maybe<countOauthAccounts>;
@@ -15168,6 +16117,7 @@ export type Query = {
   currency?: Maybe<Currency>;
   dashboardSummary?: Maybe<DashboardResult>;
   docAccessAccount?: Maybe<accountsDocAccess>;
+  docAccessAiPrompt?: Maybe<ai_promptsDocAccess>;
   docAccessAiUsage?: Maybe<ai_usagesDocAccess>;
   docAccessAppSetting?: Maybe<app_settingsDocAccess>;
   docAccessCategory?: Maybe<categoriesDocAccess>;
@@ -15217,6 +16167,26 @@ export type QueryAccountsArgs = {
   sort?: InputMaybe<Scalars['String']['input']>;
   trash?: InputMaybe<Scalars['Boolean']['input']>;
   where?: InputMaybe<Account_where>;
+};
+
+
+export type QueryAiPromptArgs = {
+  draft?: InputMaybe<Scalars['Boolean']['input']>;
+  id: Scalars['String']['input'];
+  select?: InputMaybe<Scalars['Boolean']['input']>;
+  trash?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+
+export type QueryAiPromptsArgs = {
+  draft?: InputMaybe<Scalars['Boolean']['input']>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  page?: InputMaybe<Scalars['Int']['input']>;
+  pagination?: InputMaybe<Scalars['Boolean']['input']>;
+  select?: InputMaybe<Scalars['Boolean']['input']>;
+  sort?: InputMaybe<Scalars['String']['input']>;
+  trash?: InputMaybe<Scalars['Boolean']['input']>;
+  where?: InputMaybe<AiPrompt_where>;
 };
 
 
@@ -15573,6 +16543,13 @@ export type QuerycountAccountsArgs = {
 };
 
 
+export type QuerycountAiPromptsArgs = {
+  draft?: InputMaybe<Scalars['Boolean']['input']>;
+  trash?: InputMaybe<Scalars['Boolean']['input']>;
+  where?: InputMaybe<AiPrompt_where>;
+};
+
+
 export type QuerycountAiUsagesArgs = {
   draft?: InputMaybe<Scalars['Boolean']['input']>;
   trash?: InputMaybe<Scalars['Boolean']['input']>;
@@ -15698,6 +16675,11 @@ export type QuerycurrencyArgs = {
 
 
 export type QuerydocAccessAccountArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+export type QuerydocAccessAiPromptArgs = {
   id: Scalars['String']['input'];
 };
 
@@ -22464,6 +23446,24 @@ export type accountsDocAccess = {
   update?: Maybe<AccountsUpdateDocAccess>;
 };
 
+export type ai_promptsAccess = {
+  __typename?: 'ai_promptsAccess';
+  create?: Maybe<AiPromptsCreateAccess>;
+  delete?: Maybe<AiPromptsDeleteAccess>;
+  fields?: Maybe<AiPromptsFields>;
+  read?: Maybe<AiPromptsReadAccess>;
+  update?: Maybe<AiPromptsUpdateAccess>;
+};
+
+export type ai_promptsDocAccess = {
+  __typename?: 'ai_promptsDocAccess';
+  create?: Maybe<AiPromptsCreateDocAccess>;
+  delete?: Maybe<AiPromptsDeleteDocAccess>;
+  fields?: Maybe<AiPromptsDocAccessFields>;
+  read?: Maybe<AiPromptsReadDocAccess>;
+  update?: Maybe<AiPromptsUpdateDocAccess>;
+};
+
 export type ai_usagesAccess = {
   __typename?: 'ai_usagesAccess';
   create?: Maybe<AiUsagesCreateAccess>;
@@ -22531,6 +23531,11 @@ export type categoriesDocAccess = {
 
 export type countAccounts = {
   __typename?: 'countAccounts';
+  totalDocs?: Maybe<Scalars['Int']['output']>;
+};
+
+export type countAiPrompts = {
+  __typename?: 'countAiPrompts';
   totalDocs?: Maybe<Scalars['Int']['output']>;
 };
 
@@ -22667,6 +23672,34 @@ export type mutationAccountUpdateInput = {
   totalTransactions?: InputMaybe<Scalars['Float']['input']>;
   updatedAt?: InputMaybe<Scalars['String']['input']>;
   user?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type mutationAiPromptInput = {
+  createdAt?: InputMaybe<Scalars['String']['input']>;
+  inputImageBase64?: InputMaybe<Scalars['String']['input']>;
+  inputImageMimeType?: InputMaybe<Scalars['String']['input']>;
+  inputText?: InputMaybe<Scalars['String']['input']>;
+  inputType: AiPrompt_inputType_MutationInput;
+  model?: InputMaybe<Scalars['String']['input']>;
+  systemPrompt?: InputMaybe<Scalars['String']['input']>;
+  transaction?: InputMaybe<Scalars['String']['input']>;
+  updatedAt?: InputMaybe<Scalars['String']['input']>;
+  user?: InputMaybe<Scalars['String']['input']>;
+  userPrompt?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type mutationAiPromptUpdateInput = {
+  createdAt?: InputMaybe<Scalars['String']['input']>;
+  inputImageBase64?: InputMaybe<Scalars['String']['input']>;
+  inputImageMimeType?: InputMaybe<Scalars['String']['input']>;
+  inputText?: InputMaybe<Scalars['String']['input']>;
+  inputType?: InputMaybe<AiPromptUpdate_inputType_MutationInput>;
+  model?: InputMaybe<Scalars['String']['input']>;
+  systemPrompt?: InputMaybe<Scalars['String']['input']>;
+  transaction?: InputMaybe<Scalars['String']['input']>;
+  updatedAt?: InputMaybe<Scalars['String']['input']>;
+  user?: InputMaybe<Scalars['String']['input']>;
+  userPrompt?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type mutationAiUsageInput = {
@@ -23717,7 +24750,7 @@ export type TextToTransactionMutationVariables = Exact<{
 }>;
 
 
-export type TextToTransactionMutation = { __typename?: 'Mutation', textToTransaction?: { __typename?: 'AITransactionResult', data?: any | null, model: string, latencyMs: number, usage: { __typename?: 'AIUsageMeta', promptTokenCount: number, candidatesTokenCount: number, totalTokenCount: number } } | null };
+export type TextToTransactionMutation = { __typename?: 'Mutation', textToTransaction?: { __typename?: 'AITransactionResult', data?: any | null, model: string, latencyMs: number, promptId?: string | null, usage: { __typename?: 'AIUsageMeta', promptTokenCount: number, candidatesTokenCount: number, totalTokenCount: number } } | null };
 
 export type ImageToTransactionMutationVariables = Exact<{
   image: Scalars['String']['input'];
@@ -23726,7 +24759,7 @@ export type ImageToTransactionMutationVariables = Exact<{
 }>;
 
 
-export type ImageToTransactionMutation = { __typename?: 'Mutation', imageToTransaction?: { __typename?: 'AITransactionResult', data?: any | null, model: string, latencyMs: number, usage: { __typename?: 'AIUsageMeta', promptTokenCount: number, candidatesTokenCount: number, totalTokenCount: number } } | null };
+export type ImageToTransactionMutation = { __typename?: 'Mutation', imageToTransaction?: { __typename?: 'AITransactionResult', data?: any | null, model: string, latencyMs: number, promptId?: string | null, usage: { __typename?: 'AIUsageMeta', promptTokenCount: number, candidatesTokenCount: number, totalTokenCount: number } } | null };
 
 export type SuggestCategoryMutationVariables = Exact<{
   type: Scalars['String']['input'];
@@ -24151,8 +25184,8 @@ export const GetAccountDocument = {"kind":"Document","definitions":[{"kind":"Ope
 export const CreateAccountDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateAccount"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"data"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"mutationAccountInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createAccount"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"data"},"value":{"kind":"Variable","name":{"kind":"Name","value":"data"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"AccountFields"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"AccountFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Account"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}},{"kind":"Field","name":{"kind":"Name","value":"bgColor"}},{"kind":"Field","name":{"kind":"Name","value":"color"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"balance"}},{"kind":"Field","name":{"kind":"Name","value":"totalTransactions"}},{"kind":"Field","name":{"kind":"Name","value":"lastTransactionAt"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"thumbnailURL"}}]}}]}}]} as unknown as DocumentNode<CreateAccountMutation, CreateAccountMutationVariables>;
 export const UpdateAccountDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateAccount"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"data"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"mutationAccountUpdateInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateAccount"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}},{"kind":"Argument","name":{"kind":"Name","value":"data"},"value":{"kind":"Variable","name":{"kind":"Name","value":"data"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"AccountFields"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"AccountFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Account"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}},{"kind":"Field","name":{"kind":"Name","value":"bgColor"}},{"kind":"Field","name":{"kind":"Name","value":"color"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"balance"}},{"kind":"Field","name":{"kind":"Name","value":"totalTransactions"}},{"kind":"Field","name":{"kind":"Name","value":"lastTransactionAt"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"thumbnailURL"}}]}}]}}]} as unknown as DocumentNode<UpdateAccountMutation, UpdateAccountMutationVariables>;
 export const DeleteAccountDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"DeleteAccount"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deleteAccount"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]} as unknown as DocumentNode<DeleteAccountMutation, DeleteAccountMutationVariables>;
-export const TextToTransactionDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"TextToTransaction"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"text"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"model"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"textToTransaction"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"text"},"value":{"kind":"Variable","name":{"kind":"Name","value":"text"}}},{"kind":"Argument","name":{"kind":"Name","value":"model"},"value":{"kind":"Variable","name":{"kind":"Name","value":"model"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"data"}},{"kind":"Field","name":{"kind":"Name","value":"model"}},{"kind":"Field","name":{"kind":"Name","value":"latencyMs"}},{"kind":"Field","name":{"kind":"Name","value":"usage"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"promptTokenCount"}},{"kind":"Field","name":{"kind":"Name","value":"candidatesTokenCount"}},{"kind":"Field","name":{"kind":"Name","value":"totalTokenCount"}}]}}]}}]}}]} as unknown as DocumentNode<TextToTransactionMutation, TextToTransactionMutationVariables>;
-export const ImageToTransactionDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"ImageToTransaction"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"image"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"mimeType"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"model"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"imageToTransaction"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"image"},"value":{"kind":"Variable","name":{"kind":"Name","value":"image"}}},{"kind":"Argument","name":{"kind":"Name","value":"mimeType"},"value":{"kind":"Variable","name":{"kind":"Name","value":"mimeType"}}},{"kind":"Argument","name":{"kind":"Name","value":"model"},"value":{"kind":"Variable","name":{"kind":"Name","value":"model"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"data"}},{"kind":"Field","name":{"kind":"Name","value":"model"}},{"kind":"Field","name":{"kind":"Name","value":"latencyMs"}},{"kind":"Field","name":{"kind":"Name","value":"usage"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"promptTokenCount"}},{"kind":"Field","name":{"kind":"Name","value":"candidatesTokenCount"}},{"kind":"Field","name":{"kind":"Name","value":"totalTokenCount"}}]}}]}}]}}]} as unknown as DocumentNode<ImageToTransactionMutation, ImageToTransactionMutationVariables>;
+export const TextToTransactionDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"TextToTransaction"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"text"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"model"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"textToTransaction"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"text"},"value":{"kind":"Variable","name":{"kind":"Name","value":"text"}}},{"kind":"Argument","name":{"kind":"Name","value":"model"},"value":{"kind":"Variable","name":{"kind":"Name","value":"model"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"data"}},{"kind":"Field","name":{"kind":"Name","value":"model"}},{"kind":"Field","name":{"kind":"Name","value":"latencyMs"}},{"kind":"Field","name":{"kind":"Name","value":"promptId"}},{"kind":"Field","name":{"kind":"Name","value":"usage"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"promptTokenCount"}},{"kind":"Field","name":{"kind":"Name","value":"candidatesTokenCount"}},{"kind":"Field","name":{"kind":"Name","value":"totalTokenCount"}}]}}]}}]}}]} as unknown as DocumentNode<TextToTransactionMutation, TextToTransactionMutationVariables>;
+export const ImageToTransactionDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"ImageToTransaction"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"image"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"mimeType"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"model"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"imageToTransaction"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"image"},"value":{"kind":"Variable","name":{"kind":"Name","value":"image"}}},{"kind":"Argument","name":{"kind":"Name","value":"mimeType"},"value":{"kind":"Variable","name":{"kind":"Name","value":"mimeType"}}},{"kind":"Argument","name":{"kind":"Name","value":"model"},"value":{"kind":"Variable","name":{"kind":"Name","value":"model"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"data"}},{"kind":"Field","name":{"kind":"Name","value":"model"}},{"kind":"Field","name":{"kind":"Name","value":"latencyMs"}},{"kind":"Field","name":{"kind":"Name","value":"promptId"}},{"kind":"Field","name":{"kind":"Name","value":"usage"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"promptTokenCount"}},{"kind":"Field","name":{"kind":"Name","value":"candidatesTokenCount"}},{"kind":"Field","name":{"kind":"Name","value":"totalTokenCount"}}]}}]}}]}}]} as unknown as DocumentNode<ImageToTransactionMutation, ImageToTransactionMutationVariables>;
 export const SuggestCategoryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"SuggestCategory"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"type"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"title"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"amount"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"date"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"note"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"personId"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"model"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"forceMethod"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"suggestCategory"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"type"},"value":{"kind":"Variable","name":{"kind":"Name","value":"type"}}},{"kind":"Argument","name":{"kind":"Name","value":"title"},"value":{"kind":"Variable","name":{"kind":"Name","value":"title"}}},{"kind":"Argument","name":{"kind":"Name","value":"amount"},"value":{"kind":"Variable","name":{"kind":"Name","value":"amount"}}},{"kind":"Argument","name":{"kind":"Name","value":"date"},"value":{"kind":"Variable","name":{"kind":"Name","value":"date"}}},{"kind":"Argument","name":{"kind":"Name","value":"note"},"value":{"kind":"Variable","name":{"kind":"Name","value":"note"}}},{"kind":"Argument","name":{"kind":"Name","value":"personId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"personId"}}},{"kind":"Argument","name":{"kind":"Name","value":"model"},"value":{"kind":"Variable","name":{"kind":"Name","value":"model"}}},{"kind":"Argument","name":{"kind":"Name","value":"forceMethod"},"value":{"kind":"Variable","name":{"kind":"Name","value":"forceMethod"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"category"}},{"kind":"Field","name":{"kind":"Name","value":"reason"}},{"kind":"Field","name":{"kind":"Name","value":"model"}},{"kind":"Field","name":{"kind":"Name","value":"latencyMs"}},{"kind":"Field","name":{"kind":"Name","value":"usage"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"promptTokenCount"}},{"kind":"Field","name":{"kind":"Name","value":"candidatesTokenCount"}},{"kind":"Field","name":{"kind":"Name","value":"totalTokenCount"}}]}}]}}]}}]} as unknown as DocumentNode<SuggestCategoryMutation, SuggestCategoryMutationVariables>;
 export const PredictCategoryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"PredictCategory"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"type"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"title"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"predictCategory"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"type"},"value":{"kind":"Variable","name":{"kind":"Name","value":"type"}}},{"kind":"Argument","name":{"kind":"Name","value":"title"},"value":{"kind":"Variable","name":{"kind":"Name","value":"title"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"category"}},{"kind":"Field","name":{"kind":"Name","value":"score"}},{"kind":"Field","name":{"kind":"Name","value":"model"}},{"kind":"Field","name":{"kind":"Name","value":"latencyMs"}}]}}]}}]} as unknown as DocumentNode<PredictCategoryMutation, PredictCategoryMutationVariables>;
 export const GetDashboardSummaryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetDashboardSummary"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"dashboardSummary"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"totalBalance"}},{"kind":"Field","name":{"kind":"Name","value":"balanceChangePercent"}},{"kind":"Field","name":{"kind":"Name","value":"monthlyPulse"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"income"}},{"kind":"Field","name":{"kind":"Name","value":"expenses"}},{"kind":"Field","name":{"kind":"Name","value":"surplus"}},{"kind":"Field","name":{"kind":"Name","value":"month"}},{"kind":"Field","name":{"kind":"Name","value":"year"}},{"kind":"Field","name":{"kind":"Name","value":"monthName"}}]}}]}}]}}]} as unknown as DocumentNode<GetDashboardSummaryQuery, GetDashboardSummaryQueryVariables>;

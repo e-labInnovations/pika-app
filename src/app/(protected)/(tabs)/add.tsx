@@ -47,6 +47,7 @@ export default function AddTransactionScreen() {
   const [aiInitialImage, setAiInitialImage] = useState<
     { uri: string; base64: string; mimeType: string } | undefined
   >();
+  const [pendingPromptId, setPendingPromptId] = useState<string | undefined>();
 
   const { pending, clearPending } = usePendingShare();
   const { pending: pendingAIPrefill, clearPending: clearAIPrefill } =
@@ -76,6 +77,7 @@ export default function AddTransactionScreen() {
   useEffect(() => {
     if (!pendingAIPrefill) return;
     setAiPrefill(pendingAIPrefill.values);
+    setPendingPromptId(pendingAIPrefill.promptId);
     const img = pendingAIPrefill.image;
     setAiSeedImage(
       img
@@ -115,12 +117,14 @@ export default function AddTransactionScreen() {
     attachmentIds: string[],
   ) => {
     try {
-      await createTransaction({
-        data: formValuesToMutationInput(values, attachmentIds),
-      });
+      await createTransaction(
+        { data: formValuesToMutationInput(values, attachmentIds) },
+        pendingPromptId,
+      );
       setFormKey((k) => k + 1);
       setAiPrefill(null);
       setAiSeedImage(null);
+      setPendingPromptId(undefined);
       router.replace("/transactions");
     } catch (err: any) {
       showAlert({
@@ -133,8 +137,10 @@ export default function AddTransactionScreen() {
   const handleAIUseDetails = (
     values: Partial<TxFormValues>,
     image?: { uri: string; base64: string; mimeType: string },
+    promptId?: string,
   ) => {
     setAiPrefill(values);
+    setPendingPromptId(promptId);
     setAiSeedImage(
       image
         ? {

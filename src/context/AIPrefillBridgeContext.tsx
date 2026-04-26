@@ -11,6 +11,7 @@ import type { AIImageAttachment } from "../components/transaction/AIAssistantShe
 export type PendingAIPrefill = {
   values: Partial<TxFormValues>;
   image?: AIImageAttachment;
+  promptId?: string;
 };
 
 interface AIPrefillBridgeContextType {

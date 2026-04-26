@@ -71,8 +71,11 @@ export const useCreateTransaction = () => {
   });
 
   return {
-    createTransaction: (variables: CreateTransactionMutationVariables) =>
-      createTransaction({ variables }),
+    createTransaction: (variables: CreateTransactionMutationVariables, promptId?: string) =>
+      createTransaction({
+        variables,
+        ...(promptId ? { context: { headers: { 'X-Prompt-Id': promptId } } } : {}),
+      }),
     data: data?.createTransaction,
     loading,
     error,

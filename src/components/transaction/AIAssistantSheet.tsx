@@ -96,6 +96,7 @@ interface Props {
   onUseDetails: (
     values: Partial<TxFormValues>,
     image?: AIImageAttachment,
+    promptId?: string,
   ) => void;
   /** Fired after a transaction is created via the "Create" shortcut */
   onCreated?: () => void;
@@ -443,6 +444,7 @@ export function AIAssistantSheet({ visible, onClose, onUseDetails, onCreated, in
     mimeType: string;
   } | null>(null);
   const [result, setResult] = useState<AITransactionData | null>(null);
+  const [promptId, setPromptId] = useState<string | null>(null);
   const [attachImage, setAttachImage] = useState(true);
   const [creating, setCreating] = useState(false);
 
@@ -475,6 +477,7 @@ export function AIAssistantSheet({ visible, onClose, onUseDetails, onCreated, in
     setTextInput("");
     setImage(null);
     setResult(null);
+    setPromptId(null);
     setAttachImage(true);
   };
 
@@ -517,12 +520,14 @@ export function AIAssistantSheet({ visible, onClose, onUseDetails, onCreated, in
         const data = res.data?.textToTransaction?.data;
         if (!data) throw new Error("No result from AI.");
         setResult(data as AITransactionData);
+        setPromptId(res.data?.textToTransaction?.promptId ?? null);
       } else {
         if (!image) return;
         const res = await imageToTransaction(image.base64, image.mimeType);
         const data = res.data?.imageToTransaction?.data;
         if (!data) throw new Error("No result from AI.");
         setResult(data as AITransactionData);
+        setPromptId(res.data?.imageToTransaction?.promptId ?? null);
       }
     } catch (err: any) {
       const msg =
@@ -538,7 +543,7 @@ export function AIAssistantSheet({ visible, onClose, onUseDetails, onCreated, in
     if (!result) return;
     const imageAttachment =
       attachImage && image && tab === "receipt" ? image : undefined;
-    onUseDetails(aiDataToFormValues(result), imageAttachment);
+    onUseDetails(aiDataToFormValues(result), imageAttachment, promptId ?? undefined);
     handleClose();
   };
 
@@ -557,9 +562,10 @@ export function AIAssistantSheet({ visible, onClose, onUseDetails, onCreated, in
         );
         attachmentIds = [media.id];
       }
-      await createTransaction({
-        data: formValuesToMutationInput(values, attachmentIds),
-      });
+      await createTransaction(
+        { data: formValuesToMutationInput(values, attachmentIds) },
+        promptId ?? undefined,
+      );
       resetState();
       onClose();
       onCreated?.();
