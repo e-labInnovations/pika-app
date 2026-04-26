@@ -69,7 +69,7 @@ function ScrollColumn({
   // never go stale and never trigger re-renders on every scroll frame.
   const currentOffset = useRef(selectedIndex * ITEM_HEIGHT);
   const hasMomentum = useRef(false);
-  const dragEndTimer = useRef<ReturnType<typeof setTimeout>>();
+  const dragEndTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
   // Snap the view to the nearest item and notify the parent.
   const commit = useCallback(

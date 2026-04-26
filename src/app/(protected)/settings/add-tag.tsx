@@ -76,20 +76,6 @@ export default function AddTagScreen() {
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
       >
-        {/* Tag badge */}
-        <View
-          className="flex-row items-center gap-2 self-start px-3 py-1.5 rounded-full"
-          style={{ backgroundColor: `${C.primary}22` }}
-        >
-          <DynamicIcon name="tag" size={13} color={C.primary} />
-          <Text
-            className="text-[12px] font-semibold"
-            style={{ color: C.primary }}
-          >
-            New Tag
-          </Text>
-        </View>
-
         {/* Name */}
         <View className="rounded-2xl bg-surface-mid overflow-hidden">
           <View className="px-4 pt-3 pb-1">
@@ -136,7 +122,7 @@ export default function AddTagScreen() {
             <IconPicker
               value={icon}
               onChange={setIcon}
-              bgColor={bgColor ? `${bgColor}33` : `${C.primaryBright}22`}
+              bgColor={bgColor || C.primaryBright}
               iconColor={color}
               size={64}
             />
@@ -158,39 +144,25 @@ export default function AddTagScreen() {
               </View>
             </View>
           </View>
+        </View>
 
-          {/* Live preview */}
+        {/* Preview */}
+        <View className="rounded-2xl bg-surface-mid p-4 gap-3">
+          <Text className="text-[11px] font-semibold uppercase tracking-[0.5px] text-on-surface-variant">
+            Preview
+          </Text>
+
           <View
-            className="flex-row items-center gap-3 p-3 rounded-xl"
-            style={{ backgroundColor: C.surfaceHighest }}
+            className="flex-row items-center gap-2 self-start px-3 py-1.5 rounded-full"
+            style={{ backgroundColor: bgColor }}
           >
-            <Text className="text-[11px] font-semibold uppercase tracking-[0.5px] text-on-surface-variant">
-              Preview
+            <DynamicIcon name="tag" size={13} color={color ?? C.primary} />
+            <Text
+              className="text-[12px] font-semibold"
+              style={{ color: color ?? C.primary }}
+            >
+              {name ?? "Tag name"}
             </Text>
-            <View className="flex-row items-center gap-3 flex-1">
-              <View
-                className="w-9 h-9 rounded-xl items-center justify-center"
-                style={{ backgroundColor: `${bgColor}33` }}
-              >
-                <DynamicIcon name={icon || "tag"} size={17} color={color} />
-              </View>
-              <View className="flex-1">
-                <Text
-                  className="text-[14px] font-semibold text-on-surface"
-                  numberOfLines={1}
-                >
-                  {name || "Tag name"}
-                </Text>
-                {description ? (
-                  <Text
-                    className="text-[12px] text-on-surface-variant"
-                    numberOfLines={1}
-                  >
-                    {description}
-                  </Text>
-                ) : null}
-              </View>
-            </View>
           </View>
         </View>
       </ScrollView>

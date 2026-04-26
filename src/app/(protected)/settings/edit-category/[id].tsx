@@ -35,7 +35,10 @@ const TYPE_META: Record<
   transfer: { label: "Transfer", color: "#3b82f6", icon: "arrow-right-left" },
 };
 
-const TYPE_TO_MUTATION: Record<TransactionType, CategoryUpdate_type_MutationInput> = {
+const TYPE_TO_MUTATION: Record<
+  TransactionType,
+  CategoryUpdate_type_MutationInput
+> = {
   expense: CategoryUpdate_type_MutationInput.expense,
   income: CategoryUpdate_type_MutationInput.income,
   transfer: CategoryUpdate_type_MutationInput.transfer,
@@ -180,50 +183,55 @@ export default function EditCategoryScreen() {
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
         >
-          {/* Type badge / Parent info */}
-          {isChild && category?.parent ? (
-            <View className="flex-row items-center gap-3 p-4 rounded-2xl bg-surface-mid">
-              <View
-                className="w-9 h-9 rounded-xl items-center justify-center"
-                style={{
-                  backgroundColor: category.parent.color
-                    ? `${category.parent.color}22`
-                    : `${C.primaryBright}18`,
-                }}
-              >
-                <DynamicIcon
-                  name={category.parent.icon ?? "folder"}
-                  size={16}
-                  color={category.parent.color ?? C.primaryBright}
-                />
-              </View>
-              <View>
-                <Text className="text-[11px] font-semibold uppercase tracking-[0.5px] text-on-surface-variant">
-                  Parent category
-                </Text>
-                <Text className="text-[14px] font-bold text-on-surface">
-                  {category.parent.name}
-                </Text>
-              </View>
-            </View>
-          ) : (
-            <View
-              className="flex-row items-center gap-2 self-start px-3 py-1.5 rounded-full"
-              style={{ backgroundColor: `${typeMeta.color}22` }}
+          {/* Type badge */}
+          <View
+            className="flex-row items-center gap-2 self-start px-3 py-1.5 rounded-full"
+            style={{ backgroundColor: `${typeMeta.color}22` }}
+          >
+            <DynamicIcon name={typeMeta.icon} size={13} color={typeMeta.color} />
+            <Text
+              className="text-[12px] font-semibold"
+              style={{ color: typeMeta.color }}
             >
-              <DynamicIcon
-                name={typeMeta.icon}
-                size={13}
-                color={typeMeta.color}
-              />
-              <Text
-                className="text-[12px] font-semibold"
-                style={{ color: typeMeta.color }}
-              >
-                {typeMeta.label}
+              {typeMeta.label}
+            </Text>
+          </View>
+
+          {/* Parent info */}
+          {isChild && category?.parent ? (
+            <View className="flex-col gap-3 p-4 rounded-2xl bg-surface-mid">
+              <Text className="text-[11px] font-semibold uppercase tracking-[0.5px] text-on-surface-variant">
+                Parent category
               </Text>
+              <View className="flex-row items-center gap-3">
+                <View
+                  className="w-9 h-9 rounded-xl items-center justify-center"
+                  style={{
+                    backgroundColor: category.parent.bgColor ?? C.primaryBright,
+                  }}
+                >
+                  <DynamicIcon
+                    name={category.parent.icon ?? "folder"}
+                    size={16}
+                    color={category.parent.color ?? C.primaryBright}
+                  />
+                </View>
+                <View className="flex-1">
+                  <Text className="text-[14px] font-bold text-on-surface">
+                    {category.parent.name}
+                  </Text>
+                  {category.parent.description ? (
+                    <Text
+                      className="text-[12px] text-on-surface-variant"
+                      numberOfLines={1}
+                    >
+                      {category.parent.description}
+                    </Text>
+                  ) : null}
+                </View>
+              </View>
             </View>
-          )}
+          ) : null}
 
           {/* Name */}
           <View className="rounded-2xl bg-surface-mid overflow-hidden">
@@ -271,7 +279,7 @@ export default function EditCategoryScreen() {
               <IconPicker
                 value={icon}
                 onChange={setIcon}
-                bgColor={bgColor ? `${bgColor}33` : undefined}
+                bgColor={bgColor || undefined}
                 iconColor={color}
                 size={64}
               />
@@ -293,42 +301,35 @@ export default function EditCategoryScreen() {
                 </View>
               </View>
             </View>
+          </View>
 
-            {/* Preview */}
-            <View
-              className="flex-row items-center gap-3 p-3 rounded-xl"
-              style={{ backgroundColor: C.surfaceHighest }}
-            >
-              <Text className="text-[11px] font-semibold uppercase tracking-[0.5px] text-on-surface-variant">
-                Preview
-              </Text>
-              <View className="flex-row items-center gap-3 flex-1">
-                <View
-                  className="w-9 h-9 rounded-xl items-center justify-center"
-                  style={{ backgroundColor: `${bgColor}33` }}
+          {/* Preview */}
+          <View className="rounded-2xl bg-surface-mid p-4 gap-3">
+            <Text className="text-[11px] font-semibold uppercase tracking-[0.5px] text-on-surface-variant">
+              Preview
+            </Text>
+            <View className="flex-row items-center gap-3">
+              <View
+                className="w-12 h-12 rounded-2xl items-center justify-center"
+                style={{ backgroundColor: bgColor }}
+              >
+                <DynamicIcon name={icon || "folder"} size={22} color={color} />
+              </View>
+              <View className="flex-1">
+                <Text
+                  className="text-[15px] font-bold text-on-surface"
+                  numberOfLines={1}
                 >
-                  <DynamicIcon
-                    name={icon || "folder"}
-                    size={17}
-                    color={color}
-                  />
-                </View>
-                <View className="flex-1">
+                  {name || "Category name"}
+                </Text>
+                {description ? (
                   <Text
-                    className="text-[14px] font-semibold text-on-surface"
+                    className="text-[12px] text-on-surface-variant"
                     numberOfLines={1}
                   >
-                    {name || "Category name"}
+                    {description}
                   </Text>
-                  {description ? (
-                    <Text
-                      className="text-[12px] text-on-surface-variant"
-                      numberOfLines={1}
-                    >
-                      {description}
-                    </Text>
-                  ) : null}
-                </View>
+                ) : null}
               </View>
             </View>
           </View>

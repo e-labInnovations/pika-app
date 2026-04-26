@@ -17,6 +17,8 @@ fragment CategoryFields on Category {
     name
     icon
     color
+    bgColor
+    description
   }
 }
 
