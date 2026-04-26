@@ -434,6 +434,7 @@ export function TopCategoriesCard() {
   const [month, setMonth] = useState(today.getMonth() + 1);
   const [year, setYear] = useState(today.getFullYear());
   const [allExpanded, setAllExpanded] = useState(false);
+  const [hasNavigated, setHasNavigated] = useState(false);
   const [selected, setSelected] = useState<{
     category: CategoryItem;
     categoryIds: string[];
@@ -469,12 +470,14 @@ export function TopCategoriesCard() {
   const monthLabel = `${monthName} '${String(year).slice(2)}`;
 
   const prevMonth = () => {
+    setHasNavigated(true);
     if (month === 1) {
       setMonth(12);
       setYear((y) => y - 1);
     } else setMonth((m) => m - 1);
   };
   const nextMonth = () => {
+    setHasNavigated(true);
     if (month === 12) {
       setMonth(1);
       setYear((y) => y + 1);
@@ -482,7 +485,7 @@ export function TopCategoriesCard() {
   };
 
   const showSkeleton = loading && !data;
-  if (!showSkeleton && !parents.length) return null;
+  if (!showSkeleton && !parents.length && !hasNavigated) return null;
 
   const dateFrom = `${year}-${String(month).padStart(2, "0")}-01T00:00:00.000Z`;
   const lastDay = new Date(year, month, 0).getDate();
@@ -557,23 +560,32 @@ export function TopCategoriesCard() {
 
       {/* Content */}
       <View className="gap-2">
-        {showSkeleton
-          ? [0, 1, 2].map((i) => <CategoryCardSkeleton key={i} />)
-          : parents.map((parent) => (
-              <ParentCard
-                key={parent.id}
-                parent={parent}
-                children={(childrenMap[parent.id] ?? []).sort(
-                  (a, b) => b.amount - a.amount,
-                )}
-                totalExpenses={totalExpenses}
-                allExpanded={allExpanded}
-                fmt={fmt}
-                onSelect={(cat, ids) =>
-                  setSelected({ category: cat, categoryIds: ids })
-                }
-              />
-            ))}
+        {showSkeleton ? (
+          [0, 1, 2].map((i) => <CategoryCardSkeleton key={i} />)
+        ) : parents.length > 0 ? (
+          parents.map((parent) => (
+            <ParentCard
+              key={parent.id}
+              parent={parent}
+              children={(childrenMap[parent.id] ?? []).sort(
+                (a, b) => b.amount - a.amount,
+              )}
+              totalExpenses={totalExpenses}
+              allExpanded={allExpanded}
+              fmt={fmt}
+              onSelect={(cat, ids) =>
+                setSelected({ category: cat, categoryIds: ids })
+              }
+            />
+          ))
+        ) : (
+          <View className="py-6 items-center gap-1.5">
+            <DynamicIcon name="folder-open" size={28} color={C.outlineVariant} />
+            <Text className="text-[13px] text-on-surface-variant">
+              No spending this month
+            </Text>
+          </View>
+        )}
       </View>
 
       {/* Category detail sheet */}

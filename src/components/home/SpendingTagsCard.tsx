@@ -369,6 +369,7 @@ export function SpendingTagsCard() {
   const today = new Date();
   const [month, setMonth] = useState(today.getMonth() + 1);
   const [year, setYear] = useState(today.getFullYear());
+  const [hasNavigated, setHasNavigated] = useState(false);
   const [selected, setSelected] = useState<TagActivity | null>(null);
 
   const { data, loading } = useGetMonthlyTags({ month, year });
@@ -388,12 +389,14 @@ export function SpendingTagsCard() {
   const dateTo = `${year}-${String(month).padStart(2, "0")}-${lastDay}T23:59:59.999Z`;
 
   const prevMonth = () => {
+    setHasNavigated(true);
     if (month === 1) {
       setMonth(12);
       setYear((y) => y - 1);
     } else setMonth((m) => m - 1);
   };
   const nextMonth = () => {
+    setHasNavigated(true);
     if (month === 12) {
       setMonth(1);
       setYear((y) => y + 1);
@@ -401,7 +404,7 @@ export function SpendingTagsCard() {
   };
 
   const showSkeleton = loading && !data;
-  if (!showSkeleton && !tags.length) return null;
+  if (!showSkeleton && !tags.length && !hasNavigated) return null;
 
   return (
     <>
@@ -455,16 +458,25 @@ export function SpendingTagsCard() {
 
         {/* Rows */}
         <View className="gap-3.5">
-          {showSkeleton
-            ? [1, 2, 3].map((i) => <TagRowSkeleton key={i} />)
-            : tags.map((tag) => (
-                <TagRow
-                  key={tag.id}
-                  tag={tag}
-                  fmt={fmt}
-                  onPress={() => setSelected(tag)}
-                />
-              ))}
+          {showSkeleton ? (
+            [1, 2, 3].map((i) => <TagRowSkeleton key={i} />)
+          ) : tags.length > 0 ? (
+            tags.map((tag) => (
+              <TagRow
+                key={tag.id}
+                tag={tag}
+                fmt={fmt}
+                onPress={() => setSelected(tag)}
+              />
+            ))
+          ) : (
+            <View className="py-6 items-center gap-1.5">
+              <DynamicIcon name="tag" size={28} color={C.outlineVariant} />
+              <Text className="text-[13px] text-on-surface-variant">
+                No tag activity this month
+              </Text>
+            </View>
+          )}
         </View>
       </View>
 
