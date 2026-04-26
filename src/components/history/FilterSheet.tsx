@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import { DatePicker } from '../transaction/DateTimePicker';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { DynamicIcon } from '../Icon';
 import { AccountAvatar } from '../AccountAvatar';
@@ -253,33 +254,33 @@ function DatePanel({ local, setLocal }: { local: TxFilter; setLocal: React.Dispa
       <Text className="text-[11px] font-bold uppercase tracking-[0.8px] text-on-surface-variant px-1 mt-2">
         Custom Range
       </Text>
-      <View className="flex-row gap-3">
-        <View className="flex-1 gap-1.5">
+      <View className="gap-2">
+        <View className="gap-1.5">
           <Text className="text-[10px] font-semibold uppercase tracking-[0.5px] text-on-surface-variant px-1">From</Text>
-          <TextInput
-            className="text-[13px] text-on-surface px-3 py-2.5 rounded-xl"
-            style={{ backgroundColor: C.surfaceHigh }}
-            placeholderTextColor={C.outlineVariant}
-            placeholder="YYYY-MM-DD"
-            value={local.dateFrom ? local.dateFrom.split('T')[0] : ''}
-            onChangeText={(v) =>
-              setLocal((p) => ({ ...p, dateFrom: v ? new Date(v).toISOString() : '', datePreset: '' }))
+          <DatePicker
+            value={local.dateFrom ? new Date(local.dateFrom) : null}
+            placeholder="Start date"
+            onChange={(d) =>
+              setLocal((p) => ({
+                ...p,
+                dateFrom: d ? new Date(d.getFullYear(), d.getMonth(), d.getDate(), 0, 0, 0, 0).toISOString() : '',
+                datePreset: '',
+              }))
             }
-            keyboardType="numbers-and-punctuation"
           />
         </View>
-        <View className="flex-1 gap-1.5">
+        <View className="gap-1.5">
           <Text className="text-[10px] font-semibold uppercase tracking-[0.5px] text-on-surface-variant px-1">To</Text>
-          <TextInput
-            className="text-[13px] text-on-surface px-3 py-2.5 rounded-xl"
-            style={{ backgroundColor: C.surfaceHigh }}
-            placeholderTextColor={C.outlineVariant}
-            placeholder="YYYY-MM-DD"
-            value={local.dateTo ? local.dateTo.split('T')[0] : ''}
-            onChangeText={(v) =>
-              setLocal((p) => ({ ...p, dateTo: v ? new Date(v + 'T23:59:59').toISOString() : '', datePreset: '' }))
+          <DatePicker
+            value={local.dateTo ? new Date(local.dateTo) : null}
+            placeholder="End date"
+            onChange={(d) =>
+              setLocal((p) => ({
+                ...p,
+                dateTo: d ? new Date(d.getFullYear(), d.getMonth(), d.getDate(), 23, 59, 59, 999).toISOString() : '',
+                datePreset: '',
+              }))
             }
-            keyboardType="numbers-and-punctuation"
           />
         </View>
       </View>

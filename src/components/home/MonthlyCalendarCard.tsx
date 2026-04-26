@@ -198,8 +198,11 @@ function DayDetailContent({
   const fmt = useFormatMoney();
   const insets = useSafeAreaInsets();
 
-  const dateFrom = `${date}T00:00:00.000Z`;
-  const dateTo = `${date}T23:59:59.999Z`;
+  // Use local midnight so users in non-UTC timezones get the same calendar
+  // day as the backend, which groups by local date, not UTC date.
+  const [_y, _m, _d] = date.split("-").map(Number);
+  const dateFrom = new Date(_y, _m - 1, _d, 0, 0, 0, 0).toISOString();
+  const dateTo = new Date(_y, _m - 1, _d, 23, 59, 59, 999).toISOString();
 
   const { transactions, loading } = useGetTransactions({
     limit: 20,
@@ -433,8 +436,8 @@ export function MonthlyCalendarCard() {
                 router.push({
                   pathname: "/transactions",
                   params: {
-                    dateFrom: `${year}-${String(month).padStart(2, "0")}-01T00:00:00.000Z`,
-                    dateTo: `${year}-${String(month).padStart(2, "0")}-${new Date(year, month, 0).getDate()}T23:59:59.999Z`,
+                    dateFrom: new Date(year, month - 1, 1, 0, 0, 0, 0).toISOString(),
+                    dateTo: new Date(year, month, 0, 23, 59, 59, 999).toISOString(),
                   },
                 })
               }

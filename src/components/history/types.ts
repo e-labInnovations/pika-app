@@ -65,33 +65,31 @@ export function isDefaultSort(s: TxSort): boolean {
 
 export function getDatePresetRange(preset: DatePreset): { dateFrom: string; dateTo: string } {
   const now = new Date();
-  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const y = now.getFullYear();
+  const m = now.getMonth();
+  const d = now.getDate();
+  const dow = now.getDay(); // Sunday = 0
 
-  const end = (d: Date) => new Date(d.getTime() + 86400000 - 1).toISOString();
+  // Always build local midnight / end-of-day via the Date constructor so that
+  // toISOString() produces the correct UTC offset for the device's timezone.
+  // Using ms arithmetic (getTime() ± N * 86400000) is DST-unsafe.
+  const start = (year: number, month: number, day: number) =>
+    new Date(year, month, day, 0, 0, 0, 0).toISOString();
+  const end = (year: number, month: number, day: number) =>
+    new Date(year, month, day, 23, 59, 59, 999).toISOString();
 
   switch (preset) {
     case 'today':
-      return { dateFrom: today.toISOString(), dateTo: end(today) };
-    case 'week': {
-      const weekStart = new Date(today.getTime() - today.getDay() * 86400000);
-      const weekEnd = new Date(weekStart.getTime() + 7 * 86400000 - 1);
-      return { dateFrom: weekStart.toISOString(), dateTo: weekEnd.toISOString() };
-    }
-    case 'month': {
-      const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
-      const monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59);
-      return { dateFrom: monthStart.toISOString(), dateTo: monthEnd.toISOString() };
-    }
-    case 'last_month': {
-      const lmStart = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-      const lmEnd = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59);
-      return { dateFrom: lmStart.toISOString(), dateTo: lmEnd.toISOString() };
-    }
-    case 'year': {
-      const yearStart = new Date(now.getFullYear(), 0, 1);
-      const yearEnd = new Date(now.getFullYear(), 11, 31, 23, 59, 59);
-      return { dateFrom: yearStart.toISOString(), dateTo: yearEnd.toISOString() };
-    }
+      return { dateFrom: start(y, m, d), dateTo: end(y, m, d) };
+    case 'week':
+      // JS Date handles negative/overflow day values correctly (e.g. day -2 = 2 days before month start).
+      return { dateFrom: start(y, m, d - dow), dateTo: end(y, m, d - dow + 6) };
+    case 'month':
+      return { dateFrom: start(y, m, 1), dateTo: end(y, m + 1, 0) }; // day 0 of next month = last day of this month
+    case 'last_month':
+      return { dateFrom: start(y, m - 1, 1), dateTo: end(y, m, 0) };
+    case 'year':
+      return { dateFrom: start(y, 0, 1), dateTo: end(y, 11, 31) };
   }
 }
 
