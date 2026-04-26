@@ -654,18 +654,20 @@ export function AIAssistantSheet({ visible, onClose, onUseDetails, onCreated, in
               gap: 12,
             }}
           >
-            <View
+            <LinearGradient
+              colors={AI_GRADIENT}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
               style={{
                 width: 40,
                 height: 40,
                 borderRadius: 20,
-                backgroundColor: "#7c3aed22",
                 alignItems: "center",
                 justifyContent: "center",
               }}
             >
-              <DynamicIcon name="bot" size={20} color="#7c3aed" />
-            </View>
+              <DynamicIcon name="bot" size={20} color="#fff" />
+            </LinearGradient>
             <View style={{ flex: 1 }}>
               <Text
                 style={{ fontSize: 16, fontWeight: "700", color: C.onSurface }}

@@ -124,10 +124,25 @@ function PickerRow({
     <TouchableOpacity
       onPress={onPress}
       activeOpacity={0.75}
-      style={{ flexDirection: "row", alignItems: "center", gap: 12, paddingHorizontal: 14, paddingVertical: 12 }}
+      style={{
+        flexDirection: "row",
+        alignItems: "center",
+        gap: 12,
+        paddingHorizontal: 14,
+        paddingVertical: 12,
+      }}
     >
       <View style={{ flex: 1 }}>
-        <Text style={{ fontSize: 11, fontWeight: "700", textTransform: "uppercase", letterSpacing: 0.5, color: C.onSurfaceVariant, marginBottom: 3 }}>
+        <Text
+          style={{
+            fontSize: 11,
+            fontWeight: "700",
+            textTransform: "uppercase",
+            letterSpacing: 0.5,
+            color: C.onSurfaceVariant,
+            marginBottom: 3,
+          }}
+        >
           {label}
         </Text>
         {children}
@@ -140,27 +155,69 @@ function PickerRow({
 // ── Attachment thumbnail ──────────────────────────────────────────────────────
 
 const THUMB_SIZE = 88;
+const AI_GRADIENT = ["#7c3aed", "#db2777", "#f59e0b"] as const;
 
-function AttachmentThumb({ att, onRemove }: { att: LocalAttachment; onRemove: () => void }) {
+function AttachmentThumb({
+  att,
+  onRemove,
+}: {
+  att: LocalAttachment;
+  onRemove: () => void;
+}) {
   const C = useColors();
   const uploading = att.mediaId === undefined;
   const failed = att.mediaId === null;
   const isImg = (att.mimeType ?? "").startsWith("image/");
   const SIZE = THUMB_SIZE;
   return (
-    <View style={{ width: SIZE, height: SIZE, borderRadius: 12, overflow: "hidden", backgroundColor: C.surfaceHigh }}>
+    <View
+      style={{
+        width: SIZE,
+        height: SIZE,
+        borderRadius: 12,
+        overflow: "hidden",
+        backgroundColor: C.surfaceHigh,
+      }}
+    >
       {isImg ? (
-        <Image source={{ uri: att.uri }} style={{ width: SIZE, height: SIZE }} resizeMode="cover" />
+        <Image
+          source={{ uri: att.uri }}
+          style={{ width: SIZE, height: SIZE }}
+          resizeMode="cover"
+        />
       ) : (
-        <View style={{ flex: 1, alignItems: "center", justifyContent: "center", gap: 3 }}>
+        <View
+          style={{
+            flex: 1,
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 3,
+          }}
+        >
           <DynamicIcon name="file-text" size={22} color={C.onSurfaceVariant} />
-          <Text style={{ fontSize: 9, color: C.onSurfaceVariant, textAlign: "center", paddingHorizontal: 4 }} numberOfLines={2}>
+          <Text
+            style={{
+              fontSize: 9,
+              color: C.onSurfaceVariant,
+              textAlign: "center",
+              paddingHorizontal: 4,
+            }}
+            numberOfLines={2}
+          >
             {att.filename}
           </Text>
         </View>
       )}
       {uploading ? (
-        <View style={{ position: "absolute", inset: 0, backgroundColor: "rgba(0,0,0,0.45)", alignItems: "center", justifyContent: "center" }}>
+        <View
+          style={{
+            position: "absolute",
+            inset: 0,
+            backgroundColor: "rgba(0,0,0,0.45)",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
           <ActivityIndicator size="small" color="#fff" />
         </View>
       ) : (
@@ -168,17 +225,36 @@ function AttachmentThumb({ att, onRemove }: { att: LocalAttachment; onRemove: ()
           onPress={onRemove}
           activeOpacity={0.8}
           style={{
-            position: "absolute", top: 4, right: 4,
-            width: 20, height: 20, borderRadius: 10,
-            backgroundColor: failed ? "rgba(239,68,68,0.8)" : "rgba(0,0,0,0.55)",
-            alignItems: "center", justifyContent: "center",
+            position: "absolute",
+            top: 4,
+            right: 4,
+            width: 20,
+            height: 20,
+            borderRadius: 10,
+            backgroundColor: failed
+              ? "rgba(239,68,68,0.8)"
+              : "rgba(0,0,0,0.55)",
+            alignItems: "center",
+            justifyContent: "center",
           }}
         >
           <DynamicIcon name="x" size={11} color="#fff" />
         </TouchableOpacity>
       )}
       {att.mediaId && (
-        <View style={{ position: "absolute", bottom: 4, right: 4, width: 16, height: 16, borderRadius: 8, backgroundColor: "#10b981", alignItems: "center", justifyContent: "center" }}>
+        <View
+          style={{
+            position: "absolute",
+            bottom: 4,
+            right: 4,
+            width: 16,
+            height: 16,
+            borderRadius: 8,
+            backgroundColor: "#10b981",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
           <DynamicIcon name="check" size={9} color="#fff" />
         </View>
       )}
@@ -188,7 +264,16 @@ function AttachmentThumb({ att, onRemove }: { att: LocalAttachment; onRemove: ()
 
 // ── Main component ────────────────────────────────────────────────────────────
 
-export function TransactionForm({ initialValues, onSubmit, onCancel, submitLabel, title, saving, onAIPress, seedAttachments }: TxFormProps) {
+export function TransactionForm({
+  initialValues,
+  onSubmit,
+  onCancel,
+  submitLabel,
+  title,
+  saving,
+  onAIPress,
+  seedAttachments,
+}: TxFormProps) {
   const C = useColors();
   const insets = useSafeAreaInsets();
   const topPad = insets.top || (Platform.OS === "ios" ? 44 : 24);
@@ -226,12 +311,19 @@ export function TransactionForm({ initialValues, onSubmit, onCancel, submitLabel
             item.filename ?? undefined,
           );
           setAttachments((prev) =>
-            prev.map((a) => (a.localId === item.localId ? { ...a, mediaId: media.id } : a)),
+            prev.map((a) =>
+              a.localId === item.localId ? { ...a, mediaId: media.id } : a,
+            ),
           );
         } catch {
-          showAlert({ title: "Upload failed", message: `Could not upload receipt image.` });
+          showAlert({
+            title: "Upload failed",
+            message: `Could not upload receipt image.`,
+          });
           setAttachments((prev) =>
-            prev.map((a) => (a.localId === item.localId ? { ...a, mediaId: null } : a)),
+            prev.map((a) =>
+              a.localId === item.localId ? { ...a, mediaId: null } : a,
+            ),
           );
         }
       }
@@ -248,14 +340,18 @@ export function TransactionForm({ initialValues, onSubmit, onCancel, submitLabel
   // AI category suggestion state — the explicit Suggest button routes through
   // the user's preferred backend (minilm | cloud). See settings/ai.tsx.
   const { settings } = useAuth();
-  const categoryAiMethod = (settings?.categoryAiMethod as "minilm" | "cloud" | null | undefined) ?? "minilm";
+  const categoryAiMethod =
+    (settings?.categoryAiMethod as "minilm" | "cloud" | null | undefined) ??
+    "minilm";
 
   const { suggestCategory, loading: suggesting } = useSuggestCategory();
-  const [suggestedCategory, setSuggestedCategory] = useState<SuggestedCategory | null>(null);
+  const [suggestedCategory, setSuggestedCategory] =
+    useState<SuggestedCategory | null>(null);
 
   // AI category prediction state (debounced, local MiniLM-backed)
   const { predictCategory } = usePredictCategory();
-  const [predictedCategory, setPredictedCategory] = useState<PredictedCategory | null>(null);
+  const [predictedCategory, setPredictedCategory] =
+    useState<PredictedCategory | null>(null);
   const predictReqIdRef = React.useRef(0);
   const dismissedPredictionTitleRef = React.useRef<string | null>(null);
 
@@ -272,7 +368,8 @@ export function TransactionForm({ initialValues, onSubmit, onCancel, submitLabel
         personId: values.person?.id,
         forceMethod,
       });
-      const cat = (res.data?.suggestCategory?.category ?? null) as SuggestedCategory | null;
+      const cat = (res.data?.suggestCategory?.category ??
+        null) as SuggestedCategory | null;
       if (cat) {
         setSuggestedCategory(cat);
         return;
@@ -298,7 +395,10 @@ export function TransactionForm({ initialValues, onSubmit, onCancel, submitLabel
         });
       }
     } catch (e: any) {
-      showAlert({ title: "Couldn't suggest", message: e?.message ?? "Suggestion failed." });
+      showAlert({
+        title: "Couldn't suggest",
+        message: e?.message ?? "Suggestion failed.",
+      });
     }
   };
 
@@ -336,12 +436,11 @@ export function TransactionForm({ initialValues, onSubmit, onCancel, submitLabel
       try {
         const res = await predictCategory({ type: values.type, title });
         if (reqId !== predictReqIdRef.current) return; // superseded
-        const cat = (res.data?.predictCategory?.category ?? null) as PredictedCategory | null;
+        const cat = (res.data?.predictCategory?.category ??
+          null) as PredictedCategory | null;
         if (!cat) return;
         // Auto-fill only if the category slot is empty
-        setValues((v) =>
-          v.category ? v : { ...v, category: cat },
-        );
+        setValues((v) => (v.category ? v : { ...v, category: cat }));
         setPredictedCategory(cat);
       } catch {
         // swallow — prediction is best-effort
@@ -356,7 +455,11 @@ export function TransactionForm({ initialValues, onSubmit, onCancel, submitLabel
     dismissedPredictionTitleRef.current = values.title.trim();
     setPredictedCategory(null);
     // If the field still holds the auto-filled pick, clear it so the user can start fresh
-    setValues((v) => (v.category && v.category.id === predictedCategory?.id ? { ...v, category: null } : v));
+    setValues((v) =>
+      v.category && v.category.id === predictedCategory?.id
+        ? { ...v, category: null }
+        : v,
+    );
   };
 
   const set = <K extends keyof TxFormValues>(key: K, val: TxFormValues[K]) =>
@@ -382,8 +485,8 @@ export function TransactionForm({ initialValues, onSubmit, onCancel, submitLabel
     setValues((v) => ({
       ...v,
       type: t,
-      category: null,                              // each type has its own categories
-      person: t === "transfer" ? null : v.person,  // transfers don't have a person
+      category: null, // each type has its own categories
+      person: t === "transfer" ? null : v.person, // transfers don't have a person
       toAccount: t !== "transfer" ? null : v.toAccount,
     }));
   };
@@ -404,12 +507,19 @@ export function TransactionForm({ initialValues, onSubmit, onCancel, submitLabel
           item.filename ?? undefined,
         );
         setAttachments((prev) =>
-          prev.map((a) => (a.localId === item.localId ? { ...a, mediaId: media.id } : a)),
+          prev.map((a) =>
+            a.localId === item.localId ? { ...a, mediaId: media.id } : a,
+          ),
         );
       } catch {
-        showAlert({ title: "Upload failed", message: `Could not upload ${item.filename}.` });
+        showAlert({
+          title: "Upload failed",
+          message: `Could not upload ${item.filename}.`,
+        });
         setAttachments((prev) =>
-          prev.map((a) => (a.localId === item.localId ? { ...a, mediaId: null } : a)),
+          prev.map((a) =>
+            a.localId === item.localId ? { ...a, mediaId: null } : a,
+          ),
         );
       }
     }
@@ -418,7 +528,10 @@ export function TransactionForm({ initialValues, onSubmit, onCancel, submitLabel
   const pickPhotos = async () => {
     const perm = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (!perm.granted) {
-      showAlert({ title: "Permission required", message: "Allow access to your photo library to add attachments." });
+      showAlert({
+        title: "Permission required",
+        message: "Allow access to your photo library to add attachments.",
+      });
       return;
     }
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -456,7 +569,10 @@ export function TransactionForm({ initialValues, onSubmit, onCancel, submitLabel
       }));
       await uploadNewItems(newItems);
     } catch (e: any) {
-      showAlert({ title: "Error", message: e?.message ?? "Could not pick document." });
+      showAlert({
+        title: "Error",
+        message: e?.message ?? "Could not pick document.",
+      });
     }
   };
 
@@ -479,39 +595,67 @@ export function TransactionForm({ initialValues, onSubmit, onCancel, submitLabel
       behavior={Platform.OS === "ios" ? "padding" : undefined}
     >
       {/* Header */}
-      <View style={{ paddingTop: topPad, paddingHorizontal: 20, paddingBottom: 12, backgroundColor: C.surface }}>
+      <View
+        style={{
+          paddingTop: topPad,
+          paddingHorizontal: 20,
+          paddingBottom: 12,
+          backgroundColor: C.surface,
+        }}
+      >
         <View style={{ flexDirection: "row", alignItems: "center", gap: 12 }}>
           <TouchableOpacity
             onPress={onCancel}
             activeOpacity={0.7}
-            style={{ width: 36, height: 36, borderRadius: 18, alignItems: "center", justifyContent: "center", backgroundColor: C.surfaceMid }}
+            style={{
+              width: 36,
+              height: 36,
+              borderRadius: 18,
+              alignItems: "center",
+              justifyContent: "center",
+              backgroundColor: C.surfaceMid,
+            }}
           >
             <DynamicIcon name="chevron-left" size={20} color={C.onSurface} />
           </TouchableOpacity>
-          <Text style={{ flex: 1, fontSize: 20, fontWeight: "900", letterSpacing: -0.5, color: C.onSurface }}>
+          <Text
+            style={{
+              flex: 1,
+              fontSize: 20,
+              fontWeight: "900",
+              letterSpacing: -0.5,
+              color: C.onSurface,
+            }}
+          >
             {title}
           </Text>
           {onAIPress && (
-            <TouchableOpacity
-              onPress={onAIPress}
-              activeOpacity={0.75}
-              style={{
-                width: 36,
-                height: 36,
-                borderRadius: 18,
-                alignItems: "center",
-                justifyContent: "center",
-                backgroundColor: "#7c3aed22",
-              }}
-            >
-              <DynamicIcon name="sparkles" size={18} color="#7c3aed" />
+            <TouchableOpacity onPress={onAIPress} activeOpacity={0.75}>
+              <LinearGradient
+                colors={AI_GRADIENT}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={{
+                  width: 36,
+                  height: 36,
+                  borderRadius: 18,
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <DynamicIcon name="bot" size={18} color="#fff" />
+              </LinearGradient>
             </TouchableOpacity>
           )}
         </View>
       </View>
 
       <ScrollView
-        contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 40, gap: 10 }}
+        contentContainerStyle={{
+          paddingHorizontal: 16,
+          paddingBottom: 40,
+          gap: 10,
+        }}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
       >
@@ -519,19 +663,60 @@ export function TransactionForm({ initialValues, onSubmit, onCancel, submitLabel
         <TxTypeSelector value={values.type} onChange={handleTypeChange} />
 
         {/* ── Amount + Title ── */}
-        <View style={{ borderRadius: 16, backgroundColor: C.surfaceMid, overflow: "hidden" }}>
-          <View style={{ paddingHorizontal: 16, paddingTop: 14, paddingBottom: 6 }}>
-            <Text style={{ fontSize: 11, fontWeight: "700", textTransform: "uppercase", letterSpacing: 0.5, color: C.onSurfaceVariant, marginBottom: 4 }}>
+        <View
+          style={{
+            borderRadius: 16,
+            backgroundColor: C.surfaceMid,
+            overflow: "hidden",
+          }}
+        >
+          <View
+            style={{ paddingHorizontal: 16, paddingTop: 14, paddingBottom: 6 }}
+          >
+            <Text
+              style={{
+                fontSize: 11,
+                fontWeight: "700",
+                textTransform: "uppercase",
+                letterSpacing: 0.5,
+                color: C.onSurfaceVariant,
+                marginBottom: 4,
+              }}
+            >
               Amount *
             </Text>
-            <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
-              <View style={{ backgroundColor: `${typeColor}22`, borderRadius: 8, padding: 6 }}>
-                <DynamicIcon name={values.type === "income" ? "arrow-down-left" : values.type === "transfer" ? "arrow-right-left" : "arrow-up-right"} size={14} color={typeColor} />
+            <View
+              style={{ flexDirection: "row", alignItems: "center", gap: 6 }}
+            >
+              <View
+                style={{
+                  backgroundColor: `${typeColor}22`,
+                  borderRadius: 8,
+                  padding: 6,
+                }}
+              >
+                <DynamicIcon
+                  name={
+                    values.type === "income"
+                      ? "arrow-down-left"
+                      : values.type === "transfer"
+                        ? "arrow-right-left"
+                        : "arrow-up-right"
+                  }
+                  size={14}
+                  color={typeColor}
+                />
               </View>
               <TextInput
                 value={values.amount}
                 onChangeText={(v) => set("amount", v)}
-                style={{ flex: 1, fontSize: 28, fontWeight: "800", color: typeColor, letterSpacing: -0.5 }}
+                style={{
+                  flex: 1,
+                  fontSize: 28,
+                  fontWeight: "800",
+                  color: typeColor,
+                  letterSpacing: -0.5,
+                }}
                 placeholderTextColor={`${typeColor}60`}
                 placeholder="0.00"
                 keyboardType="decimal-pad"
@@ -539,9 +724,26 @@ export function TransactionForm({ initialValues, onSubmit, onCancel, submitLabel
               />
             </View>
           </View>
-          <View style={{ height: 1, backgroundColor: `${C.outlineVariant}40`, marginHorizontal: 16 }} />
-          <View style={{ paddingHorizontal: 16, paddingTop: 8, paddingBottom: 14 }}>
-            <Text style={{ fontSize: 11, fontWeight: "700", textTransform: "uppercase", letterSpacing: 0.5, color: C.onSurfaceVariant, marginBottom: 4 }}>
+          <View
+            style={{
+              height: 1,
+              backgroundColor: `${C.outlineVariant}40`,
+              marginHorizontal: 16,
+            }}
+          />
+          <View
+            style={{ paddingHorizontal: 16, paddingTop: 8, paddingBottom: 14 }}
+          >
+            <Text
+              style={{
+                fontSize: 11,
+                fontWeight: "700",
+                textTransform: "uppercase",
+                letterSpacing: 0.5,
+                color: C.onSurfaceVariant,
+                marginBottom: 4,
+              }}
+            >
               Title *
             </Text>
             <TextInput
@@ -557,57 +759,130 @@ export function TransactionForm({ initialValues, onSubmit, onCancel, submitLabel
         </View>
 
         {/* ── Date & Time ── */}
-        <View style={{ borderRadius: 16, backgroundColor: C.surfaceMid, overflow: "hidden", padding: 14 }}>
-          <Text style={{ fontSize: 11, fontWeight: "700", textTransform: "uppercase", letterSpacing: 0.5, color: C.onSurfaceVariant, marginBottom: 8 }}>
+        <View
+          style={{
+            borderRadius: 16,
+            backgroundColor: C.surfaceMid,
+            overflow: "hidden",
+            padding: 14,
+          }}
+        >
+          <Text
+            style={{
+              fontSize: 11,
+              fontWeight: "700",
+              textTransform: "uppercase",
+              letterSpacing: 0.5,
+              color: C.onSurfaceVariant,
+              marginBottom: 8,
+            }}
+          >
             Date & Time
           </Text>
-          <DateTimePicker value={values.date} onChange={(d) => set("date", d)} />
+          <DateTimePicker
+            value={values.date}
+            onChange={(d) => set("date", d)}
+          />
         </View>
 
         {/* ── Category ── */}
-        <View style={{ borderRadius: 16, backgroundColor: C.surfaceMid, overflow: "hidden" }}>
+        <View
+          style={{
+            borderRadius: 16,
+            backgroundColor: C.surfaceMid,
+            overflow: "hidden",
+          }}
+        >
           <View style={{ flexDirection: "row", alignItems: "center" }}>
             <View style={{ flex: 1 }}>
-              <PickerRow label="Category *" onPress={() => setShowCategory(true)}>
+              <PickerRow
+                label="Category *"
+                onPress={() => setShowCategory(true)}
+              >
                 {values.category ? (
-                  <View style={{ flexDirection: "row", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
-                    <View style={{ width: 28, height: 28, borderRadius: 8, backgroundColor: values.category.bgColor ?? `${values.category.color ?? "#f59e0b"}22`, alignItems: "center", justifyContent: "center" }}>
-                      <DynamicIcon name={values.category.icon ?? "folder"} size={14} color={values.category.color ?? "#f59e0b"} />
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      alignItems: "center",
+                      gap: 8,
+                      flexWrap: "wrap",
+                    }}
+                  >
+                    <View
+                      style={{
+                        width: 28,
+                        height: 28,
+                        borderRadius: 8,
+                        backgroundColor:
+                          values.category.bgColor ??
+                          `${values.category.color ?? "#f59e0b"}22`,
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    >
+                      <DynamicIcon
+                        name={values.category.icon ?? "folder"}
+                        size={14}
+                        color={values.category.color ?? "#f59e0b"}
+                      />
                     </View>
-                    <Text style={{ fontSize: 14, fontWeight: "600", color: C.onSurface }}>{values.category.name}</Text>
-                    {predictedCategory && values.category.id === predictedCategory.id && (
-                      <View
-                        style={{
-                          flexDirection: "row",
-                          alignItems: "center",
-                          gap: 3,
-                          paddingLeft: 6,
-                          paddingRight: 2,
-                          paddingVertical: 2,
-                          borderRadius: 999,
-                          backgroundColor: `${C.primary}18`,
-                        }}
-                      >
-                        <DynamicIcon name="sparkles" size={9} color={C.primary} />
-                        <Text style={{ fontSize: 9, fontWeight: "800", color: C.primary, letterSpacing: 0.4, textTransform: "uppercase" }}>
-                          Predicted
-                        </Text>
-                        <TouchableOpacity
-                          onPress={(e) => {
-                            e.stopPropagation();
-                            dismissPrediction();
+                    <Text
+                      style={{
+                        fontSize: 14,
+                        fontWeight: "600",
+                        color: C.onSurface,
+                      }}
+                    >
+                      {values.category.name}
+                    </Text>
+                    {predictedCategory &&
+                      values.category.id === predictedCategory.id && (
+                        <View
+                          style={{
+                            flexDirection: "row",
+                            alignItems: "center",
+                            gap: 3,
+                            paddingLeft: 6,
+                            paddingRight: 2,
+                            paddingVertical: 2,
+                            borderRadius: 999,
+                            backgroundColor: `${C.primary}18`,
                           }}
-                          hitSlop={6}
-                          style={{ paddingHorizontal: 3, paddingVertical: 1 }}
-                          accessibilityLabel="Dismiss prediction"
                         >
-                          <DynamicIcon name="x" size={10} color={C.primary} />
-                        </TouchableOpacity>
-                      </View>
-                    )}
+                          <DynamicIcon
+                            name="sparkles"
+                            size={9}
+                            color={C.primary}
+                          />
+                          <Text
+                            style={{
+                              fontSize: 9,
+                              fontWeight: "800",
+                              color: C.primary,
+                              letterSpacing: 0.4,
+                              textTransform: "uppercase",
+                            }}
+                          >
+                            Predicted
+                          </Text>
+                          <TouchableOpacity
+                            onPress={(e) => {
+                              e.stopPropagation();
+                              dismissPrediction();
+                            }}
+                            hitSlop={6}
+                            style={{ paddingHorizontal: 3, paddingVertical: 1 }}
+                            accessibilityLabel="Dismiss prediction"
+                          >
+                            <DynamicIcon name="x" size={10} color={C.primary} />
+                          </TouchableOpacity>
+                        </View>
+                      )}
                   </View>
                 ) : (
-                  <Text style={{ fontSize: 14, color: C.outlineVariant }}>Select category…</Text>
+                  <Text style={{ fontSize: 14, color: C.outlineVariant }}>
+                    Select category…
+                  </Text>
                 )}
               </PickerRow>
             </View>
@@ -659,24 +934,49 @@ export function TransactionForm({ initialValues, onSubmit, onCancel, submitLabel
                     width: 26,
                     height: 26,
                     borderRadius: 7,
-                    backgroundColor: suggestedCategory.bgColor ?? `${suggestedCategory.color ?? "#f59e0b"}22`,
+                    backgroundColor:
+                      suggestedCategory.bgColor ??
+                      `${suggestedCategory.color ?? "#f59e0b"}22`,
                     alignItems: "center",
                     justifyContent: "center",
                   }}
                 >
-                  <DynamicIcon name={suggestedCategory.icon ?? "folder"} size={12} color={suggestedCategory.color ?? "#f59e0b"} />
+                  <DynamicIcon
+                    name={suggestedCategory.icon ?? "folder"}
+                    size={12}
+                    color={suggestedCategory.color ?? "#f59e0b"}
+                  />
                 </View>
-                <Text style={{ flex: 1, fontSize: 13, fontWeight: "600", color: C.onSurface }} numberOfLines={1}>
+                <Text
+                  style={{
+                    flex: 1,
+                    fontSize: 13,
+                    fontWeight: "600",
+                    color: C.onSurface,
+                  }}
+                  numberOfLines={1}
+                >
                   {suggestedCategory.name}
                 </Text>
-                <TouchableOpacity onPress={applySuggestedCategory} activeOpacity={0.8}>
+                <TouchableOpacity
+                  onPress={applySuggestedCategory}
+                  activeOpacity={0.8}
+                >
                   <LinearGradient
                     colors={["#7c3aed", "#db2777"]}
                     start={{ x: 0, y: 0 }}
                     end={{ x: 1, y: 0 }}
-                    style={{ paddingHorizontal: 12, paddingVertical: 6, borderRadius: 999 }}
+                    style={{
+                      paddingHorizontal: 12,
+                      paddingVertical: 6,
+                      borderRadius: 999,
+                    }}
                   >
-                    <Text style={{ fontSize: 12, fontWeight: "700", color: "#fff" }}>Apply</Text>
+                    <Text
+                      style={{ fontSize: 12, fontWeight: "700", color: "#fff" }}
+                    >
+                      Apply
+                    </Text>
                   </LinearGradient>
                 </TouchableOpacity>
                 <TouchableOpacity
@@ -692,29 +992,89 @@ export function TransactionForm({ initialValues, onSubmit, onCancel, submitLabel
         </View>
 
         {/* ── Account(s) ── */}
-        <View style={{ borderRadius: 16, backgroundColor: C.surfaceMid, overflow: "hidden" }}>
-          <PickerRow label={isTransfer ? "From Account *" : "Account *"} onPress={() => setShowAccount(true)}>
+        <View
+          style={{
+            borderRadius: 16,
+            backgroundColor: C.surfaceMid,
+            overflow: "hidden",
+          }}
+        >
+          <PickerRow
+            label={isTransfer ? "From Account *" : "Account *"}
+            onPress={() => setShowAccount(true)}
+          >
             {values.account ? (
-              <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
-                <AccountAvatar avatarUrl={values.account.avatar?.url} icon={values.account.icon} bgColor={values.account.bgColor} iconColor={values.account.color} name={values.account.name} size={28} />
-                <Text style={{ fontSize: 14, fontWeight: "600", color: C.onSurface }}>{values.account.name}</Text>
+              <View
+                style={{ flexDirection: "row", alignItems: "center", gap: 8 }}
+              >
+                <AccountAvatar
+                  avatarUrl={values.account.avatar?.url}
+                  icon={values.account.icon}
+                  bgColor={values.account.bgColor}
+                  iconColor={values.account.color}
+                  name={values.account.name}
+                  size={28}
+                />
+                <Text
+                  style={{
+                    fontSize: 14,
+                    fontWeight: "600",
+                    color: C.onSurface,
+                  }}
+                >
+                  {values.account.name}
+                </Text>
               </View>
             ) : (
-              <Text style={{ fontSize: 14, color: C.outlineVariant }}>Select account…</Text>
+              <Text style={{ fontSize: 14, color: C.outlineVariant }}>
+                Select account…
+              </Text>
             )}
           </PickerRow>
 
           {isTransfer && (
             <>
-              <View style={{ height: 1, backgroundColor: `${C.outlineVariant}40`, marginHorizontal: 14 }} />
-              <PickerRow label="To Account *" onPress={() => setShowToAccount(true)}>
+              <View
+                style={{
+                  height: 1,
+                  backgroundColor: `${C.outlineVariant}40`,
+                  marginHorizontal: 14,
+                }}
+              />
+              <PickerRow
+                label="To Account *"
+                onPress={() => setShowToAccount(true)}
+              >
                 {values.toAccount ? (
-                  <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
-                    <AccountAvatar avatarUrl={values.toAccount.avatar?.url} icon={values.toAccount.icon} bgColor={values.toAccount.bgColor} iconColor={values.toAccount.color} name={values.toAccount.name} size={28} />
-                    <Text style={{ fontSize: 14, fontWeight: "600", color: C.onSurface }}>{values.toAccount.name}</Text>
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      alignItems: "center",
+                      gap: 8,
+                    }}
+                  >
+                    <AccountAvatar
+                      avatarUrl={values.toAccount.avatar?.url}
+                      icon={values.toAccount.icon}
+                      bgColor={values.toAccount.bgColor}
+                      iconColor={values.toAccount.color}
+                      name={values.toAccount.name}
+                      size={28}
+                    />
+                    <Text
+                      style={{
+                        fontSize: 14,
+                        fontWeight: "600",
+                        color: C.onSurface,
+                      }}
+                    >
+                      {values.toAccount.name}
+                    </Text>
                   </View>
                 ) : (
-                  <Text style={{ fontSize: 14, color: C.outlineVariant }}>Select destination…</Text>
+                  <Text style={{ fontSize: 14, color: C.outlineVariant }}>
+                    Select destination…
+                  </Text>
                 )}
               </PickerRow>
             </>
@@ -723,49 +1083,136 @@ export function TransactionForm({ initialValues, onSubmit, onCancel, submitLabel
 
         {/* ── Person (hidden for transfer) ── */}
         {!isTransfer && (
-          <View style={{ borderRadius: 16, backgroundColor: C.surfaceMid, overflow: "hidden" }}>
+          <View
+            style={{
+              borderRadius: 16,
+              backgroundColor: C.surfaceMid,
+              overflow: "hidden",
+            }}
+          >
             <PickerRow label="Person" onPress={() => setShowPerson(true)}>
               {values.person ? (
-                <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
-                  <UserAvatar id={values.person.id} name={values.person.name} avatarUrl={values.person.avatar?.url} size={28} radius={14} />
-                  <Text style={{ fontSize: 14, fontWeight: "600", color: C.onSurface }}>{values.person.name}</Text>
+                <View
+                  style={{ flexDirection: "row", alignItems: "center", gap: 8 }}
+                >
+                  <UserAvatar
+                    id={values.person.id}
+                    name={values.person.name}
+                    avatarUrl={values.person.avatar?.url}
+                    size={28}
+                    radius={14}
+                  />
+                  <Text
+                    style={{
+                      fontSize: 14,
+                      fontWeight: "600",
+                      color: C.onSurface,
+                    }}
+                  >
+                    {values.person.name}
+                  </Text>
                 </View>
               ) : (
-                <Text style={{ fontSize: 14, color: C.outlineVariant }}>Optional person…</Text>
+                <Text style={{ fontSize: 14, color: C.outlineVariant }}>
+                  Optional person…
+                </Text>
               )}
             </PickerRow>
           </View>
         )}
 
         {/* ── Tags ── */}
-        <View style={{ borderRadius: 16, backgroundColor: C.surfaceMid, overflow: "hidden" }}>
+        <View
+          style={{
+            borderRadius: 16,
+            backgroundColor: C.surfaceMid,
+            overflow: "hidden",
+          }}
+        >
           <PickerRow label="Tags" onPress={() => setShowTags(true)}>
             {values.tags.length > 0 ? (
-              <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 6, marginTop: 2 }}>
+              <View
+                style={{
+                  flexDirection: "row",
+                  flexWrap: "wrap",
+                  gap: 6,
+                  marginTop: 2,
+                }}
+              >
                 {values.tags.map((tag, i) => (
-                  <View key={tag.id ?? tag.name ?? i} style={{ flexDirection: "row", alignItems: "center", gap: 4, paddingHorizontal: 8, paddingVertical: 4, borderRadius: 20, backgroundColor: tag.bgColor ?? `${tag.color ?? C.primary}22` }}>
-                    {tag.icon ? <DynamicIcon name={tag.icon} size={11} color={tag.color ?? C.primary} /> : null}
-                    <Text style={{ fontSize: 12, fontWeight: "600", color: tag.color ?? C.primary }}>{tag.name}</Text>
+                  <View
+                    key={tag.id ?? tag.name ?? i}
+                    style={{
+                      flexDirection: "row",
+                      alignItems: "center",
+                      gap: 4,
+                      paddingHorizontal: 8,
+                      paddingVertical: 4,
+                      borderRadius: 20,
+                      backgroundColor:
+                        tag.bgColor ?? `${tag.color ?? C.primary}22`,
+                    }}
+                  >
+                    {tag.icon ? (
+                      <DynamicIcon
+                        name={tag.icon}
+                        size={11}
+                        color={tag.color ?? C.primary}
+                      />
+                    ) : null}
+                    <Text
+                      style={{
+                        fontSize: 12,
+                        fontWeight: "600",
+                        color: tag.color ?? C.primary,
+                      }}
+                    >
+                      {tag.name}
+                    </Text>
                   </View>
                 ))}
               </View>
             ) : (
-              <Text style={{ fontSize: 14, color: C.outlineVariant }}>Add tags…</Text>
+              <Text style={{ fontSize: 14, color: C.outlineVariant }}>
+                Add tags…
+              </Text>
             )}
           </PickerRow>
         </View>
 
         {/* ── Note ── */}
-        <View style={{ borderRadius: 16, backgroundColor: C.surfaceMid, overflow: "hidden" }}>
-          <View style={{ paddingHorizontal: 16, paddingTop: 12, paddingBottom: 4 }}>
-            <Text style={{ fontSize: 11, fontWeight: "700", textTransform: "uppercase", letterSpacing: 0.5, color: C.onSurfaceVariant }}>
+        <View
+          style={{
+            borderRadius: 16,
+            backgroundColor: C.surfaceMid,
+            overflow: "hidden",
+          }}
+        >
+          <View
+            style={{ paddingHorizontal: 16, paddingTop: 12, paddingBottom: 4 }}
+          >
+            <Text
+              style={{
+                fontSize: 11,
+                fontWeight: "700",
+                textTransform: "uppercase",
+                letterSpacing: 0.5,
+                color: C.onSurfaceVariant,
+              }}
+            >
               Note
             </Text>
           </View>
           <TextInput
             value={values.note}
             onChangeText={(v) => set("note", v)}
-            style={{ fontSize: 14, color: C.onSurface, paddingHorizontal: 16, paddingBottom: 14, minHeight: 60 }}
+            style={{
+              fontSize: 14,
+              color: C.onSurface,
+              paddingHorizontal: 16,
+              paddingBottom: 14,
+              minHeight: 60,
+            }}
             placeholderTextColor={C.outlineVariant}
             placeholder="Add a note…"
             multiline
@@ -775,8 +1222,24 @@ export function TransactionForm({ initialValues, onSubmit, onCancel, submitLabel
         </View>
 
         {/* ── Attachments ── */}
-        <View style={{ borderRadius: 16, backgroundColor: C.surfaceMid, overflow: "hidden", padding: 14 }}>
-          <Text style={{ fontSize: 11, fontWeight: "700", textTransform: "uppercase", letterSpacing: 0.5, color: C.onSurfaceVariant, marginBottom: 10 }}>
+        <View
+          style={{
+            borderRadius: 16,
+            backgroundColor: C.surfaceMid,
+            overflow: "hidden",
+            padding: 14,
+          }}
+        >
+          <Text
+            style={{
+              fontSize: 11,
+              fontWeight: "700",
+              textTransform: "uppercase",
+              letterSpacing: 0.5,
+              color: C.onSurfaceVariant,
+              marginBottom: 10,
+            }}
+          >
             {`Attachments${attachments.length > 0 ? ` · ${attachments.length}` : ""}`}
           </Text>
           <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
@@ -793,31 +1256,57 @@ export function TransactionForm({ initialValues, onSubmit, onCancel, submitLabel
               onPress={() => setAttachSourceOpen(true)}
               activeOpacity={0.75}
               style={{
-                width: THUMB_SIZE, height: THUMB_SIZE, borderRadius: 14,
-                borderWidth: 1.5, borderStyle: "dashed",
+                width: THUMB_SIZE,
+                height: THUMB_SIZE,
+                borderRadius: 14,
+                borderWidth: 1.5,
+                borderStyle: "dashed",
                 borderColor: C.outlineVariant,
-                alignItems: "center", justifyContent: "center", gap: 4,
+                alignItems: "center",
+                justifyContent: "center",
+                gap: 4,
               }}
             >
               <DynamicIcon name="plus" size={22} color={C.outlineVariant} />
-              <Text style={{ fontSize: 10, color: C.outlineVariant, fontWeight: "600" }}>Add</Text>
+              <Text
+                style={{
+                  fontSize: 10,
+                  color: C.outlineVariant,
+                  fontWeight: "600",
+                }}
+              >
+                Add
+              </Text>
             </TouchableOpacity>
           </View>
           {anyUploading && (
-            <Text style={{ fontSize: 11, color: "#f59e0b", marginTop: 8 }}>Uploading…</Text>
+            <Text style={{ fontSize: 11, color: "#f59e0b", marginTop: 8 }}>
+              Uploading…
+            </Text>
           )}
         </View>
       </ScrollView>
 
       {/* Save button */}
-      <View style={{ paddingHorizontal: 16, paddingBottom: Math.max(insets.bottom, 16) + 4, paddingTop: 12, backgroundColor: C.surface }}>
+      <View
+        style={{
+          paddingHorizontal: 16,
+          paddingBottom: Math.max(insets.bottom, 16) + 4,
+          paddingTop: 12,
+          backgroundColor: C.surface,
+        }}
+      >
         <TouchableOpacity
           onPress={handleSubmit}
           activeOpacity={0.85}
           disabled={!canSave}
           style={{
-            flexDirection: "row", alignItems: "center", justifyContent: "center",
-            gap: 8, paddingVertical: 16, borderRadius: 16,
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 8,
+            paddingVertical: 16,
+            borderRadius: 16,
             backgroundColor: canSave ? typeColor : `${C.outlineVariant}55`,
           }}
         >
@@ -825,8 +1314,18 @@ export function TransactionForm({ initialValues, onSubmit, onCancel, submitLabel
             <ActivityIndicator size="small" color="#fff" />
           ) : (
             <>
-              <DynamicIcon name="check" size={18} color={canSave ? "#fff" : C.outlineVariant} />
-              <Text style={{ fontSize: 15, fontWeight: "700", color: canSave ? "#fff" : C.outlineVariant }}>
+              <DynamicIcon
+                name="check"
+                size={18}
+                color={canSave ? "#fff" : C.outlineVariant}
+              />
+              <Text
+                style={{
+                  fontSize: 15,
+                  fontWeight: "700",
+                  color: canSave ? "#fff" : C.outlineVariant,
+                }}
+              >
                 {submitLabel}
               </Text>
             </>
@@ -888,7 +1387,11 @@ export function TransactionForm({ initialValues, onSubmit, onCancel, submitLabel
  * - On update we send null to explicitly clear a previously-set value —
  *   undefined would be treated as "no change" and the old value would persist.
  */
-function baseFields(v: TxFormValues, attachmentIds: string[], mode: "create" | "update") {
+function baseFields(
+  v: TxFormValues,
+  attachmentIds: string[],
+  mode: "create" | "update",
+) {
   const clearable = <T,>(val: T | null | undefined): T | null | undefined =>
     val ?? (mode === "update" ? null : undefined);
 
@@ -903,18 +1406,32 @@ function baseFields(v: TxFormValues, attachmentIds: string[], mode: "create" | "
     tags: v.tags.map((t) => t.id),
     note: clearable(v.note.trim() || undefined),
     attachments:
-      attachmentIds.length > 0 ? attachmentIds : mode === "update" ? [] : undefined,
+      attachmentIds.length > 0
+        ? attachmentIds
+        : mode === "update"
+          ? []
+          : undefined,
   };
 }
 
 /** Use for createTransaction */
-export function formValuesToMutationInput(v: TxFormValues, attachmentIds: string[] = []) {
-  return { ...baseFields(v, attachmentIds, "create"), type: TX_MUTATION_TYPE[v.type] };
+export function formValuesToMutationInput(
+  v: TxFormValues,
+  attachmentIds: string[] = [],
+) {
+  return {
+    ...baseFields(v, attachmentIds, "create"),
+    type: TX_MUTATION_TYPE[v.type],
+  };
 }
 
 /** Use for updateTransaction (different type enum) */
-export function formValuesToUpdateInput(v: TxFormValues, attachmentIds: string[] = []) {
-  type UpdateType = import("../../services/gql/types/graphql").TransactionUpdate_type_MutationInput;
+export function formValuesToUpdateInput(
+  v: TxFormValues,
+  attachmentIds: string[] = [],
+) {
+  type UpdateType =
+    import("../../services/gql/types/graphql").TransactionUpdate_type_MutationInput;
   const t = v.type as unknown as UpdateType;
   return { ...baseFields(v, attachmentIds, "update"), type: t };
 }
