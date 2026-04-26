@@ -12,7 +12,7 @@ import { useColors } from "../../theme/colors";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
-type TagActivity = {
+export type TagActivity = {
   id: string;
   name: string;
   icon?: string | null;
@@ -56,7 +56,7 @@ function TypePill({
 
 // ── Tag row ───────────────────────────────────────────────────────────────────
 
-function TagRow({
+export function TagRow({
   tag,
   fmt,
   onPress,
@@ -180,7 +180,7 @@ function TxSheetRow({
 
 // ── Tag detail sheet ──────────────────────────────────────────────────────────
 
-function TagDetailContent({
+export function TagDetailContent({
   tag,
   month,
   year,
@@ -345,7 +345,7 @@ function TagDetailContent({
 
 // ── Skeleton row ──────────────────────────────────────────────────────────────
 
-function TagRowSkeleton() {
+export function TagRowSkeleton() {
   return (
     <View className="flex-row items-center gap-3">
       <Skeleton width={36} height={36} radius={12} />
@@ -375,7 +375,7 @@ export function SpendingTagsCard() {
   const { data, loading } = useGetMonthlyTags({ month, year });
 
   const tags: TagActivity[] = (data?.data ?? [])
-    .filter((t): t is TagActivity => t != null && t.totalAmount > 0)
+    .filter((t): t is TagActivity => t != null && t.totalTransactionCount > 0)
     .sort((a, b) => b.totalAmount - a.totalAmount);
 
   const meta = data?.meta;
@@ -461,14 +461,32 @@ export function SpendingTagsCard() {
           {showSkeleton ? (
             [1, 2, 3].map((i) => <TagRowSkeleton key={i} />)
           ) : tags.length > 0 ? (
-            tags.map((tag) => (
-              <TagRow
-                key={tag.id}
-                tag={tag}
-                fmt={fmt}
-                onPress={() => setSelected(tag)}
-              />
-            ))
+            <>
+              {tags.slice(0, 5).map((tag) => (
+                <TagRow
+                  key={tag.id}
+                  tag={tag}
+                  fmt={fmt}
+                  onPress={() => setSelected(tag)}
+                />
+              ))}
+              {tags.length > 5 && (
+                <TouchableOpacity
+                  onPress={() =>
+                    router.push({
+                      pathname: "/analytics/tags",
+                      params: { month, year },
+                    })
+                  }
+                  activeOpacity={0.7}
+                  className="py-3 rounded-2xl items-center bg-surface-highest"
+                >
+                  <Text className="text-[13px] font-bold text-primary-bright">
+                    View all {tags.length} tags
+                  </Text>
+                </TouchableOpacity>
+              )}
+            </>
           ) : (
             <View className="py-6 items-center gap-1.5">
               <DynamicIcon name="tag" size={28} color={C.outlineVariant} />

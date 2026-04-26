@@ -12,7 +12,7 @@ import { useColors } from "../../theme/colors";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
-type CategoryItem = {
+export type CategoryItem = {
   id: string;
   name: string;
   amount: number;
@@ -42,7 +42,7 @@ function SkeletonChildRow() {
   );
 }
 
-function CategoryCardSkeleton() {
+export function CategoryCardSkeleton() {
   const C = useColors();
   return (
     <View className="rounded-2xl overflow-hidden bg-surface-mid">
@@ -174,7 +174,7 @@ function TxSheetRow({
 
 // ── Category detail sheet ─────────────────────────────────────────────────────
 
-function CategoryDetailContent({
+export function CategoryDetailContent({
   category,
   categoryIds,
   month,
@@ -326,7 +326,7 @@ function CategoryDetailContent({
 
 // ── Parent card ───────────────────────────────────────────────────────────────
 
-function ParentCard({
+export function ParentCard({
   parent,
   children,
   totalExpenses,
@@ -563,21 +563,39 @@ export function TopCategoriesCard() {
         {showSkeleton ? (
           [0, 1, 2].map((i) => <CategoryCardSkeleton key={i} />)
         ) : parents.length > 0 ? (
-          parents.map((parent) => (
-            <ParentCard
-              key={parent.id}
-              parent={parent}
-              children={(childrenMap[parent.id] ?? []).sort(
-                (a, b) => b.amount - a.amount,
-              )}
-              totalExpenses={totalExpenses}
-              allExpanded={allExpanded}
-              fmt={fmt}
-              onSelect={(cat, ids) =>
-                setSelected({ category: cat, categoryIds: ids })
-              }
-            />
-          ))
+          <>
+            {parents.slice(0, 5).map((parent) => (
+              <ParentCard
+                key={parent.id}
+                parent={parent}
+                children={(childrenMap[parent.id] ?? []).sort(
+                  (a, b) => b.amount - a.amount,
+                )}
+                totalExpenses={totalExpenses}
+                allExpanded={allExpanded}
+                fmt={fmt}
+                onSelect={(cat, ids) =>
+                  setSelected({ category: cat, categoryIds: ids })
+                }
+              />
+            ))}
+            {parents.length > 5 && (
+              <TouchableOpacity
+                onPress={() =>
+                  router.push({
+                    pathname: "/analytics/categories",
+                    params: { month, year },
+                  })
+                }
+                activeOpacity={0.7}
+                className="py-3 rounded-2xl items-center bg-surface-mid"
+              >
+                <Text className="text-[13px] font-bold text-primary-bright">
+                  View all {parents.length} categories
+                </Text>
+              </TouchableOpacity>
+            )}
+          </>
         ) : (
           <View className="py-6 items-center gap-1.5">
             <DynamicIcon name="folder-open" size={28} color={C.outlineVariant} />

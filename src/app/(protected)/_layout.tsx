@@ -12,6 +12,7 @@ export default function ProtectedLayout() {
       }}
     >
       <Stack.Screen name="(tabs)" />
+      <Stack.Screen name="analytics" />
       <Stack.Screen name="people" />
       <Stack.Screen name="settings" />
       <Stack.Screen name="transactions" />

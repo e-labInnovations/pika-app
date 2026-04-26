@@ -12,7 +12,7 @@ import { useColors } from "../../theme/colors";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
-type PersonActivity = {
+export type PersonActivity = {
   id: string;
   name: string;
   balance: number;
@@ -55,7 +55,7 @@ function PersonAvatar({ name, size = 40 }: { name: string; size?: number }) {
 
 // ── Person row ────────────────────────────────────────────────────────────────
 
-function PersonRow({
+export function PersonRow({
   person,
   fmt,
   onPress,
@@ -124,7 +124,7 @@ function PersonRow({
 
 // ── Skeleton row ──────────────────────────────────────────────────────────────
 
-function PersonRowSkeleton() {
+export function PersonRowSkeleton() {
   return (
     <View className="flex-row items-center gap-3 rounded-2xl p-3 bg-surface-mid">
       <Skeleton width={40} height={40} radius={20} />
@@ -200,7 +200,7 @@ function TxSheetRow({
 
 // ── Person detail sheet ───────────────────────────────────────────────────────
 
-function PersonDetailContent({
+export function PersonDetailContent({
   person,
   month,
   year,
@@ -513,14 +513,32 @@ export function SplitsDebtsCard() {
           {showSkeleton ? (
             [1, 2, 3].map((i) => <PersonRowSkeleton key={i} />)
           ) : people.length > 0 ? (
-            people.map((person) => (
-              <PersonRow
-                key={person.id}
-                person={person}
-                fmt={fmt}
-                onPress={() => setSelected(person)}
-              />
-            ))
+            <>
+              {people.slice(0, 5).map((person) => (
+                <PersonRow
+                  key={person.id}
+                  person={person}
+                  fmt={fmt}
+                  onPress={() => setSelected(person)}
+                />
+              ))}
+              {people.length > 5 && (
+                <TouchableOpacity
+                  onPress={() =>
+                    router.push({
+                      pathname: "/analytics/people",
+                      params: { month, year },
+                    })
+                  }
+                  activeOpacity={0.7}
+                  className="py-3 rounded-2xl items-center bg-surface-mid"
+                >
+                  <Text className="text-[13px] font-bold text-primary-bright">
+                    View all {people.length} people
+                  </Text>
+                </TouchableOpacity>
+              )}
+            </>
           ) : (
             <View className="py-6 items-center gap-1.5">
               <DynamicIcon name="users" size={28} color={C.outlineVariant} />
