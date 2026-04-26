@@ -112,9 +112,11 @@ interface Props {
 function AnalysisPreview({
   data,
   onRetry,
+  analyzing,
 }: {
   data: AITransactionData;
   onRetry: () => void;
+  analyzing: boolean;
 }) {
   const C = useColors();
   const fmt = useFormatMoney();
@@ -400,6 +402,7 @@ function AnalysisPreview({
         <TouchableOpacity
           onPress={onRetry}
           activeOpacity={0.75}
+          disabled={analyzing}
           style={{
             flexDirection: "row",
             alignItems: "center",
@@ -409,11 +412,16 @@ function AnalysisPreview({
             borderRadius: 10,
             borderWidth: 1,
             borderColor: C.outlineVariant,
+            opacity: analyzing ? 0.5 : 1,
           }}
         >
-          <DynamicIcon name="rotate-ccw" size={13} color={C.onSurfaceVariant} />
+          {analyzing ? (
+            <ActivityIndicator size="small" color={C.onSurfaceVariant} style={{ width: 13, height: 13 }} />
+          ) : (
+            <DynamicIcon name="rotate-ccw" size={13} color={C.onSurfaceVariant} />
+          )}
           <Text style={{ fontSize: 12, color: C.onSurfaceVariant }}>
-            Re-analyze
+            {analyzing ? "Analyzing…" : "Re-analyze"}
           </Text>
         </TouchableOpacity>
       </View>
@@ -869,7 +877,10 @@ export function AIAssistantSheet({ visible, onClose, onUseDetails, onCreated, in
               </View>
             )}
 
-            {/* Attach image checkbox — receipt tab only */}
+            {/* Analysis result */}
+            {result && <AnalysisPreview data={result} onRetry={handleAnalyze} analyzing={analyzing} />}
+
+            {/* Attach image card — shown below AI result for receipt tab */}
             {result && tab === "receipt" && image && (
               <TouchableOpacity
                 onPress={() => setAttachImage((v) => !v)}
@@ -877,14 +888,76 @@ export function AIAssistantSheet({ visible, onClose, onUseDetails, onCreated, in
                 style={{
                   flexDirection: "row",
                   alignItems: "center",
-                  gap: 10,
-                  paddingVertical: 10,
+                  gap: 12,
+                  padding: 10,
+                  borderRadius: 14,
+                  backgroundColor: C.surfaceMid,
+                  marginTop: 4,
+                  marginBottom: 4,
                 }}
               >
+                {/* Thumbnail with check badge */}
+                <View style={{ position: "relative" }}>
+                  <Image
+                    source={{ uri: image.uri }}
+                    style={{
+                      width: 56,
+                      height: 56,
+                      borderRadius: 10,
+                      opacity: attachImage ? 1 : 0.35,
+                    }}
+                    resizeMode="cover"
+                  />
+                  {attachImage && (
+                    <View
+                      style={{
+                        position: "absolute",
+                        bottom: -5,
+                        right: -5,
+                        width: 20,
+                        height: 20,
+                        borderRadius: 10,
+                        backgroundColor: "#7c3aed",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        borderWidth: 2,
+                        borderColor: C.surfaceMid,
+                      }}
+                    >
+                      <DynamicIcon name="check" size={10} color="#fff" />
+                    </View>
+                  )}
+                </View>
+
+                {/* Labels */}
+                <View style={{ flex: 1 }}>
+                  <Text
+                    style={{
+                      fontSize: 13,
+                      fontWeight: "600",
+                      color: C.onSurface,
+                    }}
+                  >
+                    Attach receipt image
+                  </Text>
+                  <Text
+                    style={{
+                      fontSize: 11,
+                      color: C.onSurfaceVariant,
+                      marginTop: 2,
+                    }}
+                  >
+                    {attachImage
+                      ? "Image will be saved with transaction"
+                      : "Tap to attach image"}
+                  </Text>
+                </View>
+
+                {/* Checkbox */}
                 <View
                   style={{
-                    width: 20,
-                    height: 20,
+                    width: 22,
+                    height: 22,
                     borderRadius: 6,
                     borderWidth: 1.5,
                     borderColor: attachImage ? "#7c3aed" : C.outlineVariant,
@@ -894,23 +967,11 @@ export function AIAssistantSheet({ visible, onClose, onUseDetails, onCreated, in
                   }}
                 >
                   {attachImage && (
-                    <DynamicIcon name="check" size={12} color="#fff" />
+                    <DynamicIcon name="check" size={13} color="#fff" />
                   )}
                 </View>
-                <Text
-                  style={{
-                    fontSize: 13,
-                    color: C.onSurface,
-                    fontWeight: "500",
-                  }}
-                >
-                  Attach receipt image to transaction
-                </Text>
               </TouchableOpacity>
             )}
-
-            {/* Analysis result */}
-            {result && <AnalysisPreview data={result} onRetry={handleReject} />}
           </ScrollView>
 
           {/* Footer buttons */}
