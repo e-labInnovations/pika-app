@@ -64,8 +64,9 @@ export function PersonRow({
   fmt: (n: number) => string;
   onPress: () => void;
 }) {
-  const owesYou = person.balance > 0;
-  const youOwe = person.balance < 0;
+  // Backend rule: balance > 0 → you owe them, balance < 0 → they owe you
+  const owesYou = person.balance < 0;
+  const youOwe = person.balance > 0;
   const settled = person.balance === 0;
   const balanceColor = owesYou
     ? INCOME_COLOR
@@ -230,8 +231,9 @@ export function PersonDetailContent({
     },
   });
 
-  const owesYou = person.balance > 0;
-  const youOwe = person.balance < 0;
+  // Backend rule: balance > 0 → you owe them, balance < 0 → they owe you
+  const owesYou = person.balance < 0;
+  const youOwe = person.balance > 0;
   const settled = person.balance === 0;
   const balanceColor = owesYou
     ? INCOME_COLOR
@@ -432,11 +434,11 @@ export function SplitsDebtsCard() {
 
   // Summary: total owed to you vs you owe
   const totalOwedToYou = people
-    .filter((p) => p.balance > 0)
-    .reduce((s, p) => s + p.balance, 0);
-  const totalYouOwe = people
     .filter((p) => p.balance < 0)
     .reduce((s, p) => s + Math.abs(p.balance), 0);
+  const totalYouOwe = people
+    .filter((p) => p.balance > 0)
+    .reduce((s, p) => s + p.balance, 0);
 
   return (
     <>

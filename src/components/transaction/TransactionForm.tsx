@@ -26,6 +26,7 @@ import { AttachSourceSheet } from "./AttachSourceSheet";
 import { CategoryPickerSheet, type TxType } from "./CategoryPickerSheet";
 import { AccountPickerSheet } from "./AccountPickerSheet";
 import { PersonPickerSheet } from "./PersonPickerSheet";
+import { SplitSheet, type SplitShare } from "./SplitSheet";
 import { TagPickerSheet } from "./TagPickerSheet";
 import { TxTypeSelector, TX_TYPE_COLORS } from "./TxTypeSelector";
 import {
@@ -79,6 +80,8 @@ export type TxFormValues = {
   account: AccountFieldsFragment | null;
   toAccount: AccountFieldsFragment | null;
   person: PersonFieldsFragment | null;
+  /** Friends' shares of an expense; each is money that person owes you */
+  shares: SplitShare[];
   tags: TagFieldsFragment[];
   note: string;
   /** Full attachment data for items already on the server (edit mode) */
@@ -335,6 +338,7 @@ export function TransactionForm({
   const [showAccount, setShowAccount] = useState(false);
   const [showToAccount, setShowToAccount] = useState(false);
   const [showPerson, setShowPerson] = useState(false);
+  const [showSplit, setShowSplit] = useState(false);
   const [showTags, setShowTags] = useState(false);
 
   // AI category suggestion state — the explicit Suggest button routes through
@@ -471,6 +475,10 @@ export function TransactionForm({
   // Block save while any attachment is still uploading (mediaId === undefined)
   const anyUploading = attachments.some((a) => a.mediaId === undefined);
 
+  // Shares must still fit if the amount was lowered after splitting
+  const sharesPaisa = values.shares.reduce((s, x) => s + Math.round((parseFloat(x.amount) || 0) * 100), 0);
+  const sharesTooBig = sharesPaisa > Math.round((parseFloat(values.amount) || 0) * 100);
+
   const canSave =
     values.title.trim().length > 0 &&
     values.amount.trim().length > 0 &&
@@ -478,6 +486,7 @@ export function TransactionForm({
     values.account !== null &&
     (!isTransfer || values.toAccount !== null) &&
     values.category !== null &&
+    !sharesTooBig &&
     !anyUploading &&
     !saving;
 
@@ -487,6 +496,7 @@ export function TransactionForm({
       type: t,
       category: null, // each type has its own categories
       person: t === "transfer" ? null : v.person, // transfers don't have a person
+      shares: t === "expense" ? v.shares : [], // only expenses can be split
       toAccount: t !== "transfer" ? null : v.toAccount,
     }));
   };
@@ -1121,6 +1131,44 @@ export function TransactionForm({
           </View>
         )}
 
+        {/* ── Split with (expenses only) ── */}
+        {values.type === "expense" && (
+          <View
+            style={{
+              borderRadius: 16,
+              backgroundColor: C.surfaceMid,
+              overflow: "hidden",
+            }}
+          >
+            <PickerRow label="Split with" onPress={() => setShowSplit(true)}>
+              {values.shares.length > 0 ? (
+                <View style={{ gap: 2 }}>
+                  <Text
+                    style={{ fontSize: 14, fontWeight: "600", color: C.onSurface }}
+                    numberOfLines={1}
+                  >
+                    {values.shares.map((s) => s.person.name).join(", ")}
+                  </Text>
+                  <Text
+                    style={{
+                      fontSize: 12,
+                      color: sharesTooBig ? TX_TYPE_COLORS.expense : C.onSurfaceVariant,
+                    }}
+                  >
+                    {sharesTooBig
+                      ? "Shares add up to more than the amount"
+                      : `Your share ${((Math.round((parseFloat(values.amount) || 0) * 100) - sharesPaisa) / 100).toFixed(2)}`}
+                  </Text>
+                </View>
+              ) : (
+                <Text style={{ fontSize: 14, color: C.outlineVariant }}>
+                  Paid for friends too? Split it…
+                </Text>
+              )}
+            </PickerRow>
+          </View>
+        )}
+
         {/* ── Tags ── */}
         <View
           style={{
@@ -1363,6 +1411,13 @@ export function TransactionForm({
         selectedId={values.person?.id ?? null}
         onSelect={(p) => set("person", p)}
       />
+      <SplitSheet
+        visible={showSplit}
+        onClose={() => setShowSplit(false)}
+        total={values.amount}
+        value={values.shares}
+        onApply={(shares) => set("shares", shares)}
+      />
       <TagPickerSheet
         visible={showTags}
         onClose={() => setShowTags(false)}
@@ -1403,6 +1458,13 @@ function baseFields(
     account: v.account?.id,
     toAccount: clearable(v.toAccount?.id),
     person: clearable(v.person?.id),
+    // Empty array on update clears a previous split
+    shares:
+      v.type === "expense" && v.shares.length > 0
+        ? v.shares.map((s) => ({ person: s.person.id, amount: s.amount }))
+        : mode === "update"
+          ? []
+          : undefined,
     tags: v.tags.map((t) => t.id),
     note: clearable(v.note.trim() || undefined),
     attachments:

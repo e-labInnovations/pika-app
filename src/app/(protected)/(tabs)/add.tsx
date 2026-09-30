@@ -9,6 +9,8 @@ import {
 import { AIAssistantSheet } from "@/components/transaction/AIAssistantSheet";
 import { useCreateTransaction } from "@/services/gql/transactions/transactions.service";
 import { useGetPerson } from "@/services/gql/people/people.service";
+import { useCreateTransactionLink } from "@/services/gql/transaction-links/transaction-links.service";
+import { TransactionLink_type_MutationInput } from "@/services/gql/types/graphql";
 import { usePendingShare } from "@/context/ShareIntentBridgeContext";
 import { usePendingAIPrefill } from "@/context/AIPrefillBridgeContext";
 import type { TxType } from "@/components/transaction/CategoryPickerSheet";
@@ -26,6 +28,7 @@ const DEFAULT_FORM_VALUES = (
   account: null,
   toAccount: null,
   person,
+  shares: [],
   tags: [],
   note: "",
   existingAttachments: [],
@@ -93,11 +96,14 @@ export default function AddTransactionScreen() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pendingAIPrefill]);
 
-  const { personId, type, amount } = useLocalSearchParams<{
+  const { personId, type, amount, linkTo } = useLocalSearchParams<{
     personId?: string;
     type?: string;
     amount?: string;
+    /** Comma-separated shared-expense ids this payback settles (from the person page) */
+    linkTo?: string;
   }>();
+  const { createLink } = useCreateTransactionLink();
 
   // Will use Apollo cache instantly if person page was visited — skip: !personId
   const { data: prefillPerson } = useGetPerson(personId ?? "");
@@ -117,10 +123,25 @@ export default function AddTransactionScreen() {
     attachmentIds: string[],
   ) => {
     try {
-      await createTransaction(
+      const res = await createTransaction(
         { data: formValuesToMutationInput(values, attachmentIds) },
         pendingPromptId,
       );
+      // A payback started from "Owes you for": link it to the shares it pays back
+      const newId = res.data?.createTransaction?.id;
+      const targets = (linkTo ?? "").split(",").filter(Boolean);
+      if (newId && values.type === "income" && targets.length) {
+        try {
+          for (const to of targets) {
+            await createLink({ from: newId, to, type: TransactionLink_type_MutationInput.repaid });
+          }
+        } catch (err: any) {
+          showAlert({
+            title: "Saved, but not linked",
+            message: `The payback was saved, but linking it to the shared payment failed: ${err?.message ?? "unknown error"}. Link it from the transaction screen.`,
+          });
+        }
+      }
       setFormKey((k) => k + 1);
       setAiPrefill(null);
       setAiSeedImage(null);

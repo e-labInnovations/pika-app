@@ -56,11 +56,11 @@ export default function PeopleAnalyticsScreen() {
   const showSkeleton = loading && !data;
 
   const totalOwedToYou = people
-    .filter((p) => p.balance > 0)
-    .reduce((s, p) => s + p.balance, 0);
-  const totalYouOwe = people
     .filter((p) => p.balance < 0)
     .reduce((s, p) => s + Math.abs(p.balance), 0);
+  const totalYouOwe = people
+    .filter((p) => p.balance > 0)
+    .reduce((s, p) => s + p.balance, 0);
 
   const prevMonth = () => {
     if (month === 1) {

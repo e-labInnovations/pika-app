@@ -254,6 +254,9 @@ export default function EditTransactionScreen() {
     account: tx.account as AccountFieldsFragment,
     toAccount: (tx.toAccount as AccountFieldsFragment | null) ?? null,
     person: (tx.person as PersonFieldsFragment | null) ?? null,
+    shares: (tx.shares ?? [])
+      .filter((s) => s.person)
+      .map((s) => ({ person: s.person as PersonFieldsFragment, amount: s.amount ?? "" })),
     tags: (tx.tags ?? []) as TagFieldsFragment[],
     note: tx.note ?? "",
     existingAttachments: (tx.attachments ?? []).map((a) => ({

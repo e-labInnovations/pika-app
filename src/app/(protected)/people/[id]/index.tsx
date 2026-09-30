@@ -201,6 +201,15 @@ function InfoRow({
   );
 }
 
+type OpenShare = {
+  transaction: string;
+  title: string;
+  date: string | null;
+  share: number;
+  paid: number;
+  remaining: number;
+};
+
 function Divider() {
   const C = useColors();
   return (
@@ -229,6 +238,13 @@ export default function PersonDetailScreen() {
 
   const balance = person?.balance ?? 0;
   const avatar = person?.avatar ?? null;
+  // Shared payments they have not fully paid back, oldest first (computed by the backend)
+  const openShares = (person?.openShares ?? []) as OpenShare[];
+  const recordPayback = (amount: number, linkTo: string[]) =>
+    router.push({
+      pathname: "/add",
+      params: { personId: id, type: "income", amount: String(amount), linkTo: linkTo.join(",") },
+    });
 
   const joinedDate = person?.createdAt
     ? new Date(person.createdAt).toLocaleDateString("en-US", {
@@ -391,6 +407,11 @@ export default function PersonDetailScreen() {
             <TouchableOpacity
               onPress={() => {
                 if (balance === 0) return;
+                // They owe you: link the payback to their open shares so those close too
+                if (balance < 0 && openShares.length) {
+                  recordPayback(Math.abs(balance), openShares.map((s) => s.transaction));
+                  return;
+                }
                 router.push({
                   pathname: "/add",
                   params: {
@@ -411,6 +432,45 @@ export default function PersonDetailScreen() {
               </Text>
             </TouchableOpacity>
           </View>
+
+          {/* Owes you for: open shares of shared payments */}
+          {openShares.length > 0 && (
+            <View className="rounded-2xl overflow-hidden" style={{ backgroundColor: C.surfaceMid }}>
+              <Text className="px-4 pt-3.5 pb-1 text-[11px] font-bold uppercase tracking-[0.8px] text-on-surface-variant">
+                Owes you for
+              </Text>
+              {openShares.map((s, i) => (
+                <View key={s.transaction}>
+                  {i > 0 && <Divider />}
+                  <View className="flex-row items-center gap-3 px-4 py-3">
+                    <TouchableOpacity
+                      className="flex-1 min-w-0"
+                      activeOpacity={0.7}
+                      onPress={() => router.push(`/transactions/${s.transaction}`)}
+                    >
+                      <Text className="text-[14px] font-semibold text-on-surface" numberOfLines={1}>
+                        {s.title}
+                      </Text>
+                      <Text className="text-[12px] text-on-surface-variant">
+                        {s.date ? new Date(s.date).toLocaleDateString("en-US", { month: "short", day: "numeric" }) : ""}
+                        {s.paid > 0 ? ` · ${fmt(s.paid)} of ${fmt(s.share)} paid` : ` · share ${fmt(s.share)}`}
+                      </Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      onPress={() => recordPayback(s.remaining, [s.transaction])}
+                      activeOpacity={0.75}
+                      className="px-3 py-2 rounded-xl"
+                      style={{ backgroundColor: "#10b98120" }}
+                    >
+                      <Text className="text-[13px] font-bold" style={{ color: "#10b981" }}>
+                        {fmt(s.remaining)} paid
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              ))}
+            </View>
+          )}
 
           {/* Contact info */}
           {(person.email || person.phone) && (

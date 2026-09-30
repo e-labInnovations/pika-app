@@ -60,6 +60,9 @@ const TRANSACTION_REFETCH_QUERIES = [
   'GetMonthlyTags',
   'GetWeeklyExpenses',
   'GetMonthlyCalendar',
+  // Person balances and open shares change with every transaction
+  'GetPeople',
+  'GetPerson',
 ];
 
 export const useCreateTransaction = () => {

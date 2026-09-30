@@ -73,6 +73,14 @@ fragment TransactionFields on Transaction {
   person {
     ...TransactionPersonFields
   }
+  shares {
+    id
+    amount
+    person {
+      ...TransactionPersonFields
+    }
+  }
+  myShare
   tags {
     ...TransactionTagFields
   }

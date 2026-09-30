@@ -8,7 +8,7 @@ import {
   type mutationTransactionLinkInput,
 } from '../types/graphql';
 
-const REFETCH_QUERIES = ['GetTransactionLinks'];
+const REFETCH_QUERIES = ['GetTransactionLinks', 'GetPeople', 'GetPerson', 'GetMonthlyPeople'];
 
 export const useGetTransactionLinks = (transactionId: string) => {
   const { data, loading, error, refetch } = useQuery(GetTransactionLinksDocument, {
