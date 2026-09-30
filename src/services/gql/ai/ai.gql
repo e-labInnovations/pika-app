@@ -12,8 +12,8 @@ mutation TextToTransaction($text: String!, $model: String) {
   }
 }
 
-mutation ImageToTransaction($image: String!, $mimeType: String, $model: String) {
-  imageToTransaction(image: $image, mimeType: $mimeType, model: $model) {
+mutation ImageToTransaction($image: String!, $mimeType: String, $model: String, $text: String) {
+  imageToTransaction(image: $image, mimeType: $mimeType, model: $model, text: $text) {
     data
     model
     latencyMs

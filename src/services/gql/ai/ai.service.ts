@@ -33,8 +33,8 @@ export const useImageToTransaction = () => {
   );
 
   return {
-    imageToTransaction: (image: string, mimeType?: string, model?: string) =>
-      imageToTransaction({ variables: { image, mimeType, model } }),
+    imageToTransaction: (image: string, mimeType?: string, model?: string, text?: string) =>
+      imageToTransaction({ variables: { image, mimeType, model, text } }),
     data: data?.imageToTransaction as ImageToTransactionMutation['imageToTransaction'],
     loading,
     error,

@@ -10,6 +10,13 @@
  */
 
 import * as ImagePicker from "expo-image-picker";
+import {
+  EntityComposer,
+  composerIsEmpty,
+  emptyComposer,
+  serializeComposer,
+  type ComposerValue,
+} from "./EntityComposer";
 import React, { useState } from "react";
 import {
   ActivityIndicator,
@@ -61,6 +68,8 @@ export interface AITransactionData {
   toAccount?: AccountFieldsFragment | null;
   person?: PersonFieldsFragment | null;
   tags?: TagFieldsFragment[];
+  /** Friends' shares when the AI detected a split (people already resolved) */
+  shares?: { person: PersonFieldsFragment | null; amount: string }[];
 }
 
 // ── Helper: map AI result → TxFormValues partial ──────────────────────────────
@@ -77,8 +86,10 @@ export function aiDataToFormValues(
     account: (data.account as AccountFieldsFragment) ?? null,
     toAccount: (data.toAccount as AccountFieldsFragment) ?? null,
     person: (data.person as PersonFieldsFragment) ?? null,
-    // Direct "Create" builds the payload from these values, which reads shares
-    shares: [],
+    // Always set: direct "Create" builds the payload from these values, which reads shares
+    shares: (data.shares ?? [])
+      .filter((s) => s.person)
+      .map((s) => ({ person: s.person as PersonFieldsFragment, amount: String(s.amount) })),
     tags: (data.tags as TagFieldsFragment[]) ?? [],
     note: data.note ?? "",
   };
@@ -337,6 +348,31 @@ function AnalysisPreview({
           </View>
         ) : null}
 
+        {/* Split with */}
+        {data.shares && data.shares.some((s) => s.person) ? (
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+            <View
+              style={{
+                width: 28,
+                height: 28,
+                borderRadius: 14,
+                backgroundColor: "#10b98122",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <DynamicIcon name="split" size={14} color="#10b981" />
+            </View>
+            <Text style={{ flex: 1, fontSize: 13, color: C.onSurface, fontWeight: "500" }}>
+              Split with{" "}
+              {data.shares
+                .filter((s) => s.person)
+                .map((s) => `${s.person!.name} ₹${parseFloat(s.amount).toFixed(2)}`)
+                .join(", ")}
+            </Text>
+          </View>
+        ) : null}
+
         {/* Tags */}
         {data.tags && data.tags.length > 0 ? (
           <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 6 }}>
@@ -439,7 +475,9 @@ export function AIAssistantSheet({ visible, onClose, onUseDetails, onCreated, in
   const insets = useSafeAreaInsets();
 
   const [tab, setTab] = useState<"text" | "receipt">("text");
-  const [textInput, setTextInput] = useState("");
+  const [composer, setComposer] = useState<ComposerValue>(emptyComposer());
+  // Optional note typed with a receipt (e.g. "split with @Rony")
+  const [receiptNote, setReceiptNote] = useState<ComposerValue>(emptyComposer());
   const [image, setImage] = useState<{
     uri: string;
     base64: string;
@@ -464,7 +502,7 @@ export function AIAssistantSheet({ visible, onClose, onUseDetails, onCreated, in
       setResult(null);
     } else if (initialText) {
       setTab("text");
-      setTextInput(initialText);
+      setComposer(emptyComposer(initialText));
       setResult(null);
     } else if (initialTab) {
       setTab(initialTab);
@@ -476,7 +514,8 @@ export function AIAssistantSheet({ visible, onClose, onUseDetails, onCreated, in
 
   const resetState = () => {
     setTab("text");
-    setTextInput("");
+    setComposer(emptyComposer());
+    setReceiptNote(emptyComposer());
     setImage(null);
     setResult(null);
     setPromptId(null);
@@ -517,15 +556,17 @@ export function AIAssistantSheet({ visible, onClose, onUseDetails, onCreated, in
   const handleAnalyze = async () => {
     try {
       if (tab === "text") {
-        if (!textInput.trim()) return;
-        const res = await textToTransaction(textInput.trim());
+        const text = serializeComposer(composer);
+        if (!text) return;
+        const res = await textToTransaction(text);
         const data = res.data?.textToTransaction?.data;
         if (!data) throw new Error("No result from AI.");
         setResult(data as AITransactionData);
         setPromptId(res.data?.textToTransaction?.promptId ?? null);
       } else {
         if (!image) return;
-        const res = await imageToTransaction(image.base64, image.mimeType);
+        const note = serializeComposer(receiptNote);
+        const res = await imageToTransaction(image.base64, image.mimeType, undefined, note || undefined);
         const data = res.data?.imageToTransaction?.data;
         if (!data) throw new Error("No result from AI.");
         setResult(data as AITransactionData);
@@ -588,7 +629,7 @@ export function AIAssistantSheet({ visible, onClose, onUseDetails, onCreated, in
   // ── Derived ─────────────────────────────────────────────────────────────────
 
   const canAnalyze =
-    tab === "text" ? textInput.trim().length > 0 : image !== null;
+    tab === "text" ? !composerIsEmpty(composer) : image !== null;
 
   const canCreateDirect = (() => {
     if (!result) return false;
@@ -773,26 +814,12 @@ export function AIAssistantSheet({ visible, onClose, onUseDetails, onCreated, in
           >
             {/* Text tab */}
             {tab === "text" && !result && (
-              <TextInput
-                value={textInput}
-                onChangeText={setTextInput}
-                multiline
-                numberOfLines={Platform.OS === "ios" ? undefined : 6}
-                style={{
-                  minHeight: 140,
-                  maxHeight: 220,
-                  backgroundColor: C.surfaceMid,
-                  borderRadius: 14,
-                  padding: 14,
-                  fontSize: 15,
-                  color: C.onSurface,
-                  textAlignVertical: "top",
-                }}
-                placeholderTextColor={C.outlineVariant}
-                placeholder={
-                  "Paste SMS, receipt text, or describe your transaction…\n\ne.g. Paid 450 for dinner at Zomato using HDFC card"
-                }
+              <EntityComposer
+                value={composer}
+                onChange={setComposer}
                 editable={!analyzing}
+                minHeight={140}
+                placeholder={"Paste SMS or describe the transaction…\ne.g. Paid 45 for coffee from @Federal, @Rony 25 split"}
               />
             )}
 
@@ -884,6 +911,19 @@ export function AIAssistantSheet({ visible, onClose, onUseDetails, onCreated, in
                     Change image
                   </Text>
                 </TouchableOpacity>
+              </View>
+            )}
+
+            {/* Receipt tab — optional note with tags, e.g. a split */}
+            {tab === "receipt" && image && !result && (
+              <View style={{ marginTop: 10 }}>
+                <EntityComposer
+                  value={receiptNote}
+                  onChange={setReceiptNote}
+                  editable={!analyzing}
+                  minHeight={56}
+                  placeholder="Optional note, e.g. split with @Rony"
+                />
               </View>
             )}
 
