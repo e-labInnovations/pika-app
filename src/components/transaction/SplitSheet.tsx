@@ -153,7 +153,7 @@ export function SplitSheet({ visible, onClose, total, value, onApply }: Props) {
                         className="flex-1 flex-row items-center gap-3"
                       >
                         <DynamicIcon
-                          name={share ? "check-square" : "square"}
+                          name={share ? "square-check" : "square"}
                           size={18}
                           color={share ? C.primary : C.outlineVariant}
                         />
@@ -167,7 +167,7 @@ export function SplitSheet({ visible, onClose, total, value, onApply }: Props) {
                           <Text className="text-sm font-bold text-on-surface">{fmt(parseFloat(share.amount) || 0)}</Text>
                         ) : (
                           <TextInput
-                            className="w-24 text-right text-sm font-bold text-on-surface bg-surface-high rounded-lg px-2 py-1.5"
+                            className="w-24 text-right text-sm font-bold text-on-surface bg-surface-low border border-outline-variant rounded-lg px-2 py-1.5"
                             keyboardType="decimal-pad"
                             placeholder="0"
                             placeholderTextColorClassName="accent-outline-variant"

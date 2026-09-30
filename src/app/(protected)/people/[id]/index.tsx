@@ -233,7 +233,8 @@ export default function PersonDetailScreen() {
   const { transactions: recentTx, loading: txLoading } = useGetTransactions({
     limit: 10,
     sort: "-date",
-    where: { person: { in: [id] } },
+    // Include expenses they share, not only ones tagged with them
+    where: { OR: [{ person: { in: [id] } }, { shares__person: { in: [id] } }] },
   });
 
   const balance = person?.balance ?? 0;
@@ -463,7 +464,7 @@ export default function PersonDetailScreen() {
                       style={{ backgroundColor: "#10b98120" }}
                     >
                       <Text className="text-[13px] font-bold" style={{ color: "#10b981" }}>
-                        {fmt(s.remaining)} paid
+                        Got {fmt(s.remaining)}
                       </Text>
                     </TouchableOpacity>
                   </View>

@@ -701,6 +701,49 @@ export default function TransactionDetailScreen() {
             </View>
           )}
 
+          {/* ── Split with ── */}
+          {(tx.shares?.length ?? 0) > 0 && (
+            <View
+              className="rounded-2xl overflow-hidden"
+              style={{ backgroundColor: C.surfaceMid }}
+            >
+              <SectionBlock label="Split with">
+                <View className="gap-2.5">
+                  {tx.shares!.map((s) =>
+                    s.person ? (
+                      <TouchableOpacity
+                        key={s.id ?? s.person.id}
+                        onPress={() => router.push(`/people/${s.person!.id}`)}
+                        activeOpacity={0.7}
+                        className="flex-row items-center gap-3"
+                      >
+                        <UserAvatar
+                          id={s.person.id}
+                          name={s.person.name}
+                          avatarUrl={s.person.avatar?.url}
+                          size={32}
+                          radius={16}
+                        />
+                        <Text className="flex-1 text-[14px] font-semibold text-on-surface" numberOfLines={1}>
+                          {s.person.name}
+                        </Text>
+                        <Text className="text-[14px] font-bold text-on-surface">
+                          {fmt(parseFloat(s.amount ?? "0") || 0)}
+                        </Text>
+                      </TouchableOpacity>
+                    ) : null,
+                  )}
+                  <View className="flex-row justify-between pt-1">
+                    <Text className="text-[13px] text-on-surface-variant">Your share</Text>
+                    <Text className="text-[13px] font-extrabold text-on-surface">
+                      {fmt(tx.myShare ?? 0)}
+                    </Text>
+                  </View>
+                </View>
+              </SectionBlock>
+            </View>
+          )}
+
           {/* ── Note ── */}
           {tx.note && (
             <View
