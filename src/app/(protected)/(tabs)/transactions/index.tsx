@@ -133,7 +133,8 @@ function buildWhere(
     ands.push({ tags: { in: filter.tags } });
   }
   if (filter.people.length > 0) {
-    ands.push({ person: { in: filter.people } });
+    // A person filter also matches expenses they share
+    ands.push({ OR: [{ person: { in: filter.people } }, { shares__person: { in: filter.people } }] });
   }
   if (filter.accounts.length > 0) {
     ands.push({

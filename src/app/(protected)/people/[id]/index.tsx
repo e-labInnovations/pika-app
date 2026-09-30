@@ -95,14 +95,21 @@ function txDate(iso: string): string {
 
 function RecentTxRow({
   t,
+  personId,
   onPress,
 }: {
   t: TransactionFieldsFragment;
+  personId: string;
   onPress: () => void;
 }) {
   const C = useColors();
   const fmt = useFormatMoney();
   const { color } = txTypeConfig(t.type);
+  // An expense they share (not tagged with them): show their share, not the total
+  const share =
+    t.person?.id !== personId
+      ? t.shares?.find((s) => s.person?.id === personId)
+      : undefined;
   const catBg = t.category?.bgColor ?? "#f59e0b22";
   const catColor = t.category?.color ?? "#f59e0b";
   return (
@@ -150,14 +157,19 @@ function RecentTxRow({
             {t.account.name}
             {t.toAccount ? ` → ${t.toAccount.name}` : ""}
           </Text>
+          {share && (
+            <View className="px-1.5 py-px rounded-md" style={{ backgroundColor: "#10b98120" }}>
+              <Text style={{ fontSize: 10, fontWeight: "700", color: "#10b981" }}>SPLIT</Text>
+            </View>
+          )}
         </View>
       </View>
       <View className="items-end gap-0.5 shrink-0">
-        <Text style={{ fontSize: 13, fontWeight: "700", color }}>
-          {fmt(parseFloat(t.amount))}
+        <Text style={{ fontSize: 13, fontWeight: "700", color: share ? "#10b981" : color }}>
+          {fmt(parseFloat(share ? (share.amount ?? "0") : t.amount))}
         </Text>
         <Text className="text-[11px] text-on-surface-variant">
-          {txDate(t.date)}
+          {share ? `of ${fmt(parseFloat(t.amount))} · ${txDate(t.date)}` : txDate(t.date)}
         </Text>
       </View>
     </TouchableOpacity>
@@ -595,6 +607,7 @@ export default function PersonDetailScreen() {
                     {idx > 0 && <Divider />}
                     <RecentTxRow
                       t={t}
+                      personId={id}
                       onPress={() => router.push(`/transactions/${t.id}`)}
                     />
                   </React.Fragment>
