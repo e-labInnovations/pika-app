@@ -77,6 +77,8 @@ export function aiDataToFormValues(
     account: (data.account as AccountFieldsFragment) ?? null,
     toAccount: (data.toAccount as AccountFieldsFragment) ?? null,
     person: (data.person as PersonFieldsFragment) ?? null,
+    // Direct "Create" builds the payload from these values, which reads shares
+    shares: [],
     tags: (data.tags as TagFieldsFragment[]) ?? [],
     note: data.note ?? "",
   };
