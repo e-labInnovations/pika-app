@@ -6,7 +6,7 @@ import {
   formValuesToMutationInput,
   type TxFormValues,
 } from "@/components/transaction/TransactionForm";
-import { AIAssistantSheet } from "@/components/transaction/AIAssistantSheet";
+import { AIAssistantSheet, receiptFilename } from "@/components/transaction/AIAssistantSheet";
 import { useCreateTransaction } from "@/services/gql/transactions/transactions.service";
 import { useGetPerson } from "@/services/gql/people/people.service";
 import { useCreateTransactionLink } from "@/services/gql/transaction-links/transaction-links.service";
@@ -87,7 +87,7 @@ export default function AddTransactionScreen() {
         ? {
             uri: img.uri,
             mimeType: img.mimeType,
-            filename: `receipt-${Date.now()}.jpg`,
+            filename: receiptFilename(img.mimeType),
           }
         : null,
     );
@@ -167,7 +167,7 @@ export default function AddTransactionScreen() {
         ? {
             uri: image.uri,
             mimeType: image.mimeType,
-            filename: `receipt-${Date.now()}.jpg`,
+            filename: receiptFilename(image.mimeType),
           }
         : null,
     );

@@ -76,7 +76,7 @@ export default {
             NSExtensionActivationSupportsImageWithMaxCount: 5,
             NSExtensionActivationSupportsWebURLWithMaxCount: 1,
           },
-          androidIntentFilters: ['text/*', 'image/*'],
+          androidIntentFilters: ['text/*', 'image/*', 'application/pdf'],
         },
       ],
       'expo-web-browser',

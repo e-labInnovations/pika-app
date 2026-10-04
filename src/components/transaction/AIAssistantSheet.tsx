@@ -9,6 +9,8 @@
  *  5. "Reject" / "Re-analyze" → reset / retry.
  */
 
+import * as DocumentPicker from "expo-document-picker";
+import { EncodingType, readAsStringAsync } from "expo-file-system/legacy";
 import * as ImagePicker from "expo-image-picker";
 import {
   EntityComposer,
@@ -70,6 +72,32 @@ export interface AITransactionData {
   tags?: TagFieldsFragment[];
   /** Friends' shares when the AI detected a split (people already resolved) */
   shares?: { person: PersonFieldsFragment | null; amount: string }[];
+}
+
+/** File name for an uploaded receipt, with the right extension for images and PDFs. */
+export function receiptFilename(mimeType: string): string {
+  return `receipt-${Date.now()}.${mimeType === "application/pdf" ? "pdf" : "jpg"}`;
+}
+
+const isPdf = (mimeType?: string) => mimeType === "application/pdf";
+
+/** Stand-in for an image preview when the receipt is a PDF. */
+function PdfTile({ size, dim }: { size: number; dim?: boolean }) {
+  return (
+    <View
+      style={{
+        width: size,
+        height: size,
+        borderRadius: 10,
+        backgroundColor: "#ef444422",
+        alignItems: "center",
+        justifyContent: "center",
+        opacity: dim ? 0.35 : 1,
+      }}
+    >
+      <DynamicIcon name="file-text" size={size * 0.45} color="#ef4444" />
+    </View>
+  );
 }
 
 // ── Helper: map AI result → TxFormValues partial ──────────────────────────────
@@ -242,6 +270,19 @@ export function AIAssistantSheet({ visible, onClose, onUseDetails, onCreated, in
     onClose();
   };
 
+  const handlePickPdf = async () => {
+    const res = await DocumentPicker.getDocumentAsync({ type: "application/pdf", copyToCacheDirectory: true });
+    if (res.canceled) return;
+    const asset = res.assets[0];
+    try {
+      const base64 = await readAsStringAsync(asset.uri, { encoding: EncodingType.Base64 });
+      setImage({ uri: asset.uri, base64, mimeType: "application/pdf" });
+      setResult(null);
+    } catch {
+      showAlert({ title: "Error", message: "Could not read the PDF." });
+    }
+  };
+
   const handlePickImage = async () => {
     const perm = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (!perm.granted) {
@@ -315,7 +356,7 @@ export function AIAssistantSheet({ visible, onClose, onUseDetails, onCreated, in
       if (attachImage && image && tab === "receipt") {
         const media = await uploadMedia(
           image.uri,
-          `receipt-${Date.now()}.jpg`,
+          receiptFilename(image.mimeType),
           image.mimeType,
         );
         attachmentIds = [media.id];
@@ -580,20 +621,51 @@ export function AIAssistantSheet({ visible, onClose, onUseDetails, onCreated, in
                 </Text>
               </TouchableOpacity>
             )}
+            {tab === "receipt" && !image && !result && (
+              <TouchableOpacity
+                onPress={handlePickPdf}
+                activeOpacity={0.75}
+                style={{ flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 6, paddingVertical: 14 }}
+              >
+                <DynamicIcon name="file-text" size={15} color="#7c3aed" />
+                <Text style={{ fontSize: 13, color: "#7c3aed", fontWeight: "600" }}>
+                  Or choose a PDF (FedMobile, PhonePe receipt…)
+                </Text>
+              </TouchableOpacity>
+            )}
 
             {/* Receipt tab — image selected */}
             {tab === "receipt" && image && !result && (
               <View style={{ gap: 10 }}>
                 <View style={{ position: "relative" }}>
-                  <Image
-                    source={{ uri: image.uri }}
-                    style={{
-                      width: Dimensions.get("window").width - 40,
-                      height: 200,
-                      borderRadius: 14,
-                    }}
-                    resizeMode="cover"
-                  />
+                  {isPdf(image.mimeType) ? (
+                    <View
+                      style={{
+                        height: 120,
+                        borderRadius: 14,
+                        backgroundColor: C.surfaceMid,
+                        flexDirection: "row",
+                        alignItems: "center",
+                        gap: 12,
+                        paddingHorizontal: 16,
+                      }}
+                    >
+                      <PdfTile size={56} />
+                      <Text style={{ flex: 1, fontSize: 14, fontWeight: "600", color: C.onSurface }}>
+                        PDF receipt
+                      </Text>
+                    </View>
+                  ) : (
+                    <Image
+                      source={{ uri: image.uri }}
+                      style={{
+                        width: Dimensions.get("window").width - 40,
+                        height: 200,
+                        borderRadius: 14,
+                      }}
+                      resizeMode="cover"
+                    />
+                  )}
                   <TouchableOpacity
                     onPress={() => setImage(null)}
                     activeOpacity={0.8}
@@ -613,7 +685,7 @@ export function AIAssistantSheet({ visible, onClose, onUseDetails, onCreated, in
                   </TouchableOpacity>
                 </View>
                 <TouchableOpacity
-                  onPress={handlePickImage}
+                  onPress={isPdf(image.mimeType) ? handlePickPdf : handlePickImage}
                   activeOpacity={0.75}
                 >
                   <Text
@@ -623,7 +695,7 @@ export function AIAssistantSheet({ visible, onClose, onUseDetails, onCreated, in
                       fontWeight: "600",
                     }}
                   >
-                    Change image
+                    {isPdf(image.mimeType) ? "Change PDF" : "Change image"}
                   </Text>
                 </TouchableOpacity>
               </View>
@@ -663,16 +735,20 @@ export function AIAssistantSheet({ visible, onClose, onUseDetails, onCreated, in
               >
                 {/* Thumbnail with check badge */}
                 <View style={{ position: "relative" }}>
-                  <Image
-                    source={{ uri: image.uri }}
-                    style={{
-                      width: 56,
-                      height: 56,
-                      borderRadius: 10,
-                      opacity: attachImage ? 1 : 0.35,
-                    }}
-                    resizeMode="cover"
-                  />
+                  {isPdf(image.mimeType) ? (
+                    <PdfTile size={56} dim={!attachImage} />
+                  ) : (
+                    <Image
+                      source={{ uri: image.uri }}
+                      style={{
+                        width: 56,
+                        height: 56,
+                        borderRadius: 10,
+                        opacity: attachImage ? 1 : 0.35,
+                      }}
+                      resizeMode="cover"
+                    />
+                  )}
                   {attachImage && (
                     <View
                       style={{
@@ -703,7 +779,7 @@ export function AIAssistantSheet({ visible, onClose, onUseDetails, onCreated, in
                       color: C.onSurface,
                     }}
                   >
-                    Attach receipt image
+                    {isPdf(image.mimeType) ? "Attach receipt PDF" : "Attach receipt image"}
                   </Text>
                   <Text
                     style={{
@@ -713,8 +789,8 @@ export function AIAssistantSheet({ visible, onClose, onUseDetails, onCreated, in
                     }}
                   >
                     {attachImage
-                      ? "Image will be saved with transaction"
-                      : "Tap to attach image"}
+                      ? `${isPdf(image.mimeType) ? "PDF" : "Image"} will be saved with transaction`
+                      : `Tap to attach ${isPdf(image.mimeType) ? "PDF" : "image"}`}
                   </Text>
                 </View>
 
