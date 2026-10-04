@@ -353,13 +353,23 @@ export default function PeopleScreen() {
               </Text>
             )}
           </View>
-          <TouchableOpacity
-            onPress={() => router.push("/people/add")}
-            activeOpacity={0.75}
-            className="w-9 h-9 rounded-full items-center justify-center bg-surface-high"
-          >
-            <DynamicIcon name="user-plus" size={17} color={C.primaryBright} />
-          </TouchableOpacity>
+          <View className="flex-row gap-2">
+            <TouchableOpacity
+              onPress={() => router.push("/people/import-contacts")}
+              activeOpacity={0.75}
+              className="w-9 h-9 rounded-full items-center justify-center bg-surface-high"
+              accessibilityLabel="Import from contacts"
+            >
+              <DynamicIcon name="book-user" size={17} color={C.primaryBright} />
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => router.push("/people/add")}
+              activeOpacity={0.75}
+              className="w-9 h-9 rounded-full items-center justify-center bg-surface-high"
+            >
+              <DynamicIcon name="user-plus" size={17} color={C.primaryBright} />
+            </TouchableOpacity>
+          </View>
         </View>
 
         {/* Search bar */}

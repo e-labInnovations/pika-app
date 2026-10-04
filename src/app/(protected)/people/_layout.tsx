@@ -26,6 +26,13 @@ export default function PeopleLayout() {
         }}
       />
       <Stack.Screen
+        name="import-contacts"
+        options={{
+          title: "From contacts",
+          presentation: "modal",
+        }}
+      />
+      <Stack.Screen
         name="[id]/edit"
         options={{
           title: "Edit Person",

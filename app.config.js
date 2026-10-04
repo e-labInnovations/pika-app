@@ -34,6 +34,8 @@ export default {
       },
       package: appPackage,
       permissions: ['android.permission.CAMERA', 'android.permission.READ_MEDIA_IMAGES'],
+      // Contacts are only read (import people); expo-contacts would also add WRITE_CONTACTS.
+      blockedPermissions: ['android.permission.WRITE_CONTACTS'],
     },
     web: {
       output: 'static',
@@ -78,6 +80,10 @@ export default {
           },
           androidIntentFilters: ['text/*', 'image/*', 'application/pdf'],
         },
+      ],
+      [
+        'expo-contacts',
+        { contactsPermission: 'Pika reads your contacts only when you import people from them.' },
       ],
       'expo-web-browser',
       'expo-sharing',
