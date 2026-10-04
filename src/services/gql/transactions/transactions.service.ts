@@ -5,6 +5,7 @@ import {
   CreateTransactionDocument,
   UpdateTransactionDocument,
   DeleteTransactionDocument,
+  SimilarTransactionIdsDocument,
   type TransactionFieldsFragment,
   type GetTransactionsQuery,
   type GetTransactionsQueryVariables,
@@ -120,4 +121,15 @@ export const useDeleteTransaction = () => {
     loading,
     error,
   };
+};
+
+/** Transactions whose titles mean something close to the search ("coffee" → tea, snacks). */
+export const useSimilarTransactionIds = (query: string) => {
+  const q = query.trim();
+  const { data, loading } = useQuery(SimilarTransactionIdsDocument, {
+    variables: { query: q },
+    skip: q.length < 3,
+    fetchPolicy: 'cache-and-network',
+  });
+  return { ids: q.length < 3 ? [] : (data?.similarTransactionIds ?? []), loading };
 };

@@ -49,6 +49,7 @@ import { useFormatMoney } from "@/lib/format-currency";
 import {
   useGetTransactions,
   useDeleteTransaction,
+  useSimilarTransactionIds,
 } from "@/services/gql/transactions/transactions.service";
 import {
   Transaction_type,
@@ -111,6 +112,7 @@ function formatTime(iso: string): string {
 function buildWhere(
   filter: TxFilter,
   search: string,
+  similarIds: string[] = [],
 ): Transaction_where | undefined {
   const ands: Transaction_where[] = [];
 
@@ -119,6 +121,8 @@ function buildWhere(
       OR: [
         { title: { contains: search.trim() } },
         { note: { contains: search.trim() } },
+        // Titles that mean the same thing ("coffee" → "Tea")
+        ...(similarIds.length ? [{ id: { in: similarIds } }] : []),
       ],
     });
   }
@@ -668,7 +672,8 @@ export default function HistoryScreen() {
     return () => clearTimeout(t);
   }, [search]);
 
-  const where = buildWhere(filter, appliedSearch);
+  const { ids: similarIds } = useSimilarTransactionIds(appliedSearch);
+  const where = buildWhere(filter, appliedSearch, similarIds);
   // Amount is stored as text in Payload, so backend sort is lexicographic.
   // For amount sorting, fall back to date desc on the backend and sort client-side.
   const backendSortStr =
@@ -915,7 +920,7 @@ export default function HistoryScreen() {
             <TextInput
               className="flex-1 text-[14px] text-on-surface"
               placeholderTextColor={C.outlineVariant}
-              placeholder="Search by title or note…"
+              placeholder="Search transactions…"
               value={search}
               onChangeText={setSearch}
               autoFocus

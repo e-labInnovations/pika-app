@@ -130,3 +130,7 @@ mutation DeleteTransaction($id: String!) {
     id
   }
 }
+
+query SimilarTransactionIds($query: String!) {
+  similarTransactionIds(query: $query)
+}
