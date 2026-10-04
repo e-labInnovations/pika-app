@@ -1,0 +1,7 @@
+mutation ParseStatement($file: String!, $password: String, $account: String) {
+  parseStatement(file: $file, password: $password, account: $account)
+}
+
+mutation ImportStatementRows($account: String!, $rows: StatementJSON!) {
+  importStatementRows(account: $account, rows: $rows)
+}

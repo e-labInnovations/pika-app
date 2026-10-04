@@ -61,6 +61,14 @@ const SECTIONS: SettingSection[] = [
     color: "#8b5cf6",
     onPress: () => router.push("/settings/ai"),
   },
+  {
+    id: "statement",
+    title: "Import statement",
+    icon: "file-text",
+    description: "Add what a bank statement PDF has and Pika doesn't",
+    color: "#0ea5e9",
+    onPress: () => router.push("/settings/statement"),
+  },
   ...(smsCaptureAvailable
     ? [
         {
