@@ -37,3 +37,19 @@ mutation ConfirmCapturedSms($id: String!, $overrides: SmsConfirmOverrides) {
 mutation DismissCapturedSms($id: String!) {
   dismissCapturedSms(id: $id)
 }
+
+query GetBalanceChecks {
+  balanceChecks {
+    account
+    accountName
+    bankBalance
+    pikaBalance
+    difference
+    matched
+    asOf
+    sms
+    lastMatchedAt
+    firstOffAt
+    pending
+  }
+}

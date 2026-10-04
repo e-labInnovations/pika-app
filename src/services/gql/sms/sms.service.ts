@@ -4,6 +4,7 @@ import {
   GetCapturedSmsDocument,
   ConfirmCapturedSmsDocument,
   DismissCapturedSmsDocument,
+  GetBalanceChecksDocument,
   type CapturedSmsFieldsFragment,
 } from '../types/graphql';
 import { TRANSACTION_REFETCH_QUERIES } from '../transactions/transactions.service';
@@ -74,7 +75,17 @@ export const useConfirmSms = () => {
 
 export const useDismissSms = () => {
   const [dismiss, { loading }] = useMutation(DismissCapturedSmsDocument, {
-    refetchQueries: ['GetPendingSms'],
+    // A dismissed SMS no longer counts toward the expected balance
+    refetchQueries: ['GetPendingSms', 'GetBalanceChecks'],
   });
   return { dismissSms: (id: string) => dismiss({ variables: { id } }), loading };
+};
+
+/** Accounts whose latest bank SMS balance disagrees with Pika at that time. */
+export const useBalanceMismatches = () => {
+  const { data, loading, refetch } = useQuery(GetBalanceChecksDocument, {
+    fetchPolicy: 'cache-and-network',
+  });
+  const mismatches = (data?.balanceChecks ?? []).filter((c) => !c.matched && Math.abs(c.difference) >= 0.01);
+  return { mismatches, loading, refetch };
 };

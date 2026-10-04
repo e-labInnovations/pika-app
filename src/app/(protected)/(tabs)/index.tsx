@@ -13,6 +13,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { AccountsRow } from "@/components/home/AccountsRow";
 import { AIAssistantCard } from "@/components/home/AIAssistantCard";
 import { BalanceCard } from "@/components/home/BalanceCard";
+import { BalanceMismatchCard } from "@/components/home/BalanceMismatchCard";
 import { HomeHeader } from "@/components/home/HomeHeader";
 import { MonthlyCalendarCard } from "@/components/home/MonthlyCalendarCard";
 import { MonthlyPulseCard } from "@/components/home/MonthlyPulseCard";
@@ -88,6 +89,7 @@ export default function HomeScreen() {
           loading={dashboardLoading}
         />
         <PendingSmsCard />
+        <BalanceMismatchCard />
         <AIAssistantCard
           onOpen={(tab) => {
             setAiInitialTab(tab);

@@ -63,6 +63,8 @@ export const TRANSACTION_REFETCH_QUERIES = [
   // Person balances and open shares change with every transaction
   'GetPeople',
   'GetPerson',
+  // Bank-vs-Pika balance comparison on Home
+  'GetBalanceChecks',
 ];
 
 export const useCreateTransaction = () => {
