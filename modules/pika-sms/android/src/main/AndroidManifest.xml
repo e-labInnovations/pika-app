@@ -14,5 +14,9 @@
         <action android:name="android.provider.Telephony.SMS_RECEIVED" />
       </intent-filter>
     </receiver>
+    <!-- Reply / Add on SMS notifications; only our own PendingIntents reach it. -->
+    <receiver
+      android:name=".SmsActionReceiver"
+      android:exported="false" />
   </application>
 </manifest>

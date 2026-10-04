@@ -6,7 +6,7 @@ import { OriginalSms } from "@/components/sms/OriginalSms";
 import { TransactionForm, type TxFormValues } from "@/components/transaction/TransactionForm";
 import { useGetAccount } from "@/services/gql/accounts/accounts.service";
 import { useGetCategory } from "@/services/gql/categories/categories.service";
-import { useGetPerson } from "@/services/gql/people/people.service";
+import { useGetPeople, useGetPerson } from "@/services/gql/people/people.service";
 import { useGetTags } from "@/services/gql/tags/tags.service";
 import { useCapturedSms, useConfirmSms } from "@/services/gql/sms/sms.service";
 import { useColors } from "@/theme/colors";
@@ -29,12 +29,14 @@ export default function ReviewSmsScreen() {
   const category = useGetCategory(s?.category ?? "");
   const person = useGetPerson(s?.person ?? "");
   const { tags } = useGetTags({ limit: 500, sort: "name" });
+  const { people } = useGetPeople({ limit: 500 });
 
   const resolving =
     (sms?.account?.id && !account.data) ||
     (s?.toAccount && !toAccount.data) ||
     (s?.category && !category.data) ||
-    (s?.person && !person.data);
+    (s?.person && !person.data) ||
+    (s?.shares?.length && !people);
 
   if (!sms || (loading && !sms) || resolving) {
     return (
@@ -53,7 +55,10 @@ export default function ReviewSmsScreen() {
     account: account.data ?? null,
     toAccount: toAccount.data ?? null,
     person: person.data ?? null,
-    shares: [],
+    shares: ((s?.shares ?? []) as { person: string; amount: string }[]).flatMap((sh) => {
+      const who = people?.find((x) => x.id === sh.person);
+      return who ? [{ person: who, amount: sh.amount }] : [];
+    }),
     tags: (tags ?? []).filter((t) => s?.tags?.includes(t.id)),
     note: "",
     existingAttachments: [],

@@ -31,7 +31,9 @@ export type SmsSuggestion = {
   tags: string[];
   person: string | null;
   toAccount: string | null;
-  from: 'sms' | 'note' | 'model' | 'default';
+  /** Split from a reply to the notification ("lunch with @Rony, split"). */
+  shares?: { person: string; amount: string }[];
+  from: 'sms' | 'note' | 'model' | 'default' | 'reply';
 };
 
 export type PendingSms = CapturedSmsFieldsFragment & {

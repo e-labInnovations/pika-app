@@ -15,6 +15,7 @@ import {
 import { usePendingSms } from "@/services/gql/sms/sms.service";
 import { useAuth } from "@/context/AuthContext";
 import { useGetUserSettings, useUpdateUserSettings } from "@/services/gql/user-settings/user-settings.service";
+import { UserSettingUpdate_smsReplyAction_MutationInput as ReplyAction } from "@/services/gql/types/graphql";
 import { useColors } from "@/theme/colors";
 
 function Row({ label, value }: { label: string; value: string }) {
@@ -39,7 +40,7 @@ export default function SmsSettingsScreen() {
   const [maxAmount, setMaxAmount] = useState<string | null>(null);
   const shownMax = maxAmount ?? String(settings?.smsAutoConfirmMaxAmount ?? 2000);
 
-  const saveSetting = async (data: { smsAutoConfirm?: boolean; smsAutoConfirmMaxAmount?: number }) => {
+  const saveSetting = async (data: { smsAutoConfirm?: boolean; smsAutoConfirmMaxAmount?: number; smsReplyAction?: ReplyAction }) => {
     if (!settings) return;
     try {
       await updateUserSettings({ id: settings.id, data });
@@ -191,6 +192,39 @@ export default function SmsSettingsScreen() {
                     />
                   </View>
                 )}
+              </View>
+            )}
+
+            {status?.enabled && settings && (
+              <View className="rounded-2xl bg-surface-mid p-4 gap-3">
+                <View>
+                  <Text className="text-[15px] font-semibold text-on-surface">Replying to a notification</Text>
+                  <Text className="text-[12px] text-on-surface-variant leading-[17px]">
+                    Type what it was in the notification (e.g. &quot;lunch with @Rony, split&quot;). The AI reads it with
+                    the SMS; the bank&apos;s amount and time are kept.
+                  </Text>
+                </View>
+                <View className="flex-row gap-2">
+                  {[
+                    { value: ReplyAction.add, label: "Add it" },
+                    { value: ReplyAction.review, label: "Show me first" },
+                  ].map((o) => {
+                    const on = (settings.smsReplyAction ?? "add") === o.value;
+                    return (
+                      <TouchableOpacity
+                        key={o.value}
+                        onPress={() => saveSetting({ smsReplyAction: o.value })}
+                        activeOpacity={0.75}
+                        className="flex-1 items-center rounded-xl py-2.5"
+                        style={{ backgroundColor: on ? C.primaryBright : C.surface }}
+                      >
+                        <Text className="text-[13px] font-semibold" style={{ color: on ? "#fff" : C.onSurface }}>
+                          {o.label}
+                        </Text>
+                      </TouchableOpacity>
+                    );
+                  })}
+                </View>
               </View>
             )}
 

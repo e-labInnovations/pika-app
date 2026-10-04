@@ -11,6 +11,7 @@ fragment UserSettingsFields on UserSetting {
   categoryAiMethod
   smsAutoConfirm
   smsAutoConfirmMaxAmount
+  smsReplyAction
   createdAt
   updatedAt
   defaultAccount {
