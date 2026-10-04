@@ -16,11 +16,14 @@ const MISSING = "#f59e0b";
 export function TransactionPreviewCard({
   data,
   missing,
+  compact = false,
   children,
 }: {
   data: AITransactionData;
   /** Show a hint row for these when they're empty (bank SMS that need a review). */
   missing?: { category?: boolean; account?: boolean };
+  /** Smaller amount, one-line title, at most two tags and no note (Home deck). */
+  compact?: boolean;
   children?: React.ReactNode;
 }) {
   const C = useColors();
@@ -55,8 +58,8 @@ export function TransactionPreviewCard({
       end={{ x: 1, y: 1 }}
       style={{
         borderRadius: 16,
-        padding: 14,
-        gap: 10,
+        padding: compact ? 12 : 14,
+        gap: compact ? 8 : 10,
         borderWidth: 1,
         borderColor: "#7c3aed33",
       }}
@@ -72,7 +75,7 @@ export function TransactionPreviewCard({
         <View style={{ flex: 1, marginRight: 8 }}>
           <Text
             style={{ fontSize: 16, fontWeight: "700", color: C.onSurface }}
-            numberOfLines={2}
+            numberOfLines={compact ? 1 : 2}
           >
             {data.title}
           </Text>
@@ -91,7 +94,7 @@ export function TransactionPreviewCard({
         <View style={{ alignItems: "flex-end" }}>
           <Text
             style={{
-              fontSize: 20,
+              fontSize: compact ? 17 : 20,
               fontWeight: "800",
               color: typeColor,
               letterSpacing: -0.5,
@@ -301,7 +304,7 @@ export function TransactionPreviewCard({
       {/* Tags */}
       {data.tags && data.tags.length > 0 ? (
         <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 6 }}>
-          {data.tags.map((tag, i) => (
+          {(compact ? data.tags.slice(0, 2) : data.tags).map((tag, i) => (
             <View
               key={tag.id ?? tag.name ?? i}
               style={{
@@ -330,11 +333,16 @@ export function TransactionPreviewCard({
               </Text>
             </View>
           ))}
+          {compact && data.tags.length > 2 ? (
+            <Text style={{ fontSize: 11, fontWeight: "600", color: C.onSurfaceVariant, alignSelf: "center" }}>
+              +{data.tags.length - 2}
+            </Text>
+          ) : null}
         </View>
       ) : null}
 
       {/* Note */}
-      {data.note ? (
+      {data.note && !compact ? (
         <Text
           style={{
             fontSize: 13,

@@ -1,5 +1,5 @@
 import { router } from "expo-router";
-import React, { useMemo, useState } from "react";
+import React, { useState } from "react";
 import {
   ActivityIndicator,
   Platform,
@@ -12,19 +12,9 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { DynamicIcon } from "@/components/Icon";
 import { showAlert } from "@/components/ui/AlertDialog";
-import { useGetCategories } from "@/services/gql/categories/categories.service";
-import { useGetTags } from "@/services/gql/tags/tags.service";
-import { useGetAccounts } from "@/services/gql/accounts/accounts.service";
-import { useGetPeople } from "@/services/gql/people/people.service";
-import type {
-  AccountFieldsFragment,
-  CategoryFieldsFragment,
-  PersonFieldsFragment,
-  TagFieldsFragment,
-} from "@/services/gql/types/graphql";
-import type { AITransactionData } from "@/components/transaction/AIAssistantSheet";
 import { TransactionPreviewCard } from "@/components/transaction/TransactionPreviewCard";
 import { OriginalSms } from "@/components/sms/OriginalSms";
+import { canQuickConfirm, toPreview, useSmsLookups, type SmsLookups as Lookups } from "@/components/sms/preview";
 import {
   useConfirmSms,
   useDismissSms,
@@ -32,37 +22,6 @@ import {
   type PendingSms,
 } from "@/services/gql/sms/sms.service";
 import { useColors } from "@/theme/colors";
-
-/** True when the suggestion has everything a transaction needs, so one tap can confirm it. */
-export function canQuickConfirm(sms: PendingSms): boolean {
-  const s = sms.suggestion;
-  if (!s?.category || !sms.account) return false;
-  return s.type !== "transfer" || !!s.toAccount;
-}
-
-type Lookups = {
-  category: (id?: string | null) => CategoryFieldsFragment | null;
-  account: (id?: string | null) => AccountFieldsFragment | null;
-  person: (id?: string | null) => PersonFieldsFragment | null;
-  tags: (ids?: string[] | null) => TagFieldsFragment[];
-};
-
-/** The suggestion in the AI card's shape, with ids resolved to the user's records. */
-function toPreview(sms: PendingSms, find: Lookups): AITransactionData {
-  const s = sms.suggestion;
-  const p = sms.parsed;
-  return {
-    title: s?.title || p?.merchant || "Transaction",
-    amount: parseFloat(p?.amount ?? "0"),
-    type: s?.type ?? p?.type ?? "expense",
-    date: p?.occurredAt ?? sms.receivedAt,
-    category: find.category(s?.category),
-    account: find.account(sms.account?.id),
-    toAccount: find.account(s?.toAccount),
-    person: find.person(s?.person),
-    tags: find.tags(s?.tags),
-  };
-}
 
 function SmsCard({
   sms,
@@ -140,29 +99,12 @@ export default function PendingSmsScreen() {
   const insets = useSafeAreaInsets();
   const topPad = insets.top || (Platform.OS === "ios" ? 44 : 24);
   const { items, total, loading, refetch } = usePendingSms();
-  const { categories } = useGetCategories({ limit: 500, sort: "name" });
   const { confirmSms } = useConfirmSms();
   const { dismissSms } = useDismissSms();
   const [busyId, setBusyId] = useState<string | null>(null);
   const [refreshing, setRefreshing] = useState(false);
 
-  const { tags } = useGetTags({ limit: 500 });
-  const { accounts } = useGetAccounts({ limit: 100 });
-  const { people } = useGetPeople({ limit: 500 });
-
-  const find = useMemo<Lookups>(() => {
-    const index = <T extends { id: string }>(list?: T[]) => new Map((list ?? []).map((x) => [x.id, x]));
-    const cats = index(categories);
-    const accts = index(accounts);
-    const ppl = index(people);
-    const tgs = index(tags);
-    return {
-      category: (id) => (id ? cats.get(id) ?? null : null),
-      account: (id) => (id ? accts.get(id) ?? null : null),
-      person: (id) => (id ? ppl.get(id) ?? null : null),
-      tags: (ids) => (ids ?? []).flatMap((id) => tgs.get(id) ?? []),
-    };
-  }, [categories, accounts, people, tags]);
+  const find = useSmsLookups();
 
   const run = async (id: string, action: () => Promise<unknown>, failTitle: string) => {
     setBusyId(id);

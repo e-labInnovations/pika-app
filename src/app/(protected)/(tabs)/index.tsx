@@ -17,7 +17,7 @@ import { BalanceMismatchCard } from "@/components/home/BalanceMismatchCard";
 import { HomeHeader } from "@/components/home/HomeHeader";
 import { MonthlyCalendarCard } from "@/components/home/MonthlyCalendarCard";
 import { MonthlyPulseCard } from "@/components/home/MonthlyPulseCard";
-import { PendingSmsCard } from "@/components/home/PendingSmsCard";
+import { SmsDeck } from "@/components/home/SmsDeck";
 import { SplitsDebtsCard } from "@/components/home/SplitsDebtsCard";
 import { SpendingTagsCard } from "@/components/home/SpendingTagsCard";
 import { TopCategoriesCard } from "@/components/home/TopCategoriesCard";
@@ -88,7 +88,7 @@ export default function HomeScreen() {
           balanceChangePercent={dashboard?.balanceChangePercent}
           loading={dashboardLoading}
         />
-        <PendingSmsCard />
+        <SmsDeck />
         <BalanceMismatchCard />
         <AIAssistantCard
           onOpen={(tab) => {
