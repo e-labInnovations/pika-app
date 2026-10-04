@@ -38,6 +38,30 @@ mutation DismissCapturedSms($id: String!) {
   dismissCapturedSms(id: $id)
 }
 
+query GetAutoConfirmedSms($since: DateTime!) {
+  CapturedSmsList(
+    where: { autoConfirmed: { equals: true }, receivedAt: { greater_than_equal: $since } }
+    sort: "-receivedAt"
+    limit: 20
+  ) {
+    docs {
+      id
+      receivedAt
+      parsed
+      transaction {
+        id
+        title
+        amount
+        type
+      }
+    }
+  }
+}
+
+mutation UndoAutoConfirmedSms($id: String!) {
+  undoAutoConfirmedSms(id: $id)
+}
+
 query GetBalanceChecks {
   balanceChecks {
     account

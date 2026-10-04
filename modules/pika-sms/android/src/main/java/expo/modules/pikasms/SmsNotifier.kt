@@ -27,12 +27,21 @@ object SmsNotifier {
   private const val MAX_SEPARATE = 3
 
   fun notifyPending(context: Context, results: JSONArray) {
-    val pending = (0 until results.length())
-      .map { results.getJSONObject(it) }
-      .filter { it.optString("status") == "pending" && it.has("summary") }
-    if (pending.isEmpty() || !canNotify(context)) return
+    val all = (0 until results.length()).map { results.getJSONObject(it) }.filter { it.has("summary") }
+    // "auto": confirmed on arrival because the merchant is trusted.
+    val pending = all.filter { it.optString("status") == "pending" }
+    val auto = all.filter { it.optString("status") == "auto" }
+    if ((pending.isEmpty() && auto.isEmpty()) || !canNotify(context)) return
     ensureChannel(context)
     val nm = NotificationManagerCompat.from(context)
+
+    for (r in auto) {
+      val s = r.getJSONObject("summary")
+      val sign = if (s.optString("type") == "income") "+" else ""
+      val title = "Added: ${s.optString("title")} · $sign₹${s.optString("amount")}"
+      nm.notify(r.optString("id").hashCode(), base(context, title, "Added automatically. Undo from Home").build())
+    }
+    if (pending.isEmpty()) return
 
     if (pending.size > MAX_SEPARATE) {
       nm.notify(SUMMARY_ID, base(context, "${pending.size} bank SMS to review", "Tap to confirm them in Pika").build())

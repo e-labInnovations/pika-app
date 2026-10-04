@@ -1,6 +1,6 @@
 import { router, useFocusEffect } from "expo-router";
 import React, { useCallback, useState } from "react";
-import { Linking, Platform, ScrollView, Switch, Text, TouchableOpacity, View } from "react-native";
+import { Linking, Platform, ScrollView, Switch, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { DynamicIcon } from "@/components/Icon";
 import { showAlert } from "@/components/ui/AlertDialog";
@@ -13,6 +13,8 @@ import {
   smsCaptureAvailable,
 } from "@/lib/sms-capture";
 import { usePendingSms } from "@/services/gql/sms/sms.service";
+import { useAuth } from "@/context/AuthContext";
+import { useGetUserSettings, useUpdateUserSettings } from "@/services/gql/user-settings/user-settings.service";
 import { useColors } from "@/theme/colors";
 
 function Row({ label, value }: { label: string; value: string }) {
@@ -31,6 +33,20 @@ export default function SmsSettingsScreen() {
   const [status, setStatus] = useState(getSmsStatus());
   const [busy, setBusy] = useState(false);
   const { total } = usePendingSms(1);
+  const { user } = useAuth();
+  const { data: settings } = useGetUserSettings(user?.id);
+  const { updateUserSettings } = useUpdateUserSettings();
+  const [maxAmount, setMaxAmount] = useState<string | null>(null);
+  const shownMax = maxAmount ?? String(settings?.smsAutoConfirmMaxAmount ?? 2000);
+
+  const saveSetting = async (data: { smsAutoConfirm?: boolean; smsAutoConfirmMaxAmount?: number }) => {
+    if (!settings) return;
+    try {
+      await updateUserSettings({ id: settings.id, data });
+    } catch (err: any) {
+      showAlert({ title: "Could not save", message: err?.message ?? "Something went wrong." });
+    }
+  };
 
   const reload = useCallback(() => setStatus(getSmsStatus()), []);
   useFocusEffect(reload);
@@ -141,6 +157,40 @@ export default function SmsSettingsScreen() {
                   <DynamicIcon name="refresh-cw" size={18} color={C.primary} />
                   <Text className="flex-1 text-[14px] font-semibold text-on-surface">Check last 7 days again</Text>
                 </TouchableOpacity>
+              </View>
+            )}
+
+            {status?.enabled && settings && (
+              <View className="rounded-2xl bg-surface-mid p-4 gap-3">
+                <View className="flex-row items-center gap-3">
+                  <View className="flex-1">
+                    <Text className="text-[15px] font-semibold text-on-surface">Auto-add trusted merchants</Text>
+                    <Text className="text-[12px] text-on-surface-variant leading-[17px]">
+                      When a merchant was confirmed the same way the last 3 times, new SMS from it are added
+                      without review. They show on Home with Undo. Transfers and refunds always wait.
+                    </Text>
+                  </View>
+                  <Switch
+                    value={!!settings.smsAutoConfirm}
+                    onValueChange={(v) => saveSetting({ smsAutoConfirm: v })}
+                  />
+                </View>
+                {settings.smsAutoConfirm && (
+                  <View className="flex-row items-center gap-3">
+                    <Text className="flex-1 text-[14px] text-on-surface">Only up to</Text>
+                    <TextInput
+                      value={shownMax}
+                      onChangeText={setMaxAmount}
+                      onEndEditing={() => {
+                        const n = parseFloat(shownMax);
+                        if (Number.isFinite(n) && n >= 0) saveSetting({ smsAutoConfirmMaxAmount: n });
+                        setMaxAmount(null);
+                      }}
+                      keyboardType="decimal-pad"
+                      className="min-w-[90px] rounded-xl bg-surface px-3 py-2 text-right text-[14px] text-on-surface"
+                    />
+                  </View>
+                )}
               </View>
             )}
 

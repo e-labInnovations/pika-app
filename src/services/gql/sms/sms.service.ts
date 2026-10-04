@@ -5,6 +5,8 @@ import {
   ConfirmCapturedSmsDocument,
   DismissCapturedSmsDocument,
   GetBalanceChecksDocument,
+  GetAutoConfirmedSmsDocument,
+  UndoAutoConfirmedSmsDocument,
   type CapturedSmsFieldsFragment,
 } from '../types/graphql';
 import { TRANSACTION_REFETCH_QUERIES } from '../transactions/transactions.service';
@@ -88,4 +90,21 @@ export const useBalanceMismatches = () => {
   });
   const mismatches = (data?.balanceChecks ?? []).filter((c) => !c.matched && Math.abs(c.difference) >= 0.01);
   return { mismatches, loading, refetch };
+};
+
+/** SMS confirmed automatically (trusted merchants) since `since`. */
+export const useAutoConfirmedSms = (since: string) => {
+  const { data, refetch } = useQuery(GetAutoConfirmedSmsDocument, {
+    variables: { since },
+    fetchPolicy: 'cache-and-network',
+  });
+  return { items: data?.CapturedSmsList?.docs ?? [], refetch };
+};
+
+export const useUndoAutoConfirmedSms = () => {
+  const [undo, { loading }] = useMutation(UndoAutoConfirmedSmsDocument, {
+    // The SMS goes back to pending and its transaction is deleted
+    refetchQueries: ['GetAutoConfirmedSms', ...SMS_REFETCH],
+  });
+  return { undoAutoConfirm: (id: string) => undo({ variables: { id } }), loading };
 };

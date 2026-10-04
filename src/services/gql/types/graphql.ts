@@ -4269,6 +4269,8 @@ export type CalendarDay = {
 export type CapturedSms = {
   __typename?: 'CapturedSms';
   account?: Maybe<Account>;
+  autoConfirmed?: Maybe<Scalars['Boolean']['output']>;
+  autoUndone?: Maybe<Scalars['Boolean']['output']>;
   body: Scalars['String']['output'];
   createdAt?: Maybe<Scalars['DateTime']['output']>;
   hash: Scalars['String']['output'];
@@ -4311,6 +4313,8 @@ export type CapturedSmsDeleteDocAccess = {
 export type CapturedSmsDocAccessFields = {
   __typename?: 'CapturedSmsDocAccessFields';
   account?: Maybe<CapturedSmsDocAccessFields_account>;
+  autoConfirmed?: Maybe<CapturedSmsDocAccessFields_autoConfirmed>;
+  autoUndone?: Maybe<CapturedSmsDocAccessFields_autoUndone>;
   body?: Maybe<CapturedSmsDocAccessFields_body>;
   createdAt?: Maybe<CapturedSmsDocAccessFields_createdAt>;
   hash?: Maybe<CapturedSmsDocAccessFields_hash>;
@@ -4350,6 +4354,62 @@ export type CapturedSmsDocAccessFields_account_Read = {
 
 export type CapturedSmsDocAccessFields_account_Update = {
   __typename?: 'CapturedSmsDocAccessFields_account_Update';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type CapturedSmsDocAccessFields_autoConfirmed = {
+  __typename?: 'CapturedSmsDocAccessFields_autoConfirmed';
+  create?: Maybe<CapturedSmsDocAccessFields_autoConfirmed_Create>;
+  delete?: Maybe<CapturedSmsDocAccessFields_autoConfirmed_Delete>;
+  read?: Maybe<CapturedSmsDocAccessFields_autoConfirmed_Read>;
+  update?: Maybe<CapturedSmsDocAccessFields_autoConfirmed_Update>;
+};
+
+export type CapturedSmsDocAccessFields_autoConfirmed_Create = {
+  __typename?: 'CapturedSmsDocAccessFields_autoConfirmed_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type CapturedSmsDocAccessFields_autoConfirmed_Delete = {
+  __typename?: 'CapturedSmsDocAccessFields_autoConfirmed_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type CapturedSmsDocAccessFields_autoConfirmed_Read = {
+  __typename?: 'CapturedSmsDocAccessFields_autoConfirmed_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type CapturedSmsDocAccessFields_autoConfirmed_Update = {
+  __typename?: 'CapturedSmsDocAccessFields_autoConfirmed_Update';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type CapturedSmsDocAccessFields_autoUndone = {
+  __typename?: 'CapturedSmsDocAccessFields_autoUndone';
+  create?: Maybe<CapturedSmsDocAccessFields_autoUndone_Create>;
+  delete?: Maybe<CapturedSmsDocAccessFields_autoUndone_Delete>;
+  read?: Maybe<CapturedSmsDocAccessFields_autoUndone_Read>;
+  update?: Maybe<CapturedSmsDocAccessFields_autoUndone_Update>;
+};
+
+export type CapturedSmsDocAccessFields_autoUndone_Create = {
+  __typename?: 'CapturedSmsDocAccessFields_autoUndone_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type CapturedSmsDocAccessFields_autoUndone_Delete = {
+  __typename?: 'CapturedSmsDocAccessFields_autoUndone_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type CapturedSmsDocAccessFields_autoUndone_Read = {
+  __typename?: 'CapturedSmsDocAccessFields_autoUndone_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type CapturedSmsDocAccessFields_autoUndone_Update = {
+  __typename?: 'CapturedSmsDocAccessFields_autoUndone_Update';
   permission: Scalars['Boolean']['output'];
 };
 
@@ -4692,6 +4752,8 @@ export type CapturedSmsDocAccessFields_user_Update = {
 export type CapturedSmsFields = {
   __typename?: 'CapturedSmsFields';
   account?: Maybe<CapturedSmsFields_account>;
+  autoConfirmed?: Maybe<CapturedSmsFields_autoConfirmed>;
+  autoUndone?: Maybe<CapturedSmsFields_autoUndone>;
   body?: Maybe<CapturedSmsFields_body>;
   createdAt?: Maybe<CapturedSmsFields_createdAt>;
   hash?: Maybe<CapturedSmsFields_hash>;
@@ -4731,6 +4793,62 @@ export type CapturedSmsFields_account_Read = {
 
 export type CapturedSmsFields_account_Update = {
   __typename?: 'CapturedSmsFields_account_Update';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type CapturedSmsFields_autoConfirmed = {
+  __typename?: 'CapturedSmsFields_autoConfirmed';
+  create?: Maybe<CapturedSmsFields_autoConfirmed_Create>;
+  delete?: Maybe<CapturedSmsFields_autoConfirmed_Delete>;
+  read?: Maybe<CapturedSmsFields_autoConfirmed_Read>;
+  update?: Maybe<CapturedSmsFields_autoConfirmed_Update>;
+};
+
+export type CapturedSmsFields_autoConfirmed_Create = {
+  __typename?: 'CapturedSmsFields_autoConfirmed_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type CapturedSmsFields_autoConfirmed_Delete = {
+  __typename?: 'CapturedSmsFields_autoConfirmed_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type CapturedSmsFields_autoConfirmed_Read = {
+  __typename?: 'CapturedSmsFields_autoConfirmed_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type CapturedSmsFields_autoConfirmed_Update = {
+  __typename?: 'CapturedSmsFields_autoConfirmed_Update';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type CapturedSmsFields_autoUndone = {
+  __typename?: 'CapturedSmsFields_autoUndone';
+  create?: Maybe<CapturedSmsFields_autoUndone_Create>;
+  delete?: Maybe<CapturedSmsFields_autoUndone_Delete>;
+  read?: Maybe<CapturedSmsFields_autoUndone_Read>;
+  update?: Maybe<CapturedSmsFields_autoUndone_Update>;
+};
+
+export type CapturedSmsFields_autoUndone_Create = {
+  __typename?: 'CapturedSmsFields_autoUndone_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type CapturedSmsFields_autoUndone_Delete = {
+  __typename?: 'CapturedSmsFields_autoUndone_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type CapturedSmsFields_autoUndone_Read = {
+  __typename?: 'CapturedSmsFields_autoUndone_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type CapturedSmsFields_autoUndone_Update = {
+  __typename?: 'CapturedSmsFields_autoUndone_Update';
   permission: Scalars['Boolean']['output'];
 };
 
@@ -5126,6 +5244,18 @@ export type CapturedSms_account_operator = {
   not_in?: InputMaybe<Array<InputMaybe<Scalars['JSON']['input']>>>;
 };
 
+export type CapturedSms_autoConfirmed_operator = {
+  equals?: InputMaybe<Scalars['Boolean']['input']>;
+  exists?: InputMaybe<Scalars['Boolean']['input']>;
+  not_equals?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+export type CapturedSms_autoUndone_operator = {
+  equals?: InputMaybe<Scalars['Boolean']['input']>;
+  exists?: InputMaybe<Scalars['Boolean']['input']>;
+  not_equals?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
 export type CapturedSms_body_operator = {
   contains?: InputMaybe<Scalars['String']['input']>;
   equals?: InputMaybe<Scalars['String']['input']>;
@@ -5280,6 +5410,8 @@ export type CapturedSms_where = {
   AND?: InputMaybe<Array<InputMaybe<CapturedSms_where_and>>>;
   OR?: InputMaybe<Array<InputMaybe<CapturedSms_where_or>>>;
   account?: InputMaybe<CapturedSms_account_operator>;
+  autoConfirmed?: InputMaybe<CapturedSms_autoConfirmed_operator>;
+  autoUndone?: InputMaybe<CapturedSms_autoUndone_operator>;
   body?: InputMaybe<CapturedSms_body_operator>;
   createdAt?: InputMaybe<CapturedSms_createdAt_operator>;
   hash?: InputMaybe<CapturedSms_hash_operator>;
@@ -5299,6 +5431,8 @@ export type CapturedSms_where_and = {
   AND?: InputMaybe<Array<InputMaybe<CapturedSms_where_and>>>;
   OR?: InputMaybe<Array<InputMaybe<CapturedSms_where_or>>>;
   account?: InputMaybe<CapturedSms_account_operator>;
+  autoConfirmed?: InputMaybe<CapturedSms_autoConfirmed_operator>;
+  autoUndone?: InputMaybe<CapturedSms_autoUndone_operator>;
   body?: InputMaybe<CapturedSms_body_operator>;
   createdAt?: InputMaybe<CapturedSms_createdAt_operator>;
   hash?: InputMaybe<CapturedSms_hash_operator>;
@@ -5318,6 +5452,8 @@ export type CapturedSms_where_or = {
   AND?: InputMaybe<Array<InputMaybe<CapturedSms_where_and>>>;
   OR?: InputMaybe<Array<InputMaybe<CapturedSms_where_or>>>;
   account?: InputMaybe<CapturedSms_account_operator>;
+  autoConfirmed?: InputMaybe<CapturedSms_autoConfirmed_operator>;
+  autoUndone?: InputMaybe<CapturedSms_autoUndone_operator>;
   body?: InputMaybe<CapturedSms_body_operator>;
   createdAt?: InputMaybe<CapturedSms_createdAt_operator>;
   hash?: InputMaybe<CapturedSms_hash_operator>;
@@ -7690,6 +7826,7 @@ export type Mutation = {
   resetPasswordUser?: Maybe<usersResetPassword>;
   suggestCategory?: Maybe<AICategorySuggestionResult>;
   textToTransaction?: Maybe<AITransactionResult>;
+  undoAutoConfirmedSms?: Maybe<Scalars['Boolean']['output']>;
   unlockUser: Scalars['Boolean']['output'];
   updateAccount?: Maybe<Account>;
   updateAiPrompt?: Maybe<AiPrompt>;
@@ -8152,6 +8289,11 @@ export type MutationsuggestCategoryArgs = {
 export type MutationtextToTransactionArgs = {
   model?: InputMaybe<Scalars['String']['input']>;
   text: Scalars['String']['input'];
+};
+
+
+export type MutationundoAutoConfirmedSmsArgs = {
+  id: Scalars['String']['input'];
 };
 
 
@@ -23808,6 +23950,8 @@ export type UserSetting = {
   id: Scalars['String']['output'];
   locale?: Maybe<Scalars['String']['output']>;
   preferredModel?: Maybe<Scalars['String']['output']>;
+  smsAutoConfirm?: Maybe<Scalars['Boolean']['output']>;
+  smsAutoConfirmMaxAmount?: Maybe<Scalars['Float']['output']>;
   theme?: Maybe<UserSetting_theme>;
   timezone?: Maybe<Scalars['String']['output']>;
   updatedAt?: Maybe<Scalars['DateTime']['output']>;
@@ -23941,6 +24085,22 @@ export type UserSetting_preferredModel_operator = {
   not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
 };
 
+export type UserSetting_smsAutoConfirmMaxAmount_operator = {
+  equals?: InputMaybe<Scalars['Float']['input']>;
+  exists?: InputMaybe<Scalars['Boolean']['input']>;
+  greater_than?: InputMaybe<Scalars['Float']['input']>;
+  greater_than_equal?: InputMaybe<Scalars['Float']['input']>;
+  less_than?: InputMaybe<Scalars['Float']['input']>;
+  less_than_equal?: InputMaybe<Scalars['Float']['input']>;
+  not_equals?: InputMaybe<Scalars['Float']['input']>;
+};
+
+export type UserSetting_smsAutoConfirm_operator = {
+  equals?: InputMaybe<Scalars['Boolean']['input']>;
+  exists?: InputMaybe<Scalars['Boolean']['input']>;
+  not_equals?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
 export enum UserSetting_theme {
   dark = 'dark',
   light = 'light',
@@ -24011,6 +24171,8 @@ export type UserSetting_where = {
   id?: InputMaybe<UserSetting_id_operator>;
   locale?: InputMaybe<UserSetting_locale_operator>;
   preferredModel?: InputMaybe<UserSetting_preferredModel_operator>;
+  smsAutoConfirm?: InputMaybe<UserSetting_smsAutoConfirm_operator>;
+  smsAutoConfirmMaxAmount?: InputMaybe<UserSetting_smsAutoConfirmMaxAmount_operator>;
   theme?: InputMaybe<UserSetting_theme_operator>;
   timezone?: InputMaybe<UserSetting_timezone_operator>;
   updatedAt?: InputMaybe<UserSetting_updatedAt_operator>;
@@ -24030,6 +24192,8 @@ export type UserSetting_where_and = {
   id?: InputMaybe<UserSetting_id_operator>;
   locale?: InputMaybe<UserSetting_locale_operator>;
   preferredModel?: InputMaybe<UserSetting_preferredModel_operator>;
+  smsAutoConfirm?: InputMaybe<UserSetting_smsAutoConfirm_operator>;
+  smsAutoConfirmMaxAmount?: InputMaybe<UserSetting_smsAutoConfirmMaxAmount_operator>;
   theme?: InputMaybe<UserSetting_theme_operator>;
   timezone?: InputMaybe<UserSetting_timezone_operator>;
   updatedAt?: InputMaybe<UserSetting_updatedAt_operator>;
@@ -24049,6 +24213,8 @@ export type UserSetting_where_or = {
   id?: InputMaybe<UserSetting_id_operator>;
   locale?: InputMaybe<UserSetting_locale_operator>;
   preferredModel?: InputMaybe<UserSetting_preferredModel_operator>;
+  smsAutoConfirm?: InputMaybe<UserSetting_smsAutoConfirm_operator>;
+  smsAutoConfirmMaxAmount?: InputMaybe<UserSetting_smsAutoConfirmMaxAmount_operator>;
   theme?: InputMaybe<UserSetting_theme_operator>;
   timezone?: InputMaybe<UserSetting_timezone_operator>;
   updatedAt?: InputMaybe<UserSetting_updatedAt_operator>;
@@ -24105,6 +24271,8 @@ export type UserSettingsDocAccessFields = {
   hfApiKey?: Maybe<UserSettingsDocAccessFields_hfApiKey>;
   locale?: Maybe<UserSettingsDocAccessFields_locale>;
   preferredModel?: Maybe<UserSettingsDocAccessFields_preferredModel>;
+  smsAutoConfirm?: Maybe<UserSettingsDocAccessFields_smsAutoConfirm>;
+  smsAutoConfirmMaxAmount?: Maybe<UserSettingsDocAccessFields_smsAutoConfirmMaxAmount>;
   theme?: Maybe<UserSettingsDocAccessFields_theme>;
   timezone?: Maybe<UserSettingsDocAccessFields_timezone>;
   updatedAt?: Maybe<UserSettingsDocAccessFields_updatedAt>;
@@ -24363,6 +24531,62 @@ export type UserSettingsDocAccessFields_preferredModel_Update = {
   permission: Scalars['Boolean']['output'];
 };
 
+export type UserSettingsDocAccessFields_smsAutoConfirm = {
+  __typename?: 'UserSettingsDocAccessFields_smsAutoConfirm';
+  create?: Maybe<UserSettingsDocAccessFields_smsAutoConfirm_Create>;
+  delete?: Maybe<UserSettingsDocAccessFields_smsAutoConfirm_Delete>;
+  read?: Maybe<UserSettingsDocAccessFields_smsAutoConfirm_Read>;
+  update?: Maybe<UserSettingsDocAccessFields_smsAutoConfirm_Update>;
+};
+
+export type UserSettingsDocAccessFields_smsAutoConfirmMaxAmount = {
+  __typename?: 'UserSettingsDocAccessFields_smsAutoConfirmMaxAmount';
+  create?: Maybe<UserSettingsDocAccessFields_smsAutoConfirmMaxAmount_Create>;
+  delete?: Maybe<UserSettingsDocAccessFields_smsAutoConfirmMaxAmount_Delete>;
+  read?: Maybe<UserSettingsDocAccessFields_smsAutoConfirmMaxAmount_Read>;
+  update?: Maybe<UserSettingsDocAccessFields_smsAutoConfirmMaxAmount_Update>;
+};
+
+export type UserSettingsDocAccessFields_smsAutoConfirmMaxAmount_Create = {
+  __typename?: 'UserSettingsDocAccessFields_smsAutoConfirmMaxAmount_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type UserSettingsDocAccessFields_smsAutoConfirmMaxAmount_Delete = {
+  __typename?: 'UserSettingsDocAccessFields_smsAutoConfirmMaxAmount_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type UserSettingsDocAccessFields_smsAutoConfirmMaxAmount_Read = {
+  __typename?: 'UserSettingsDocAccessFields_smsAutoConfirmMaxAmount_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type UserSettingsDocAccessFields_smsAutoConfirmMaxAmount_Update = {
+  __typename?: 'UserSettingsDocAccessFields_smsAutoConfirmMaxAmount_Update';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type UserSettingsDocAccessFields_smsAutoConfirm_Create = {
+  __typename?: 'UserSettingsDocAccessFields_smsAutoConfirm_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type UserSettingsDocAccessFields_smsAutoConfirm_Delete = {
+  __typename?: 'UserSettingsDocAccessFields_smsAutoConfirm_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type UserSettingsDocAccessFields_smsAutoConfirm_Read = {
+  __typename?: 'UserSettingsDocAccessFields_smsAutoConfirm_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type UserSettingsDocAccessFields_smsAutoConfirm_Update = {
+  __typename?: 'UserSettingsDocAccessFields_smsAutoConfirm_Update';
+  permission: Scalars['Boolean']['output'];
+};
+
 export type UserSettingsDocAccessFields_theme = {
   __typename?: 'UserSettingsDocAccessFields_theme';
   create?: Maybe<UserSettingsDocAccessFields_theme_Create>;
@@ -24486,6 +24710,8 @@ export type UserSettingsFields = {
   hfApiKey?: Maybe<UserSettingsFields_hfApiKey>;
   locale?: Maybe<UserSettingsFields_locale>;
   preferredModel?: Maybe<UserSettingsFields_preferredModel>;
+  smsAutoConfirm?: Maybe<UserSettingsFields_smsAutoConfirm>;
+  smsAutoConfirmMaxAmount?: Maybe<UserSettingsFields_smsAutoConfirmMaxAmount>;
   theme?: Maybe<UserSettingsFields_theme>;
   timezone?: Maybe<UserSettingsFields_timezone>;
   updatedAt?: Maybe<UserSettingsFields_updatedAt>;
@@ -24741,6 +24967,62 @@ export type UserSettingsFields_preferredModel_Read = {
 
 export type UserSettingsFields_preferredModel_Update = {
   __typename?: 'UserSettingsFields_preferredModel_Update';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type UserSettingsFields_smsAutoConfirm = {
+  __typename?: 'UserSettingsFields_smsAutoConfirm';
+  create?: Maybe<UserSettingsFields_smsAutoConfirm_Create>;
+  delete?: Maybe<UserSettingsFields_smsAutoConfirm_Delete>;
+  read?: Maybe<UserSettingsFields_smsAutoConfirm_Read>;
+  update?: Maybe<UserSettingsFields_smsAutoConfirm_Update>;
+};
+
+export type UserSettingsFields_smsAutoConfirmMaxAmount = {
+  __typename?: 'UserSettingsFields_smsAutoConfirmMaxAmount';
+  create?: Maybe<UserSettingsFields_smsAutoConfirmMaxAmount_Create>;
+  delete?: Maybe<UserSettingsFields_smsAutoConfirmMaxAmount_Delete>;
+  read?: Maybe<UserSettingsFields_smsAutoConfirmMaxAmount_Read>;
+  update?: Maybe<UserSettingsFields_smsAutoConfirmMaxAmount_Update>;
+};
+
+export type UserSettingsFields_smsAutoConfirmMaxAmount_Create = {
+  __typename?: 'UserSettingsFields_smsAutoConfirmMaxAmount_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type UserSettingsFields_smsAutoConfirmMaxAmount_Delete = {
+  __typename?: 'UserSettingsFields_smsAutoConfirmMaxAmount_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type UserSettingsFields_smsAutoConfirmMaxAmount_Read = {
+  __typename?: 'UserSettingsFields_smsAutoConfirmMaxAmount_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type UserSettingsFields_smsAutoConfirmMaxAmount_Update = {
+  __typename?: 'UserSettingsFields_smsAutoConfirmMaxAmount_Update';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type UserSettingsFields_smsAutoConfirm_Create = {
+  __typename?: 'UserSettingsFields_smsAutoConfirm_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type UserSettingsFields_smsAutoConfirm_Delete = {
+  __typename?: 'UserSettingsFields_smsAutoConfirm_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type UserSettingsFields_smsAutoConfirm_Read = {
+  __typename?: 'UserSettingsFields_smsAutoConfirm_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type UserSettingsFields_smsAutoConfirm_Update = {
+  __typename?: 'UserSettingsFields_smsAutoConfirm_Update';
   permission: Scalars['Boolean']['output'];
 };
 
@@ -26182,6 +26464,8 @@ export type mutationAppSetting_Ai_ModelsInput = {
 
 export type mutationCapturedSmsInput = {
   account?: InputMaybe<Scalars['String']['input']>;
+  autoConfirmed?: InputMaybe<Scalars['Boolean']['input']>;
+  autoUndone?: InputMaybe<Scalars['Boolean']['input']>;
   body: Scalars['String']['input'];
   createdAt?: InputMaybe<Scalars['String']['input']>;
   hash: Scalars['String']['input'];
@@ -26198,6 +26482,8 @@ export type mutationCapturedSmsInput = {
 
 export type mutationCapturedSmsUpdateInput = {
   account?: InputMaybe<Scalars['String']['input']>;
+  autoConfirmed?: InputMaybe<Scalars['Boolean']['input']>;
+  autoUndone?: InputMaybe<Scalars['Boolean']['input']>;
   body?: InputMaybe<Scalars['String']['input']>;
   createdAt?: InputMaybe<Scalars['String']['input']>;
   hash?: InputMaybe<Scalars['String']['input']>;
@@ -26825,6 +27111,8 @@ export type mutationUserSettingInput = {
   hfApiKey?: InputMaybe<Scalars['String']['input']>;
   locale?: InputMaybe<Scalars['String']['input']>;
   preferredModel?: InputMaybe<Scalars['String']['input']>;
+  smsAutoConfirm?: InputMaybe<Scalars['Boolean']['input']>;
+  smsAutoConfirmMaxAmount?: InputMaybe<Scalars['Float']['input']>;
   theme?: InputMaybe<UserSetting_theme_MutationInput>;
   timezone?: InputMaybe<Scalars['String']['input']>;
   updatedAt?: InputMaybe<Scalars['String']['input']>;
@@ -26841,6 +27129,8 @@ export type mutationUserSettingUpdateInput = {
   hfApiKey?: InputMaybe<Scalars['String']['input']>;
   locale?: InputMaybe<Scalars['String']['input']>;
   preferredModel?: InputMaybe<Scalars['String']['input']>;
+  smsAutoConfirm?: InputMaybe<Scalars['Boolean']['input']>;
+  smsAutoConfirmMaxAmount?: InputMaybe<Scalars['Float']['input']>;
   theme?: InputMaybe<UserSettingUpdate_theme_MutationInput>;
   timezone?: InputMaybe<Scalars['String']['input']>;
   updatedAt?: InputMaybe<Scalars['String']['input']>;
@@ -27558,6 +27848,20 @@ export type DismissCapturedSmsMutationVariables = Exact<{
 
 export type DismissCapturedSmsMutation = { __typename?: 'Mutation', dismissCapturedSms?: boolean | null };
 
+export type GetAutoConfirmedSmsQueryVariables = Exact<{
+  since: Scalars['DateTime']['input'];
+}>;
+
+
+export type GetAutoConfirmedSmsQuery = { __typename?: 'Query', CapturedSmsList?: { __typename?: 'CapturedSmsList', docs: Array<{ __typename?: 'CapturedSms', id: string, receivedAt: any, parsed?: any | null, transaction?: { __typename?: 'Transaction', id: string, title: string, amount: string, type: Transaction_type } | null }> } | null };
+
+export type UndoAutoConfirmedSmsMutationVariables = Exact<{
+  id: Scalars['String']['input'];
+}>;
+
+
+export type UndoAutoConfirmedSmsMutation = { __typename?: 'Mutation', undoAutoConfirmedSms?: boolean | null };
+
 export type GetBalanceChecksQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -27685,14 +27989,14 @@ export type DeleteTransactionMutationVariables = Exact<{
 
 export type DeleteTransactionMutation = { __typename?: 'Mutation', deleteTransaction?: { __typename?: 'Transaction', id: string } | null };
 
-export type UserSettingsFieldsFragment = { __typename?: 'UserSetting', id: string, currency?: string | null, timezone?: string | null, locale?: string | null, theme?: UserSetting_theme | null, geminiApiKey?: string | null, hfApiKey?: string | null, preferredModel?: string | null, allowFallback?: boolean | null, categoryAiMethod?: UserSetting_categoryAiMethod | null, createdAt?: any | null, updatedAt?: any | null, defaultAccount?: { __typename?: 'Account', id: string, name: string, icon: string } | null };
+export type UserSettingsFieldsFragment = { __typename?: 'UserSetting', id: string, currency?: string | null, timezone?: string | null, locale?: string | null, theme?: UserSetting_theme | null, geminiApiKey?: string | null, hfApiKey?: string | null, preferredModel?: string | null, allowFallback?: boolean | null, categoryAiMethod?: UserSetting_categoryAiMethod | null, smsAutoConfirm?: boolean | null, smsAutoConfirmMaxAmount?: number | null, createdAt?: any | null, updatedAt?: any | null, defaultAccount?: { __typename?: 'Account', id: string, name: string, icon: string } | null };
 
 export type GetUserSettingsQueryVariables = Exact<{
   userId?: InputMaybe<Scalars['JSON']['input']>;
 }>;
 
 
-export type GetUserSettingsQuery = { __typename?: 'Query', UserSettings?: { __typename?: 'UserSettings', docs: Array<{ __typename?: 'UserSetting', id: string, currency?: string | null, timezone?: string | null, locale?: string | null, theme?: UserSetting_theme | null, geminiApiKey?: string | null, hfApiKey?: string | null, preferredModel?: string | null, allowFallback?: boolean | null, categoryAiMethod?: UserSetting_categoryAiMethod | null, createdAt?: any | null, updatedAt?: any | null, defaultAccount?: { __typename?: 'Account', id: string, name: string, icon: string } | null }> } | null };
+export type GetUserSettingsQuery = { __typename?: 'Query', UserSettings?: { __typename?: 'UserSettings', docs: Array<{ __typename?: 'UserSetting', id: string, currency?: string | null, timezone?: string | null, locale?: string | null, theme?: UserSetting_theme | null, geminiApiKey?: string | null, hfApiKey?: string | null, preferredModel?: string | null, allowFallback?: boolean | null, categoryAiMethod?: UserSetting_categoryAiMethod | null, smsAutoConfirm?: boolean | null, smsAutoConfirmMaxAmount?: number | null, createdAt?: any | null, updatedAt?: any | null, defaultAccount?: { __typename?: 'Account', id: string, name: string, icon: string } | null }> } | null };
 
 export type UpdateUserSettingsMutationVariables = Exact<{
   id: Scalars['String']['input'];
@@ -27700,7 +28004,7 @@ export type UpdateUserSettingsMutationVariables = Exact<{
 }>;
 
 
-export type UpdateUserSettingsMutation = { __typename?: 'Mutation', updateUserSetting?: { __typename?: 'UserSetting', id: string, currency?: string | null, timezone?: string | null, locale?: string | null, theme?: UserSetting_theme | null, geminiApiKey?: string | null, hfApiKey?: string | null, preferredModel?: string | null, allowFallback?: boolean | null, categoryAiMethod?: UserSetting_categoryAiMethod | null, createdAt?: any | null, updatedAt?: any | null, defaultAccount?: { __typename?: 'Account', id: string, name: string, icon: string } | null } | null };
+export type UpdateUserSettingsMutation = { __typename?: 'Mutation', updateUserSetting?: { __typename?: 'UserSetting', id: string, currency?: string | null, timezone?: string | null, locale?: string | null, theme?: UserSetting_theme | null, geminiApiKey?: string | null, hfApiKey?: string | null, preferredModel?: string | null, allowFallback?: boolean | null, categoryAiMethod?: UserSetting_categoryAiMethod | null, smsAutoConfirm?: boolean | null, smsAutoConfirmMaxAmount?: number | null, createdAt?: any | null, updatedAt?: any | null, defaultAccount?: { __typename?: 'Account', id: string, name: string, icon: string } | null } | null };
 
 export type UpdateUserMutationVariables = Exact<{
   id: Scalars['String']['input'];
@@ -27727,7 +28031,7 @@ export const TransactionPersonFieldsFragmentDoc = {"kind":"Document","definition
 export const TransactionTagFieldsFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"TransactionTagFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Tag"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}},{"kind":"Field","name":{"kind":"Name","value":"color"}},{"kind":"Field","name":{"kind":"Name","value":"bgColor"}}]}}]} as unknown as DocumentNode<TransactionTagFieldsFragment, unknown>;
 export const TransactionAttachmentFieldsFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"TransactionAttachmentFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Media"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"thumbnailURL"}},{"kind":"Field","name":{"kind":"Name","value":"mimeType"}},{"kind":"Field","name":{"kind":"Name","value":"filesize"}},{"kind":"Field","name":{"kind":"Name","value":"filename"}},{"kind":"Field","name":{"kind":"Name","value":"width"}},{"kind":"Field","name":{"kind":"Name","value":"height"}}]}}]} as unknown as DocumentNode<TransactionAttachmentFieldsFragment, unknown>;
 export const TransactionFieldsFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"TransactionFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Transaction"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"amount"}},{"kind":"Field","name":{"kind":"Name","value":"date"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"note"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"category"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"TransactionCategoryFields"}}]}},{"kind":"Field","name":{"kind":"Name","value":"account"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"TransactionAccountFields"}}]}},{"kind":"Field","name":{"kind":"Name","value":"toAccount"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"TransactionAccountFields"}}]}},{"kind":"Field","name":{"kind":"Name","value":"person"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"TransactionPersonFields"}}]}},{"kind":"Field","name":{"kind":"Name","value":"shares"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"amount"}},{"kind":"Field","name":{"kind":"Name","value":"person"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"TransactionPersonFields"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"myShare"}},{"kind":"Field","name":{"kind":"Name","value":"tags"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"TransactionTagFields"}}]}},{"kind":"Field","name":{"kind":"Name","value":"attachments"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"TransactionAttachmentFields"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"TransactionCategoryFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Category"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}},{"kind":"Field","name":{"kind":"Name","value":"color"}},{"kind":"Field","name":{"kind":"Name","value":"bgColor"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"TransactionAccountFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Account"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}},{"kind":"Field","name":{"kind":"Name","value":"bgColor"}},{"kind":"Field","name":{"kind":"Name","value":"color"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"thumbnailURL"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"TransactionPersonFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Person"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"phone"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"thumbnailURL"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"TransactionTagFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Tag"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}},{"kind":"Field","name":{"kind":"Name","value":"color"}},{"kind":"Field","name":{"kind":"Name","value":"bgColor"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"TransactionAttachmentFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Media"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"thumbnailURL"}},{"kind":"Field","name":{"kind":"Name","value":"mimeType"}},{"kind":"Field","name":{"kind":"Name","value":"filesize"}},{"kind":"Field","name":{"kind":"Name","value":"filename"}},{"kind":"Field","name":{"kind":"Name","value":"width"}},{"kind":"Field","name":{"kind":"Name","value":"height"}}]}}]} as unknown as DocumentNode<TransactionFieldsFragment, unknown>;
-export const UserSettingsFieldsFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserSettingsFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"UserSetting"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"currency"}},{"kind":"Field","name":{"kind":"Name","value":"timezone"}},{"kind":"Field","name":{"kind":"Name","value":"locale"}},{"kind":"Field","name":{"kind":"Name","value":"theme"}},{"kind":"Field","name":{"kind":"Name","value":"geminiApiKey"}},{"kind":"Field","name":{"kind":"Name","value":"hfApiKey"}},{"kind":"Field","name":{"kind":"Name","value":"preferredModel"}},{"kind":"Field","name":{"kind":"Name","value":"allowFallback"}},{"kind":"Field","name":{"kind":"Name","value":"categoryAiMethod"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"defaultAccount"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}}]}}]}}]} as unknown as DocumentNode<UserSettingsFieldsFragment, unknown>;
+export const UserSettingsFieldsFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserSettingsFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"UserSetting"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"currency"}},{"kind":"Field","name":{"kind":"Name","value":"timezone"}},{"kind":"Field","name":{"kind":"Name","value":"locale"}},{"kind":"Field","name":{"kind":"Name","value":"theme"}},{"kind":"Field","name":{"kind":"Name","value":"geminiApiKey"}},{"kind":"Field","name":{"kind":"Name","value":"hfApiKey"}},{"kind":"Field","name":{"kind":"Name","value":"preferredModel"}},{"kind":"Field","name":{"kind":"Name","value":"allowFallback"}},{"kind":"Field","name":{"kind":"Name","value":"categoryAiMethod"}},{"kind":"Field","name":{"kind":"Name","value":"smsAutoConfirm"}},{"kind":"Field","name":{"kind":"Name","value":"smsAutoConfirmMaxAmount"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"defaultAccount"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}}]}}]}}]} as unknown as DocumentNode<UserSettingsFieldsFragment, unknown>;
 export const GetAccountsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetAccounts"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"page"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"limit"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"sort"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"Accounts"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"page"},"value":{"kind":"Variable","name":{"kind":"Name","value":"page"}}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"Variable","name":{"kind":"Name","value":"limit"}}},{"kind":"Argument","name":{"kind":"Name","value":"sort"},"value":{"kind":"Variable","name":{"kind":"Name","value":"sort"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"docs"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"AccountFields"}}]}},{"kind":"Field","name":{"kind":"Name","value":"totalDocs"}},{"kind":"Field","name":{"kind":"Name","value":"page"}},{"kind":"Field","name":{"kind":"Name","value":"totalPages"}},{"kind":"Field","name":{"kind":"Name","value":"hasNextPage"}},{"kind":"Field","name":{"kind":"Name","value":"hasPrevPage"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"AccountFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Account"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}},{"kind":"Field","name":{"kind":"Name","value":"bgColor"}},{"kind":"Field","name":{"kind":"Name","value":"color"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"smsIdentifiers"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"balance"}},{"kind":"Field","name":{"kind":"Name","value":"totalTransactions"}},{"kind":"Field","name":{"kind":"Name","value":"lastTransactionAt"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"thumbnailURL"}}]}}]}}]} as unknown as DocumentNode<GetAccountsQuery, GetAccountsQueryVariables>;
 export const GetAccountDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetAccount"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"Account"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"AccountFields"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"AccountFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Account"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}},{"kind":"Field","name":{"kind":"Name","value":"bgColor"}},{"kind":"Field","name":{"kind":"Name","value":"color"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"smsIdentifiers"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"balance"}},{"kind":"Field","name":{"kind":"Name","value":"totalTransactions"}},{"kind":"Field","name":{"kind":"Name","value":"lastTransactionAt"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"thumbnailURL"}}]}}]}}]} as unknown as DocumentNode<GetAccountQuery, GetAccountQueryVariables>;
 export const CreateAccountDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateAccount"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"data"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"mutationAccountInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createAccount"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"data"},"value":{"kind":"Variable","name":{"kind":"Name","value":"data"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"AccountFields"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"AccountFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Account"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}},{"kind":"Field","name":{"kind":"Name","value":"bgColor"}},{"kind":"Field","name":{"kind":"Name","value":"color"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"smsIdentifiers"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"balance"}},{"kind":"Field","name":{"kind":"Name","value":"totalTransactions"}},{"kind":"Field","name":{"kind":"Name","value":"lastTransactionAt"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"thumbnailURL"}}]}}]}}]} as unknown as DocumentNode<CreateAccountMutation, CreateAccountMutationVariables>;
@@ -27772,6 +28076,8 @@ export const GetPendingSmsDocument = {"kind":"Document","definitions":[{"kind":"
 export const GetCapturedSmsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetCapturedSms"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"CapturedSms"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"CapturedSmsFields"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"CapturedSmsFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"CapturedSms"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"sender"}},{"kind":"Field","name":{"kind":"Name","value":"body"}},{"kind":"Field","name":{"kind":"Name","value":"receivedAt"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"parsed"}},{"kind":"Field","name":{"kind":"Name","value":"suggestion"}},{"kind":"Field","name":{"kind":"Name","value":"account"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]} as unknown as DocumentNode<GetCapturedSmsQuery, GetCapturedSmsQueryVariables>;
 export const ConfirmCapturedSmsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"ConfirmCapturedSms"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"overrides"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"SmsConfirmOverrides"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"confirmCapturedSms"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}},{"kind":"Argument","name":{"kind":"Name","value":"overrides"},"value":{"kind":"Variable","name":{"kind":"Name","value":"overrides"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"transaction"}},{"kind":"Field","name":{"kind":"Name","value":"linked"}}]}}]}}]} as unknown as DocumentNode<ConfirmCapturedSmsMutation, ConfirmCapturedSmsMutationVariables>;
 export const DismissCapturedSmsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"DismissCapturedSms"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"dismissCapturedSms"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}]}]}}]} as unknown as DocumentNode<DismissCapturedSmsMutation, DismissCapturedSmsMutationVariables>;
+export const GetAutoConfirmedSmsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetAutoConfirmedSms"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"since"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"DateTime"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"CapturedSmsList"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"autoConfirmed"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"equals"},"value":{"kind":"BooleanValue","value":true}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"receivedAt"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"greater_than_equal"},"value":{"kind":"Variable","name":{"kind":"Name","value":"since"}}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"sort"},"value":{"kind":"StringValue","value":"-receivedAt","block":false}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"IntValue","value":"20"}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"docs"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"receivedAt"}},{"kind":"Field","name":{"kind":"Name","value":"parsed"}},{"kind":"Field","name":{"kind":"Name","value":"transaction"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"amount"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]}}]}}]}}]} as unknown as DocumentNode<GetAutoConfirmedSmsQuery, GetAutoConfirmedSmsQueryVariables>;
+export const UndoAutoConfirmedSmsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UndoAutoConfirmedSms"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"undoAutoConfirmedSms"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}]}]}}]} as unknown as DocumentNode<UndoAutoConfirmedSmsMutation, UndoAutoConfirmedSmsMutationVariables>;
 export const GetBalanceChecksDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetBalanceChecks"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"balanceChecks"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"account"}},{"kind":"Field","name":{"kind":"Name","value":"accountName"}},{"kind":"Field","name":{"kind":"Name","value":"bankBalance"}},{"kind":"Field","name":{"kind":"Name","value":"pikaBalance"}},{"kind":"Field","name":{"kind":"Name","value":"difference"}},{"kind":"Field","name":{"kind":"Name","value":"matched"}},{"kind":"Field","name":{"kind":"Name","value":"asOf"}},{"kind":"Field","name":{"kind":"Name","value":"sms"}},{"kind":"Field","name":{"kind":"Name","value":"lastMatchedAt"}},{"kind":"Field","name":{"kind":"Name","value":"firstOffAt"}},{"kind":"Field","name":{"kind":"Name","value":"pending"}}]}}]}}]} as unknown as DocumentNode<GetBalanceChecksQuery, GetBalanceChecksQueryVariables>;
 export const GetTagsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetTags"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"page"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"limit"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"sort"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"Tags"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"page"},"value":{"kind":"Variable","name":{"kind":"Name","value":"page"}}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"Variable","name":{"kind":"Name","value":"limit"}}},{"kind":"Argument","name":{"kind":"Name","value":"sort"},"value":{"kind":"Variable","name":{"kind":"Name","value":"sort"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"docs"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"TagFields"}}]}},{"kind":"Field","name":{"kind":"Name","value":"totalDocs"}},{"kind":"Field","name":{"kind":"Name","value":"page"}},{"kind":"Field","name":{"kind":"Name","value":"totalPages"}},{"kind":"Field","name":{"kind":"Name","value":"hasNextPage"}},{"kind":"Field","name":{"kind":"Name","value":"hasPrevPage"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"TagFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Tag"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}},{"kind":"Field","name":{"kind":"Name","value":"color"}},{"kind":"Field","name":{"kind":"Name","value":"bgColor"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"user"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]} as unknown as DocumentNode<GetTagsQuery, GetTagsQueryVariables>;
 export const GetTagDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetTag"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"Tag"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"TagFields"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"TagFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Tag"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}},{"kind":"Field","name":{"kind":"Name","value":"color"}},{"kind":"Field","name":{"kind":"Name","value":"bgColor"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"user"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]} as unknown as DocumentNode<GetTagQuery, GetTagQueryVariables>;
@@ -27787,6 +28093,6 @@ export const GetTransactionDocument = {"kind":"Document","definitions":[{"kind":
 export const CreateTransactionDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateTransaction"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"data"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"mutationTransactionInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createTransaction"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"data"},"value":{"kind":"Variable","name":{"kind":"Name","value":"data"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"TransactionFields"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"TransactionCategoryFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Category"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}},{"kind":"Field","name":{"kind":"Name","value":"color"}},{"kind":"Field","name":{"kind":"Name","value":"bgColor"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"TransactionAccountFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Account"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}},{"kind":"Field","name":{"kind":"Name","value":"bgColor"}},{"kind":"Field","name":{"kind":"Name","value":"color"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"thumbnailURL"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"TransactionPersonFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Person"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"phone"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"thumbnailURL"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"TransactionTagFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Tag"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}},{"kind":"Field","name":{"kind":"Name","value":"color"}},{"kind":"Field","name":{"kind":"Name","value":"bgColor"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"TransactionAttachmentFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Media"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"thumbnailURL"}},{"kind":"Field","name":{"kind":"Name","value":"mimeType"}},{"kind":"Field","name":{"kind":"Name","value":"filesize"}},{"kind":"Field","name":{"kind":"Name","value":"filename"}},{"kind":"Field","name":{"kind":"Name","value":"width"}},{"kind":"Field","name":{"kind":"Name","value":"height"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"TransactionFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Transaction"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"amount"}},{"kind":"Field","name":{"kind":"Name","value":"date"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"note"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"category"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"TransactionCategoryFields"}}]}},{"kind":"Field","name":{"kind":"Name","value":"account"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"TransactionAccountFields"}}]}},{"kind":"Field","name":{"kind":"Name","value":"toAccount"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"TransactionAccountFields"}}]}},{"kind":"Field","name":{"kind":"Name","value":"person"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"TransactionPersonFields"}}]}},{"kind":"Field","name":{"kind":"Name","value":"shares"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"amount"}},{"kind":"Field","name":{"kind":"Name","value":"person"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"TransactionPersonFields"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"myShare"}},{"kind":"Field","name":{"kind":"Name","value":"tags"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"TransactionTagFields"}}]}},{"kind":"Field","name":{"kind":"Name","value":"attachments"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"TransactionAttachmentFields"}}]}}]}}]} as unknown as DocumentNode<CreateTransactionMutation, CreateTransactionMutationVariables>;
 export const UpdateTransactionDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateTransaction"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"data"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"mutationTransactionUpdateInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateTransaction"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}},{"kind":"Argument","name":{"kind":"Name","value":"data"},"value":{"kind":"Variable","name":{"kind":"Name","value":"data"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"TransactionFields"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"TransactionCategoryFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Category"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}},{"kind":"Field","name":{"kind":"Name","value":"color"}},{"kind":"Field","name":{"kind":"Name","value":"bgColor"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"TransactionAccountFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Account"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}},{"kind":"Field","name":{"kind":"Name","value":"bgColor"}},{"kind":"Field","name":{"kind":"Name","value":"color"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"thumbnailURL"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"TransactionPersonFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Person"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"phone"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"thumbnailURL"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"TransactionTagFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Tag"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}},{"kind":"Field","name":{"kind":"Name","value":"color"}},{"kind":"Field","name":{"kind":"Name","value":"bgColor"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"TransactionAttachmentFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Media"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"thumbnailURL"}},{"kind":"Field","name":{"kind":"Name","value":"mimeType"}},{"kind":"Field","name":{"kind":"Name","value":"filesize"}},{"kind":"Field","name":{"kind":"Name","value":"filename"}},{"kind":"Field","name":{"kind":"Name","value":"width"}},{"kind":"Field","name":{"kind":"Name","value":"height"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"TransactionFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Transaction"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"amount"}},{"kind":"Field","name":{"kind":"Name","value":"date"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"note"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"category"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"TransactionCategoryFields"}}]}},{"kind":"Field","name":{"kind":"Name","value":"account"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"TransactionAccountFields"}}]}},{"kind":"Field","name":{"kind":"Name","value":"toAccount"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"TransactionAccountFields"}}]}},{"kind":"Field","name":{"kind":"Name","value":"person"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"TransactionPersonFields"}}]}},{"kind":"Field","name":{"kind":"Name","value":"shares"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"amount"}},{"kind":"Field","name":{"kind":"Name","value":"person"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"TransactionPersonFields"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"myShare"}},{"kind":"Field","name":{"kind":"Name","value":"tags"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"TransactionTagFields"}}]}},{"kind":"Field","name":{"kind":"Name","value":"attachments"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"TransactionAttachmentFields"}}]}}]}}]} as unknown as DocumentNode<UpdateTransactionMutation, UpdateTransactionMutationVariables>;
 export const DeleteTransactionDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"DeleteTransaction"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deleteTransaction"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]} as unknown as DocumentNode<DeleteTransactionMutation, DeleteTransactionMutationVariables>;
-export const GetUserSettingsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetUserSettings"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"userId"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"JSON"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"UserSettings"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"IntValue","value":"1"}},{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"user"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"equals"},"value":{"kind":"Variable","name":{"kind":"Name","value":"userId"}}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"docs"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserSettingsFields"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserSettingsFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"UserSetting"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"currency"}},{"kind":"Field","name":{"kind":"Name","value":"timezone"}},{"kind":"Field","name":{"kind":"Name","value":"locale"}},{"kind":"Field","name":{"kind":"Name","value":"theme"}},{"kind":"Field","name":{"kind":"Name","value":"geminiApiKey"}},{"kind":"Field","name":{"kind":"Name","value":"hfApiKey"}},{"kind":"Field","name":{"kind":"Name","value":"preferredModel"}},{"kind":"Field","name":{"kind":"Name","value":"allowFallback"}},{"kind":"Field","name":{"kind":"Name","value":"categoryAiMethod"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"defaultAccount"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}}]}}]}}]} as unknown as DocumentNode<GetUserSettingsQuery, GetUserSettingsQueryVariables>;
-export const UpdateUserSettingsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateUserSettings"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"data"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"mutationUserSettingUpdateInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateUserSetting"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}},{"kind":"Argument","name":{"kind":"Name","value":"data"},"value":{"kind":"Variable","name":{"kind":"Name","value":"data"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserSettingsFields"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserSettingsFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"UserSetting"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"currency"}},{"kind":"Field","name":{"kind":"Name","value":"timezone"}},{"kind":"Field","name":{"kind":"Name","value":"locale"}},{"kind":"Field","name":{"kind":"Name","value":"theme"}},{"kind":"Field","name":{"kind":"Name","value":"geminiApiKey"}},{"kind":"Field","name":{"kind":"Name","value":"hfApiKey"}},{"kind":"Field","name":{"kind":"Name","value":"preferredModel"}},{"kind":"Field","name":{"kind":"Name","value":"allowFallback"}},{"kind":"Field","name":{"kind":"Name","value":"categoryAiMethod"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"defaultAccount"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}}]}}]}}]} as unknown as DocumentNode<UpdateUserSettingsMutation, UpdateUserSettingsMutationVariables>;
+export const GetUserSettingsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetUserSettings"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"userId"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"JSON"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"UserSettings"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"IntValue","value":"1"}},{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"user"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"equals"},"value":{"kind":"Variable","name":{"kind":"Name","value":"userId"}}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"docs"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserSettingsFields"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserSettingsFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"UserSetting"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"currency"}},{"kind":"Field","name":{"kind":"Name","value":"timezone"}},{"kind":"Field","name":{"kind":"Name","value":"locale"}},{"kind":"Field","name":{"kind":"Name","value":"theme"}},{"kind":"Field","name":{"kind":"Name","value":"geminiApiKey"}},{"kind":"Field","name":{"kind":"Name","value":"hfApiKey"}},{"kind":"Field","name":{"kind":"Name","value":"preferredModel"}},{"kind":"Field","name":{"kind":"Name","value":"allowFallback"}},{"kind":"Field","name":{"kind":"Name","value":"categoryAiMethod"}},{"kind":"Field","name":{"kind":"Name","value":"smsAutoConfirm"}},{"kind":"Field","name":{"kind":"Name","value":"smsAutoConfirmMaxAmount"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"defaultAccount"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}}]}}]}}]} as unknown as DocumentNode<GetUserSettingsQuery, GetUserSettingsQueryVariables>;
+export const UpdateUserSettingsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateUserSettings"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"data"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"mutationUserSettingUpdateInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateUserSetting"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}},{"kind":"Argument","name":{"kind":"Name","value":"data"},"value":{"kind":"Variable","name":{"kind":"Name","value":"data"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserSettingsFields"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserSettingsFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"UserSetting"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"currency"}},{"kind":"Field","name":{"kind":"Name","value":"timezone"}},{"kind":"Field","name":{"kind":"Name","value":"locale"}},{"kind":"Field","name":{"kind":"Name","value":"theme"}},{"kind":"Field","name":{"kind":"Name","value":"geminiApiKey"}},{"kind":"Field","name":{"kind":"Name","value":"hfApiKey"}},{"kind":"Field","name":{"kind":"Name","value":"preferredModel"}},{"kind":"Field","name":{"kind":"Name","value":"allowFallback"}},{"kind":"Field","name":{"kind":"Name","value":"categoryAiMethod"}},{"kind":"Field","name":{"kind":"Name","value":"smsAutoConfirm"}},{"kind":"Field","name":{"kind":"Name","value":"smsAutoConfirmMaxAmount"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"defaultAccount"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}}]}}]}}]} as unknown as DocumentNode<UpdateUserSettingsMutation, UpdateUserSettingsMutationVariables>;
 export const UpdateUserDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateUser"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"data"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"mutationUserUpdateInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateUser"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}},{"kind":"Argument","name":{"kind":"Name","value":"data"},"value":{"kind":"Variable","name":{"kind":"Name","value":"data"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"thumbnailURL"}}]}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}}]} as unknown as DocumentNode<UpdateUserMutation, UpdateUserMutationVariables>;

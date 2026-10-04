@@ -9,6 +9,8 @@ fragment UserSettingsFields on UserSetting {
   preferredModel
   allowFallback
   categoryAiMethod
+  smsAutoConfirm
+  smsAutoConfirmMaxAmount
   createdAt
   updatedAt
   defaultAccount {
