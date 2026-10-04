@@ -134,3 +134,7 @@ mutation DeleteTransaction($id: String!) {
 query SimilarTransactionIds($query: String!) {
   similarTransactionIds(query: $query)
 }
+
+query CategoryReview {
+  categoryReview
+}

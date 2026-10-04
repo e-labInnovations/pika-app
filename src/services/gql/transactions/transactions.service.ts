@@ -6,6 +6,7 @@ import {
   UpdateTransactionDocument,
   DeleteTransactionDocument,
   SimilarTransactionIdsDocument,
+  CategoryReviewDocument,
   type TransactionFieldsFragment,
   type GetTransactionsQuery,
   type GetTransactionsQueryVariables,
@@ -132,4 +133,18 @@ export const useSimilarTransactionIds = (query: string) => {
     fetchPolicy: 'cache-and-network',
   });
   return { ids: q.length < 3 ? [] : (data?.similarTransactionIds ?? []), loading };
+};
+
+export type CategoryReviewItem = {
+  /** Same title, current and suggested category; newest first. */
+  transactions: { id: string; title: string; amount: string; date: string; type: string }[];
+  current: string;
+  suggested: string;
+  score: number;
+};
+
+/** Recent transactions whose category similar ones disagree with. */
+export const useCategoryReview = () => {
+  const { data, refetch } = useQuery(CategoryReviewDocument, { fetchPolicy: 'cache-and-network' });
+  return { items: (data?.categoryReview ?? []).filter(Boolean) as CategoryReviewItem[], refetch };
 };

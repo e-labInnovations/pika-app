@@ -13,6 +13,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { AccountsRow } from "@/components/home/AccountsRow";
 import { AIAssistantCard } from "@/components/home/AIAssistantCard";
 import { AutoAddedCard } from "@/components/home/AutoAddedCard";
+import { CategoryReviewCard } from "@/components/home/CategoryReviewCard";
 import { BalanceCard } from "@/components/home/BalanceCard";
 import { BalanceMismatchCard } from "@/components/home/BalanceMismatchCard";
 import { HomeHeader } from "@/components/home/HomeHeader";
@@ -95,6 +96,7 @@ export default function HomeScreen() {
         <AutoAddedCard />
         <RecurringCard />
         <WalletCheckCard />
+        <CategoryReviewCard />
         <BalanceMismatchCard />
         <AIAssistantCard
           onOpen={(tab) => {
