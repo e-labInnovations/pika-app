@@ -1,0 +1,3 @@
+query GetRecurringOverview {
+  recurringOverview
+}

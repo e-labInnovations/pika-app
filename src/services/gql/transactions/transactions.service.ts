@@ -65,6 +65,8 @@ export const TRANSACTION_REFETCH_QUERIES = [
   'GetPerson',
   // Bank-vs-Pika balance comparison on Home
   'GetBalanceChecks',
+  // Paid reminders move on to next month
+  'GetRecurringOverview',
 ];
 
 export const useCreateTransaction = () => {

@@ -19,6 +19,7 @@ import { HomeHeader } from "@/components/home/HomeHeader";
 import { MonthlyCalendarCard } from "@/components/home/MonthlyCalendarCard";
 import { MonthlyPulseCard } from "@/components/home/MonthlyPulseCard";
 import { SmsDeck } from "@/components/home/SmsDeck";
+import { RecurringCard } from "@/components/home/RecurringCard";
 import { SplitsDebtsCard } from "@/components/home/SplitsDebtsCard";
 import { SpendingTagsCard } from "@/components/home/SpendingTagsCard";
 import { TopCategoriesCard } from "@/components/home/TopCategoriesCard";
@@ -91,6 +92,7 @@ export default function HomeScreen() {
         />
         <SmsDeck />
         <AutoAddedCard />
+        <RecurringCard />
         <BalanceMismatchCard />
         <AIAssistantCard
           onOpen={(tab) => {
