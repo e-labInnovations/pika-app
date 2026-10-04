@@ -9,6 +9,7 @@ fragment UserSettingsFields on UserSetting {
   preferredModel
   allowFallback
   categoryAiMethod
+  aiNarrowPrompt
   smsAutoConfirm
   smsAutoConfirmMaxAmount
   smsReplyAction

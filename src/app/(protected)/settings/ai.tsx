@@ -341,6 +341,15 @@ export default function AiSettingsScreen() {
     }
   };
 
+  const handleToggleNarrow = async (next: boolean) => {
+    if (!userSettings?.id) return;
+    try {
+      await updateUserSettings({ id: userSettings.id, data: { aiNarrowPrompt: next } });
+    } catch (err: any) {
+      showAlert({ title: "Error", message: err?.message ?? "Failed to save." });
+    }
+  };
+
   const handleToggleFallback = async (next: boolean) => {
     if (!userSettings?.id || savingFallback) return;
     setAllowFallback(next);
@@ -606,6 +615,33 @@ export default function AiSettingsScreen() {
                   thumbColor="#fff"
                 />
               )}
+            </View>
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                gap: 12,
+                paddingHorizontal: 14,
+                paddingVertical: 12,
+                borderTopWidth: 1,
+                borderTopColor: `${C.outlineVariant}44`,
+              }}
+            >
+              <View style={{ flex: 1 }}>
+                <Text style={{ fontSize: 13, fontWeight: "600", color: C.onSurface }}>
+                  Smaller prompts
+                </Text>
+                <Text style={{ fontSize: 11, color: C.onSurfaceVariant, marginTop: 2 }}>
+                  Send the AI only the categories, tags and people your similar past transactions used. Cheaper and
+                  faster; turn off if it misses a category.
+                </Text>
+              </View>
+              <Switch
+                value={userSettings?.aiNarrowPrompt !== false}
+                onValueChange={handleToggleNarrow}
+                trackColor={{ false: C.outlineVariant, true: C.primary }}
+                thumbColor="#fff"
+              />
             </View>
           </View>
 
