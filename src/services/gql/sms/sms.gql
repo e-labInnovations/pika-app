@@ -1,0 +1,39 @@
+fragment CapturedSmsFields on CapturedSms {
+  id
+  sender
+  body
+  receivedAt
+  status
+  parsed
+  suggestion
+  account {
+    id
+    name
+  }
+}
+
+query GetPendingSms($limit: Int) {
+  CapturedSmsList(where: { status: { equals: pending } }, sort: "-receivedAt", limit: $limit) {
+    docs {
+      ...CapturedSmsFields
+    }
+    totalDocs
+  }
+}
+
+query GetCapturedSms($id: String!) {
+  CapturedSms(id: $id) {
+    ...CapturedSmsFields
+  }
+}
+
+mutation ConfirmCapturedSms($id: String!, $overrides: SmsConfirmOverrides) {
+  confirmCapturedSms(id: $id, overrides: $overrides) {
+    transaction
+    linked
+  }
+}
+
+mutation DismissCapturedSms($id: String!) {
+  dismissCapturedSms(id: $id)
+}

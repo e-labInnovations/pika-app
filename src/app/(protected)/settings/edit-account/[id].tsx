@@ -68,6 +68,7 @@ export default function EditAccountScreen() {
 
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
+  const [smsIdentifiers, setSmsIdentifiers] = useState("");
   const [icon, setIcon] = useState("wallet");
   const [bgColor, setBgColor] = useState("#f59e0b");
   const [color, setColor] = useState("#ffffff");
@@ -87,6 +88,7 @@ export default function EditAccountScreen() {
     if (account) {
       setName(account.name);
       setDescription(account.description ?? "");
+      setSmsIdentifiers(account.smsIdentifiers ?? "");
       setIcon(account.icon ?? "wallet");
       setBgColor(account.bgColor ?? "#f59e0b");
       setColor(account.color ?? "#ffffff");
@@ -167,6 +169,7 @@ export default function EditAccountScreen() {
       data: {
         name: name.trim(),
         description: description.trim() || undefined,
+        smsIdentifiers: smsIdentifiers.trim() || null,
         icon,
         bgColor,
         color,
@@ -323,6 +326,28 @@ export default function EditAccountScreen() {
               returnKeyType="done"
             />
           </View>
+
+        {/* SMS identifiers */}
+        <View className="rounded-2xl bg-surface-mid overflow-hidden">
+          <View className="px-4 pt-3 pb-1">
+            <Text className="text-[11px] font-semibold uppercase tracking-[0.5px] text-on-surface-variant">
+              SMS identifiers
+            </Text>
+          </View>
+          <TextInput
+            value={smsIdentifiers}
+            onChangeText={setSmsIdentifiers}
+            className="px-4 pb-1 text-[16px] text-on-surface"
+            placeholderTextColorClassName="accent-outline"
+            placeholder="e.g. X7497 or xx7618, pluxee-meal"
+            autoCapitalize="none"
+            autoCorrect={false}
+            returnKeyType="done"
+          />
+          <Text className="px-4 pb-3 text-[11px] text-on-surface-variant">
+            How bank SMS name this account: number endings and keywords, comma separated.
+          </Text>
+        </View>
 
           {/* Appearance */}
           <View className="rounded-2xl bg-surface-mid p-4 gap-5">

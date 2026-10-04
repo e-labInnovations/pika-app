@@ -23,6 +23,7 @@ import {
 } from "../services/gql/client";
 import { API_URL } from "../lib/constants";
 import { storage } from "../lib/storage";
+import { forgetSmsToken } from "@/lib/sms-capture";
 import { tokenManager } from "../lib/token-manager";
 
 // Prevent splash from auto-hiding before rehydration completes
@@ -84,6 +85,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   );
 
   const clearSession = useCallback(async () => {
+    forgetSmsToken();
     await storage.clear();
     apolloClient.clearStore();
     setUser(null);

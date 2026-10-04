@@ -5,6 +5,7 @@ fragment AccountFields on Account {
   bgColor
   color
   description
+  smsIdentifiers
   isActive
   balance
   totalTransactions

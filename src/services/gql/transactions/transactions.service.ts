@@ -51,7 +51,7 @@ export const useGetTransaction = (id: string) => {
   };
 };
 
-const TRANSACTION_REFETCH_QUERIES = [
+export const TRANSACTION_REFETCH_QUERIES = [
   'GetTransactions',
   'GetDashboardSummary',
   'GetAccounts',

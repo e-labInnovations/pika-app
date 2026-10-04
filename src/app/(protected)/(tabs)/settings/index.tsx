@@ -18,6 +18,7 @@ import {
 import { UserAvatar } from "@/components/UserAvatar";
 import { useAuth } from "@/context/AuthContext";
 import { useColors } from "@/theme/colors";
+import { smsCaptureAvailable } from "@/lib/sms-capture";
 
 const SECTIONS: SettingSection[] = [
   {
@@ -60,6 +61,18 @@ const SECTIONS: SettingSection[] = [
     color: "#8b5cf6",
     onPress: () => router.push("/settings/ai"),
   },
+  ...(smsCaptureAvailable
+    ? [
+        {
+          id: "sms",
+          title: "Bank SMS",
+          icon: "message-square-text",
+          description: "Turn bank SMS into transactions",
+          color: "#ef4444",
+          onPress: () => router.push("/settings/sms"),
+        },
+      ]
+    : []),
 ];
 
 function chunk<T>(arr: T[], size: number): T[][] {

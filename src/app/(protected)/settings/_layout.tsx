@@ -10,6 +10,7 @@ export default function SettingsLayout() {
       <Stack.Screen name="profile" options={{ title: "Profile" }} />
       <Stack.Screen name="ai" options={{ title: "AI" }} />
       <Stack.Screen name="mcp" options={{ title: "MCP API Keys" }} />
+      <Stack.Screen name="sms" options={{ title: "Bank SMS" }} />
 
       {/* Accounts */}
       <Stack.Screen name="accounts" options={{ title: "Accounts" }} />
