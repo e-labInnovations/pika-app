@@ -3,6 +3,7 @@ fragment PersonFields on Person {
   name
   email
   phone
+  upiIds
   description
   isActive
   avatar {

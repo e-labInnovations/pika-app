@@ -58,6 +58,7 @@ export default function AddPersonScreen() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
+  const [upiIds, setUpiIds] = useState("");
   const [description, setDescription] = useState("");
   const [avatarUri, setAvatarUri] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
@@ -97,6 +98,7 @@ export default function AddPersonScreen() {
         name: trimmedName,
         email: email.trim() || null,
         phone: phone.trim() || null,
+        upiIds: upiIds.trim() || null,
         description: description.trim() || null,
         avatar: avatarId,
       };
@@ -228,6 +230,14 @@ export default function AddPersonScreen() {
             onChangeText={setPhone}
             placeholder="Phone number"
             keyboardType="phone-pad"
+            returnKeyType="next"
+          />
+          <FormField
+            label="UPI IDs / SMS names"
+            value={upiIds}
+            onChangeText={setUpiIds}
+            placeholder="name@okaxis, NAME AS IN SMS"
+            autoCapitalize="none"
             returnKeyType="next"
           />
           <FormField

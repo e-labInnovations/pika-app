@@ -102,6 +102,7 @@ export default function EditPersonScreen() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
+  const [upiIds, setUpiIds] = useState("");
   const [description, setDescription] = useState("");
   const [avatarUri, setAvatarUri] = useState<string | null>(null);
   const [currentAvatarUrl, setCurrentAvatarUrl] = useState<string | null>(null);
@@ -115,6 +116,7 @@ export default function EditPersonScreen() {
       setName(person.name ?? "");
       setEmail(person.email ?? "");
       setPhone(person.phone ?? "");
+      setUpiIds(person.upiIds ?? "");
       setDescription(person.description ?? "");
       setCurrentAvatarUrl(person.avatar?.url ?? null);
     }
@@ -146,6 +148,7 @@ export default function EditPersonScreen() {
         name: trimmedName,
         email: email.trim() || null,
         phone: phone.trim() || null,
+        upiIds: upiIds.trim() || null,
         description: description.trim() || null,
       };
 
@@ -327,6 +330,14 @@ export default function EditPersonScreen() {
             onChangeText={setPhone}
             placeholder="Phone number"
             keyboardType="phone-pad"
+            returnKeyType="next"
+          />
+          <FormField
+            label="UPI IDs / SMS names"
+            value={upiIds}
+            onChangeText={setUpiIds}
+            placeholder="name@okaxis, NAME AS IN SMS"
+            autoCapitalize="none"
             returnKeyType="next"
           />
           <FormField
