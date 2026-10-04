@@ -99,6 +99,8 @@ export type TxFormProps = {
   onAIPress?: () => void;
   /** Local attachments to seed on mount and begin uploading immediately (e.g. AI receipt image) */
   seedAttachments?: { uri: string; mimeType: string; filename: string }[];
+  /** Rendered above the form fields (e.g. the bank SMS being reviewed) */
+  header?: React.ReactNode;
 };
 
 // ── Type mutation map ─────────────────────────────────────────────────────────
@@ -276,6 +278,7 @@ export function TransactionForm({
   saving,
   onAIPress,
   seedAttachments,
+  header,
 }: TxFormProps) {
   const C = useColors();
   const insets = useSafeAreaInsets();
@@ -669,6 +672,8 @@ export function TransactionForm({
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
       >
+        {header}
+
         {/* ── Type selector (matches Categories page style) ── */}
         <TxTypeSelector value={values.type} onChange={handleTypeChange} />
 

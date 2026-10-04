@@ -2,6 +2,7 @@ import { router, useLocalSearchParams } from "expo-router";
 import React from "react";
 import { ActivityIndicator, View } from "react-native";
 import { showAlert } from "@/components/ui/AlertDialog";
+import { OriginalSms } from "@/components/sms/OriginalSms";
 import { TransactionForm, type TxFormValues } from "@/components/transaction/TransactionForm";
 import { useGetAccount } from "@/services/gql/accounts/accounts.service";
 import { useGetCategory } from "@/services/gql/categories/categories.service";
@@ -89,6 +90,7 @@ export default function ReviewSmsScreen() {
       submitLabel="Confirm"
       title="Review SMS"
       saving={saving}
+      header={<OriginalSms sms={sms} collapsedLines={6} style={{ backgroundColor: C.surfaceMid }} />}
     />
   );
 }

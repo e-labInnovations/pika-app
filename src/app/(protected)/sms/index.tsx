@@ -12,9 +12,19 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { DynamicIcon } from "@/components/Icon";
 import { showAlert } from "@/components/ui/AlertDialog";
-import { useFormatMoney } from "@/lib/format-currency";
-import { formatRelativeShort } from "@/lib/format-date";
 import { useGetCategories } from "@/services/gql/categories/categories.service";
+import { useGetTags } from "@/services/gql/tags/tags.service";
+import { useGetAccounts } from "@/services/gql/accounts/accounts.service";
+import { useGetPeople } from "@/services/gql/people/people.service";
+import type {
+  AccountFieldsFragment,
+  CategoryFieldsFragment,
+  PersonFieldsFragment,
+  TagFieldsFragment,
+} from "@/services/gql/types/graphql";
+import type { AITransactionData } from "@/components/transaction/AIAssistantSheet";
+import { TransactionPreviewCard } from "@/components/transaction/TransactionPreviewCard";
+import { OriginalSms } from "@/components/sms/OriginalSms";
 import {
   useConfirmSms,
   useDismissSms,
@@ -30,56 +40,54 @@ export function canQuickConfirm(sms: PendingSms): boolean {
   return s.type !== "transfer" || !!s.toAccount;
 }
 
+type Lookups = {
+  category: (id?: string | null) => CategoryFieldsFragment | null;
+  account: (id?: string | null) => AccountFieldsFragment | null;
+  person: (id?: string | null) => PersonFieldsFragment | null;
+  tags: (ids?: string[] | null) => TagFieldsFragment[];
+};
+
+/** The suggestion in the AI card's shape, with ids resolved to the user's records. */
+function toPreview(sms: PendingSms, find: Lookups): AITransactionData {
+  const s = sms.suggestion;
+  const p = sms.parsed;
+  return {
+    title: s?.title || p?.merchant || "Transaction",
+    amount: parseFloat(p?.amount ?? "0"),
+    type: s?.type ?? p?.type ?? "expense",
+    date: p?.occurredAt ?? sms.receivedAt,
+    category: find.category(s?.category),
+    account: find.account(sms.account?.id),
+    toAccount: find.account(s?.toAccount),
+    person: find.person(s?.person),
+    tags: find.tags(s?.tags),
+  };
+}
+
 function SmsCard({
   sms,
-  categoryName,
+  find,
   busy,
   onConfirm,
   onEdit,
   onDismiss,
 }: {
   sms: PendingSms;
-  categoryName: string | null;
+  find: Lookups;
   busy: boolean;
   onConfirm: () => void;
   onEdit: () => void;
   onDismiss: () => void;
 }) {
   const C = useColors();
-  const fmt = useFormatMoney();
-  const [expanded, setExpanded] = useState(false);
-  const p = sms.parsed;
-  const type = sms.suggestion?.type ?? p?.type ?? "expense";
-  const amount = parseFloat(p?.amount ?? "0");
-  const when = new Date(p?.occurredAt ?? sms.receivedAt);
   const quick = canQuickConfirm(sms);
 
   return (
-    <View className="rounded-2xl bg-surface-mid p-4 gap-3">
-      <View className="flex-row items-start gap-3">
-        <View className="flex-1 gap-0.5">
-          <Text className="text-[15px] font-bold text-on-surface" numberOfLines={1}>
-            {sms.suggestion?.title || p?.merchant || "Transaction"}
-          </Text>
-          <Text className="text-[12px] text-on-surface-variant" numberOfLines={1}>
-            {[sms.account?.name ?? "No account matched", categoryName ?? "No category", formatRelativeShort(when)].join(" · ")}
-          </Text>
-        </View>
-        <Text
-          className={[
-            "text-[16px] font-extrabold",
-            type === "income" ? "text-secondary" : type === "expense" ? "text-tertiary" : "text-on-surface",
-          ].join(" ")}
-        >
-          {type === "income" ? "+" : type === "expense" ? "−" : ""}
-          {fmt(amount)}
-        </Text>
-      </View>
-
-      <TouchableOpacity activeOpacity={0.7} onPress={() => setExpanded((e) => !e)}>
-        <Text className="text-[12px] leading-[17px] text-on-surface-variant" numberOfLines={expanded ? undefined : 2}>
-          {sms.sender}: {sms.body}
-        </Text>
+    <View className="gap-2">
+      <TouchableOpacity activeOpacity={0.85} onPress={onEdit}>
+        <TransactionPreviewCard data={toPreview(sms, find)} missing={{ category: true, account: true }}>
+          <OriginalSms sms={sms} />
+        </TransactionPreviewCard>
       </TouchableOpacity>
 
       <View className="flex-row gap-2">
@@ -138,10 +146,23 @@ export default function PendingSmsScreen() {
   const [busyId, setBusyId] = useState<string | null>(null);
   const [refreshing, setRefreshing] = useState(false);
 
-  const categoryName = useMemo(() => {
-    const byId = new Map((categories ?? []).map((c) => [c.id, c.name]));
-    return (id: string | null | undefined) => (id ? byId.get(id) ?? null : null);
-  }, [categories]);
+  const { tags } = useGetTags({ limit: 500 });
+  const { accounts } = useGetAccounts({ limit: 100 });
+  const { people } = useGetPeople({ limit: 500 });
+
+  const find = useMemo<Lookups>(() => {
+    const index = <T extends { id: string }>(list?: T[]) => new Map((list ?? []).map((x) => [x.id, x]));
+    const cats = index(categories);
+    const accts = index(accounts);
+    const ppl = index(people);
+    const tgs = index(tags);
+    return {
+      category: (id) => (id ? cats.get(id) ?? null : null),
+      account: (id) => (id ? accts.get(id) ?? null : null),
+      person: (id) => (id ? ppl.get(id) ?? null : null),
+      tags: (ids) => (ids ?? []).flatMap((id) => tgs.get(id) ?? []),
+    };
+  }, [categories, accounts, people, tags]);
 
   const run = async (id: string, action: () => Promise<unknown>, failTitle: string) => {
     setBusyId(id);
@@ -182,7 +203,7 @@ export default function PendingSmsScreen() {
       </View>
 
       <ScrollView
-        contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 40, gap: 10 }}
+        contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 40, gap: 20 }}
         showsVerticalScrollIndicator={false}
         refreshControl={
           <RefreshControl
@@ -218,7 +239,7 @@ export default function PendingSmsScreen() {
             <SmsCard
               key={sms.id}
               sms={sms}
-              categoryName={categoryName(sms.suggestion?.category)}
+              find={find}
               busy={busyId === sms.id}
               onConfirm={() => run(sms.id, () => confirmSms(sms.id), "Could not confirm")}
               onEdit={() => router.push(`/sms/${sms.id}`)}
