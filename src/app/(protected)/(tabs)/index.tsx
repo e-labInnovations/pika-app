@@ -20,6 +20,7 @@ import { MonthlyCalendarCard } from "@/components/home/MonthlyCalendarCard";
 import { MonthlyPulseCard } from "@/components/home/MonthlyPulseCard";
 import { SmsDeck } from "@/components/home/SmsDeck";
 import { RecurringCard } from "@/components/home/RecurringCard";
+import { WalletCheckCard } from "@/components/home/WalletCheckCard";
 import { SplitsDebtsCard } from "@/components/home/SplitsDebtsCard";
 import { SpendingTagsCard } from "@/components/home/SpendingTagsCard";
 import { TopCategoriesCard } from "@/components/home/TopCategoriesCard";
@@ -93,6 +94,7 @@ export default function HomeScreen() {
         <SmsDeck />
         <AutoAddedCard />
         <RecurringCard />
+        <WalletCheckCard />
         <BalanceMismatchCard />
         <AIAssistantCard
           onOpen={(tab) => {
