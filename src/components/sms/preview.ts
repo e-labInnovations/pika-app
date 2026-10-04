@@ -44,7 +44,8 @@ export function useSmsLookups(): SmsLookups {
 /** True when the suggestion has everything a transaction needs, so one tap can confirm it. */
 export function canQuickConfirm(sms: PendingSms): boolean {
   const s = sms.suggestion;
-  if (!s?.category || !sms.account) return false;
+  // A possible duplicate needs a look first.
+  if (!s?.category || !sms.account || s.possibleDuplicate) return false;
   return s.type !== "transfer" || !!s.toAccount;
 }
 

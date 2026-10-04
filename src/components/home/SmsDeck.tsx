@@ -7,6 +7,7 @@ import { showAlert } from "../ui/AlertDialog";
 import { OriginalSms } from "../sms/OriginalSms";
 import { canQuickConfirm, toPreview, useSmsLookups, type SmsLookups } from "../sms/preview";
 import { TransactionPreviewCard } from "../transaction/TransactionPreviewCard";
+import { SmsDuplicateNotice } from "../transaction/DuplicateNotice";
 import { smsCaptureAvailable } from "../../lib/sms-capture";
 import {
   useConfirmSms,
@@ -46,6 +47,7 @@ function DeckCard({
       <TouchableOpacity activeOpacity={0.85} onPress={edit}>
         <TransactionPreviewCard data={toPreview(sms, find)} missing={{ category: true, account: true }} compact>
           <OriginalSms sms={sms} collapsedLines={2} />
+          <SmsDuplicateNotice sms={sms} />
           <View className="flex-row gap-2">
             <TouchableOpacity
               onPress={onDismiss}

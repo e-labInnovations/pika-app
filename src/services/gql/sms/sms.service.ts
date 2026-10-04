@@ -1,4 +1,5 @@
 import { useMutation, useQuery } from '@apollo/client/react';
+import { useEffect, useState } from 'react';
 import {
   GetPendingSmsDocument,
   GetCapturedSmsDocument,
@@ -7,6 +8,8 @@ import {
   GetBalanceChecksDocument,
   GetAutoConfirmedSmsDocument,
   UndoAutoConfirmedSmsDocument,
+  MarkCapturedSmsDuplicateDocument,
+  PossibleDuplicatesDocument,
   type CapturedSmsFieldsFragment,
 } from '../types/graphql';
 import { TRANSACTION_REFETCH_QUERIES } from '../transactions/transactions.service';
@@ -34,6 +37,8 @@ export type SmsSuggestion = {
   /** Split from a reply to the notification ("lunch with @Rony, split"). */
   shares?: { person: string; amount: string }[];
   from: 'sms' | 'note' | 'model' | 'default' | 'reply';
+  /** A transaction that may already record this payment. */
+  possibleDuplicate?: { id: string; title: string; amount: string; date: string };
 };
 
 export type PendingSms = CapturedSmsFieldsFragment & {
@@ -109,4 +114,47 @@ export const useUndoAutoConfirmedSms = () => {
     refetchQueries: ['GetAutoConfirmedSms', ...SMS_REFETCH],
   });
   return { undoAutoConfirm: (id: string) => undo({ variables: { id } }), loading };
+};
+
+/** The SMS is already in Pika as `transaction` (added by hand). */
+export const useMarkSmsDuplicate = () => {
+  const [mark, { loading }] = useMutation(MarkCapturedSmsDuplicateDocument, {
+    refetchQueries: ['GetPendingSms', 'GetBalanceChecks'],
+  });
+  return {
+    markDuplicate: (id: string, transaction: string) => mark({ variables: { id, transaction } }),
+    loading,
+  };
+};
+
+export type PossibleDuplicate = {
+  kind: 'transaction' | 'sms';
+  /** Transaction id, or captured-sms id for a bank SMS waiting for review. */
+  id: string;
+  title: string;
+  amount: string;
+  date: string;
+};
+
+/** Existing transactions / pending bank SMS that look like the payment being entered (debounced). */
+export const usePossibleDuplicates = (
+  q: { type: string; amount: string; date: Date; title: string; exclude?: string },
+  enabled = true,
+) => {
+  const amount = parseFloat(q.amount.replace(/,/g, ''));
+  const ready = enabled && Number.isFinite(amount) && amount > 0;
+  const vars = { type: q.type, amount: String(amount), date: q.date.toISOString(), title: q.title.trim() || undefined, exclude: q.exclude };
+  const key = JSON.stringify(vars);
+  const [debounced, setDebounced] = useState(vars);
+  useEffect(() => {
+    const t = setTimeout(() => setDebounced(vars), 600);
+    return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [key]);
+  const { data } = useQuery(PossibleDuplicatesDocument, {
+    variables: debounced,
+    skip: !ready || debounced.amount !== vars.amount,
+    fetchPolicy: 'cache-and-network',
+  });
+  return ready ? ((data?.possibleDuplicates ?? []).filter(Boolean) as PossibleDuplicate[]) : [];
 };

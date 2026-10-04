@@ -190,6 +190,7 @@ export default function AddTransactionScreen() {
         saving={loading}
         onAIPress={() => setAiOpen(true)}
         seedAttachments={aiSeedImage ? [aiSeedImage] : undefined}
+        checkDuplicates
       />
       <AIAssistantSheet
         visible={aiOpen}

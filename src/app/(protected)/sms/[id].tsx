@@ -3,6 +3,7 @@ import React from "react";
 import { ActivityIndicator, View } from "react-native";
 import { showAlert } from "@/components/ui/AlertDialog";
 import { OriginalSms } from "@/components/sms/OriginalSms";
+import { SmsDuplicateNotice } from "@/components/transaction/DuplicateNotice";
 import { TransactionForm, type TxFormValues } from "@/components/transaction/TransactionForm";
 import { useGetAccount } from "@/services/gql/accounts/accounts.service";
 import { useGetCategory } from "@/services/gql/categories/categories.service";
@@ -95,7 +96,12 @@ export default function ReviewSmsScreen() {
       submitLabel="Confirm"
       title="Review SMS"
       saving={saving}
-      header={<OriginalSms sms={sms} collapsedLines={6} style={{ backgroundColor: C.surfaceMid }} />}
+      header={
+        <View style={{ gap: 8 }}>
+          <OriginalSms sms={sms} collapsedLines={6} style={{ backgroundColor: C.surfaceMid }} />
+          <SmsDuplicateNotice sms={sms} onMarked={() => router.back()} />
+        </View>
+      }
     />
   );
 }

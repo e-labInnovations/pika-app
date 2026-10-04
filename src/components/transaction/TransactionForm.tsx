@@ -46,6 +46,8 @@ import {
   type PredictedPerson,
   type SuggestedCategory,
 } from "../../services/gql/ai/ai.service";
+import { usePossibleDuplicates } from "../../services/gql/sms/sms.service";
+import { DuplicateNotice } from "./DuplicateNotice";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -102,6 +104,8 @@ export type TxFormProps = {
   seedAttachments?: { uri: string; mimeType: string; filename: string }[];
   /** Rendered above the form fields (e.g. the bank SMS being reviewed) */
   header?: React.ReactNode;
+  /** Warn when the payment looks already recorded (new transactions) */
+  checkDuplicates?: boolean;
 };
 
 // ── Type mutation map ─────────────────────────────────────────────────────────
@@ -280,6 +284,7 @@ export function TransactionForm({
   onAIPress,
   seedAttachments,
   header,
+  checkDuplicates = false,
 }: TxFormProps) {
   const C = useColors();
   const insets = useSafeAreaInsets();
@@ -491,6 +496,11 @@ export function TransactionForm({
         : v,
     );
   };
+
+  const duplicates = usePossibleDuplicates(
+    { type: values.type, amount: values.amount, date: values.date, title: values.title },
+    checkDuplicates,
+  );
 
   const set = <K extends keyof TxFormValues>(key: K, val: TxFormValues[K]) =>
     setValues((v) => ({ ...v, [key]: val }));
@@ -795,6 +805,10 @@ export function TransactionForm({
             />
           </View>
         </View>
+
+        {duplicates.map((d) => (
+          <DuplicateNotice key={`${d.kind}:${d.id}`} item={d} />
+        ))}
 
         {/* ── Date & Time ── */}
         <View

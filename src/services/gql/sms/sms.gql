@@ -77,3 +77,11 @@ query GetBalanceChecks {
     pending
   }
 }
+
+mutation MarkCapturedSmsDuplicate($id: String!, $transaction: String!) {
+  markCapturedSmsDuplicate(id: $id, transaction: $transaction)
+}
+
+query PossibleDuplicates($type: String!, $amount: String!, $date: String!, $title: String, $exclude: String) {
+  possibleDuplicates(type: $type, amount: $amount, date: $date, title: $title, exclude: $exclude)
+}

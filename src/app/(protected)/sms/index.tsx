@@ -14,6 +14,7 @@ import { DynamicIcon } from "@/components/Icon";
 import { showAlert } from "@/components/ui/AlertDialog";
 import { TransactionPreviewCard } from "@/components/transaction/TransactionPreviewCard";
 import { OriginalSms } from "@/components/sms/OriginalSms";
+import { SmsDuplicateNotice } from "@/components/transaction/DuplicateNotice";
 import { canQuickConfirm, toPreview, useSmsLookups, type SmsLookups as Lookups } from "@/components/sms/preview";
 import {
   useConfirmSms,
@@ -46,6 +47,7 @@ function SmsCard({
       <TouchableOpacity activeOpacity={0.85} onPress={onEdit}>
         <TransactionPreviewCard data={toPreview(sms, find)} missing={{ category: true, account: true }}>
           <OriginalSms sms={sms} />
+          <SmsDuplicateNotice sms={sms} />
         </TransactionPreviewCard>
       </TouchableOpacity>
 
