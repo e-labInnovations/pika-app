@@ -11,7 +11,7 @@ import {
   type PredictCategoryMutation,
   type PredictCategoryMutationVariables,
 } from '../types/graphql';
-import type { CategoryFieldsFragment } from '../types/graphql';
+import type { CategoryFieldsFragment, PersonFieldsFragment } from '../types/graphql';
 
 export const useTextToTransaction = () => {
   const [textToTransaction, { data, loading, error }] = useMutation(
@@ -72,9 +72,12 @@ export const useSuggestCategory = () => {
 };
 
 export type PredictedCategory = CategoryFieldsFragment;
+export type PredictedPerson = PersonFieldsFragment;
 
 export type PredictCategoryResult = {
   category: PredictedCategory | null;
+  /** Person most similar past transactions had (local model only). */
+  person: PredictedPerson | null;
   score: number;
   model: string;
   latencyMs: number;
@@ -93,6 +96,7 @@ export const usePredictCategory = () => {
   const result: PredictCategoryResult | undefined = data?.predictCategory
     ? {
         category: (data.predictCategory.category as PredictedCategory | null) ?? null,
+        person: (data.predictCategory.person as PredictedPerson | null) ?? null,
         score: data.predictCategory.score,
         model: data.predictCategory.model,
         latencyMs: data.predictCategory.latencyMs,

@@ -61,6 +61,7 @@ mutation SuggestCategory(
 mutation PredictCategory($type: String!, $title: String!) {
   predictCategory(type: $type, title: $title) {
     category
+    person
     score
     model
     latencyMs

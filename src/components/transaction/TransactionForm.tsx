@@ -43,6 +43,7 @@ import {
   usePredictCategory,
   useSuggestCategory,
   type PredictedCategory,
+  type PredictedPerson,
   type SuggestedCategory,
 } from "../../services/gql/ai/ai.service";
 
@@ -359,8 +360,11 @@ export function TransactionForm({
   const { predictCategory } = usePredictCategory();
   const [predictedCategory, setPredictedCategory] =
     useState<PredictedCategory | null>(null);
+  const [predictedPerson, setPredictedPerson] =
+    useState<PredictedPerson | null>(null);
   const predictReqIdRef = React.useRef(0);
   const dismissedPredictionTitleRef = React.useRef<string | null>(null);
+  const dismissedPersonTitleRef = React.useRef<string | null>(null);
 
   const runSuggest = async (forceMethod?: "minilm" | "cloud") => {
     const title = values.title.trim();
@@ -445,10 +449,19 @@ export function TransactionForm({
         if (reqId !== predictReqIdRef.current) return; // superseded
         const cat = (res.data?.predictCategory?.category ??
           null) as PredictedCategory | null;
-        if (!cat) return;
-        // Auto-fill only if the category slot is empty
-        setValues((v) => (v.category ? v : { ...v, category: cat }));
-        setPredictedCategory(cat);
+        const person =
+          dismissedPersonTitleRef.current === title
+            ? null
+            : ((res.data?.predictCategory?.person ??
+                null) as PredictedPerson | null);
+        // Auto-fill only empty slots; transfers have no person
+        setValues((v) => ({
+          ...v,
+          category: v.category ?? cat,
+          person: v.person ?? (v.type === "transfer" ? null : person),
+        }));
+        if (cat) setPredictedCategory(cat);
+        if (person) setPredictedPerson(person);
       } catch {
         // swallow — prediction is best-effort
       }
@@ -465,6 +478,16 @@ export function TransactionForm({
     setValues((v) =>
       v.category && v.category.id === predictedCategory?.id
         ? { ...v, category: null }
+        : v,
+    );
+  };
+
+  const dismissPredictedPerson = () => {
+    dismissedPersonTitleRef.current = values.title.trim();
+    setPredictedPerson(null);
+    setValues((v) =>
+      v.person && v.person.id === predictedPerson?.id
+        ? { ...v, person: null }
         : v,
     );
   };
@@ -852,46 +875,7 @@ export function TransactionForm({
                     </Text>
                     {predictedCategory &&
                       values.category.id === predictedCategory.id && (
-                        <View
-                          style={{
-                            flexDirection: "row",
-                            alignItems: "center",
-                            gap: 3,
-                            paddingLeft: 6,
-                            paddingRight: 2,
-                            paddingVertical: 2,
-                            borderRadius: 999,
-                            backgroundColor: `${C.primary}18`,
-                          }}
-                        >
-                          <DynamicIcon
-                            name="sparkles"
-                            size={9}
-                            color={C.primary}
-                          />
-                          <Text
-                            style={{
-                              fontSize: 9,
-                              fontWeight: "800",
-                              color: C.primary,
-                              letterSpacing: 0.4,
-                              textTransform: "uppercase",
-                            }}
-                          >
-                            Predicted
-                          </Text>
-                          <TouchableOpacity
-                            onPress={(e) => {
-                              e.stopPropagation();
-                              dismissPrediction();
-                            }}
-                            hitSlop={6}
-                            style={{ paddingHorizontal: 3, paddingVertical: 1 }}
-                            accessibilityLabel="Dismiss prediction"
-                          >
-                            <DynamicIcon name="x" size={10} color={C.primary} />
-                          </TouchableOpacity>
-                        </View>
+                        <PredictedChip onDismiss={dismissPrediction} />
                       )}
                   </View>
                 ) : (
@@ -1126,6 +1110,10 @@ export function TransactionForm({
                   >
                     {values.person.name}
                   </Text>
+                  {predictedPerson &&
+                    values.person.id === predictedPerson.id && (
+                      <PredictedChip onDismiss={dismissPredictedPerson} />
+                    )}
                 </View>
               ) : (
                 <Text style={{ fontSize: 14, color: C.outlineVariant }}>
@@ -1501,4 +1489,47 @@ export function formValuesToUpdateInput(
     import("../../services/gql/types/graphql").TransactionUpdate_type_MutationInput;
   const t = v.type as unknown as UpdateType;
   return { ...baseFields(v, attachmentIds, "update"), type: t };
+}
+
+/** "Predicted" pill on a value the local model filled in, with ✕ to undo it. */
+function PredictedChip({ onDismiss }: { onDismiss: () => void }) {
+  const C = useColors();
+  return (
+    <View
+      style={{
+        flexDirection: "row",
+        alignItems: "center",
+        gap: 3,
+        paddingLeft: 6,
+        paddingRight: 2,
+        paddingVertical: 2,
+        borderRadius: 999,
+        backgroundColor: `${C.primary}18`,
+      }}
+    >
+      <DynamicIcon name="sparkles" size={9} color={C.primary} />
+      <Text
+        style={{
+          fontSize: 9,
+          fontWeight: "800",
+          color: C.primary,
+          letterSpacing: 0.4,
+          textTransform: "uppercase",
+        }}
+      >
+        Predicted
+      </Text>
+      <TouchableOpacity
+        onPress={(e) => {
+          e.stopPropagation();
+          onDismiss();
+        }}
+        hitSlop={6}
+        style={{ paddingHorizontal: 3, paddingVertical: 1 }}
+        accessibilityLabel="Dismiss prediction"
+      >
+        <DynamicIcon name="x" size={10} color={C.primary} />
+      </TouchableOpacity>
+    </View>
+  );
 }
