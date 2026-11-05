@@ -1,12 +1,12 @@
-import "../lib/patch-share-intent-module";
+import "../lib/patch-native-modules";
 import "../global.css";
 
 import { ApolloProvider } from "@apollo/client/react";
 import { router, Stack } from "expo-router";
 import { readAsStringAsync, EncodingType } from "expo-file-system/legacy";
-import { ShareIntentProvider, useShareIntent } from "expo-share-intent";
 import * as SplashScreen from "expo-splash-screen";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
+import { useIncomingShare } from "../../modules/pika-share";
 import { AuthProvider, useAuth } from "../context/AuthContext";
 import {
   ShareIntentBridgeProvider,
@@ -14,74 +14,51 @@ import {
 } from "../context/ShareIntentBridgeContext";
 import { AIPrefillBridgeProvider } from "../context/AIPrefillBridgeContext";
 import { apolloClient } from "../services/gql/client";
-import { AlertProvider } from "../components/ui/AlertDialog";
+import { AlertProvider, showAlert } from "../components/ui/AlertDialog";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 SplashScreen.preventAutoHideAsync();
 
+/**
+ * Hands content shared into Pika (see modules/pika-share) to the /add screen's AI
+ * sheet. A share that arrives before auth has settled waits until it has; the file
+ * is our own cache copy, so it is still readable by then.
+ */
 function ShareIntentListener() {
-  const { hasShareIntent, shareIntent, error, resetShareIntent } = useShareIntent();
+  const { share, clear } = useIncomingShare();
   const { setPending } = usePendingShare();
   const { isAuthenticated, isLoading } = useAuth();
-  const [queuedIntent, setQueuedIntent] = useState<typeof shareIntent | null>(null);
 
-  // Queue the intent when it arrives; on native error (e.g. WhatsApp private
-  // content URI causing a SecurityException) just clean up without crashing.
   useEffect(() => {
-    if (error) {
-      resetShareIntent();
-      return;
-    }
-    if (hasShareIntent && shareIntent) {
-      setQueuedIntent(shareIntent);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [hasShareIntent, error]);
-
-  // Process the queued intent only once auth is fully settled and the
-  // navigator is mounted. This fixes cold-start crashes where router.push
-  // was called before Routes rendered (isLoading was still true).
-  useEffect(() => {
-    if (isLoading || !isAuthenticated || !queuedIntent) return;
-
-    const intent = queuedIntent;
-    setQueuedIntent(null);
+    if (!share || isLoading || !isAuthenticated) return;
+    const current = share;
+    clear();
 
     async function handle() {
-      try {
-        if (intent.files?.length) {
-          const file = intent.files[0];
-          const uri = file.path;
-          let base64: string;
-          try {
-            base64 = await readAsStringAsync(uri, {
-              encoding: EncodingType.Base64,
-            });
-          } catch {
-            // Content URI from a restricted provider (e.g. WhatsApp) cannot
-            // be read by our process — skip rather than crash.
-            return;
-          }
-          setPending({
-            type: "image",
-            uri,
-            base64,
-            mimeType: file.mimeType ?? "image/jpeg",
-          });
-        } else if (intent.text) {
-          setPending({ type: "text", text: intent.text });
-        } else {
+      if (current.type === "error") {
+        showAlert({ title: "Couldn't open shared item", message: current.message });
+        return;
+      }
+      if (current.type === "text") {
+        setPending({ type: "text", text: current.text });
+      } else {
+        let base64: string;
+        try {
+          base64 = await readAsStringAsync(current.uri, { encoding: EncodingType.Base64 });
+        } catch (e) {
+          console.warn("[share] reading cached share failed", e);
+          showAlert({ title: "Couldn't open shared item", message: "Couldn't read the shared file." });
           return;
         }
-        router.push("/add");
-      } finally {
-        resetShareIntent();
+        setPending({ type: "image", uri: current.uri, base64, mimeType: current.mimeType });
       }
+      router.push("/add");
     }
 
     handle();
+    // Keyed on the share id so a repeat share of the same content still fires.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isLoading, isAuthenticated, queuedIntent]);
+  }, [share?.id, isLoading, isAuthenticated]);
 
   return null;
 }
@@ -110,19 +87,17 @@ function Routes() {
 export default function Layout() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <ShareIntentProvider>
-        <ShareIntentBridgeProvider>
-          <AIPrefillBridgeProvider>
-            <ApolloProvider client={apolloClient}>
-              <AuthProvider>
-                <ShareIntentListener />
-                <Routes />
-                <AlertProvider />
-              </AuthProvider>
-            </ApolloProvider>
-          </AIPrefillBridgeProvider>
-        </ShareIntentBridgeProvider>
-      </ShareIntentProvider>
+      <ShareIntentBridgeProvider>
+        <AIPrefillBridgeProvider>
+          <ApolloProvider client={apolloClient}>
+            <AuthProvider>
+              <ShareIntentListener />
+              <Routes />
+              <AlertProvider />
+            </AuthProvider>
+          </ApolloProvider>
+        </AIPrefillBridgeProvider>
+      </ShareIntentBridgeProvider>
     </GestureHandlerRootView>
   );
 }
