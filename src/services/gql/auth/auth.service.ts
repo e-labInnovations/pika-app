@@ -31,6 +31,7 @@ export const useGetSession = () => {
       user: (result.data?.meUser?.user as AuthUser | null | undefined) ?? null,
       appSettings: (result.data?.AppSetting as AppSettings | null | undefined) ?? null,
       exp: result.data?.meUser?.exp ?? null,
+      error: result.error,
     }
   }
 

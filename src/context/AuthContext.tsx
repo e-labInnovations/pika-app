@@ -7,6 +7,7 @@ import React, {
   useCallback,
   useContext,
   useEffect,
+  useRef,
   useState,
 } from "react";
 import {
@@ -112,16 +113,35 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   // ── Session fetch helper ───────────────────────────────────────────────────
 
-  const loadSession = useCallback(async (): Promise<boolean> => {
-    try {
-      const session = await fetchSession();
-      if (!session.user) return false;
-      await storage.setUser(session.user);
-      applySession(session.user, session.appSettings);
-      return true;
-    } catch {
-      return false;
-    }
+  // Concurrent callers share one in-flight fetch. fetchSession runs on a single
+  // Apollo lazy-query observable, and a second execute() aborts the first one's
+  // promise (AbortError). On Android a Google sign-in completes twice — once in
+  // loginWithGoogle and once in the pika://auth route — so without this the
+  // aborted call reports "could not load profile" and clears the session the
+  // other call just established.
+  const sessionPromiseRef = useRef<Promise<boolean> | null>(null);
+
+  const loadSession = useCallback((): Promise<boolean> => {
+    if (sessionPromiseRef.current) return sessionPromiseRef.current;
+    const p = (async () => {
+      try {
+        const session = await fetchSession();
+        if (!session.user) {
+          console.warn("[auth] loadSession: no user in session", session.error);
+          return false;
+        }
+        await storage.setUser(session.user);
+        applySession(session.user, session.appSettings);
+        return true;
+      } catch (e) {
+        console.warn("[auth] loadSession failed", e);
+        return false;
+      }
+    })().finally(() => {
+      sessionPromiseRef.current = null;
+    });
+    sessionPromiseRef.current = p;
+    return p;
   }, [fetchSession, applySession]);
 
   // ── Session rehydration ────────────────────────────────────────────────────
