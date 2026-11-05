@@ -70,17 +70,7 @@ export default {
           sounds: [],
         },
       ],
-      [
-        'expo-share-intent',
-        {
-          iosActivationRules: {
-            NSExtensionActivationSupportsText: true,
-            NSExtensionActivationSupportsImageWithMaxCount: 5,
-            NSExtensionActivationSupportsWebURLWithMaxCount: 1,
-          },
-          androidIntentFilters: ['text/*', 'image/*', 'application/pdf'],
-        },
-      ],
+      './modules/pika-share/app.plugin.js',
       [
         'expo-contacts',
         { contactsPermission: 'Pika reads your contacts only when you import people from them.' },
