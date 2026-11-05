@@ -29,12 +29,12 @@ class PikaShareModule : Module() {
 
     OnCreate {
       io.execute { runCatching { ShareReader.pruneOld(context) } }
-      appContext.currentActivity?.let { handle(it, it.intent) }
+      appContext.currentActivity?.let { handleLaunch(it) }
     }
 
     // Cold start: the activity may not exist yet when the module is created.
     OnActivityEntersForeground {
-      appContext.currentActivity?.let { handle(it, it.intent) }
+      appContext.currentActivity?.let { handleLaunch(it) }
     }
 
     OnNewIntent { intent ->
@@ -42,6 +42,7 @@ class PikaShareModule : Module() {
         // Make the new intent the activity's own, so a later recreate sees the
         // consumed version rather than the stale launch intent.
         activity.intent = intent
+        if (ShareReader.isShareIntent(intent)) rememberHandled(intent)
         handle(activity, intent)
       }
     }
@@ -55,6 +56,31 @@ class PikaShareModule : Module() {
     }
 
     OnDestroy { io.shutdown() }
+  }
+
+  /**
+   * The activity's launch intent. Changing its action only lasts for this process:
+   * after process death, or a relaunch from Recents, Android recreates the activity
+   * with the original SEND intent. Skip those, so an old share doesn't reopen.
+   * Cost: re-sharing the identical item as the app's next cold launch is ignored.
+   */
+  private fun handleLaunch(activity: Activity) {
+    val intent = activity.intent ?: return
+    if (!ShareReader.isShareIntent(intent)) return
+    val fromHistory = (intent.flags and Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY) != 0
+    val seen = prefs.getString(KEY_LAST, null) == ShareReader.fingerprint(intent)
+    if (fromHistory || seen) {
+      intent.action = CONSUMED_ACTION
+      return
+    }
+    rememberHandled(intent)
+    handle(activity, intent)
+  }
+
+  private val prefs get() = context.getSharedPreferences("pika_share", android.content.Context.MODE_PRIVATE)
+
+  private fun rememberHandled(intent: Intent) {
+    prefs.edit().putString(KEY_LAST, ShareReader.fingerprint(intent)).apply()
   }
 
   private fun handle(activity: Activity, intent: Intent?) {
@@ -96,5 +122,6 @@ class PikaShareModule : Module() {
 
   companion object {
     private const val CONSUMED_ACTION = "com.elabins.pika.SHARE_CONSUMED"
+    private const val KEY_LAST = "last_handled"
   }
 }

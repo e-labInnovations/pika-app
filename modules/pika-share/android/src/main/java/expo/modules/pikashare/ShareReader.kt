@@ -92,14 +92,29 @@ object ShareReader {
     return out.toList()
   }
 
+  /**
+   * A type that actually names the content. Wildcards and octet-stream (which
+   * WhatsApp / Telegram documents and some file managers report) say nothing, so
+   * fall through to the intent type or the file extension.
+   */
+  private fun isSpecific(mime: String?) =
+    mime != null && !mime.contains('*') && mime != "application/octet-stream"
+
+  /** Identity of a share intent, used to spot the same launch intent being redelivered. */
+  fun fingerprint(intent: Intent): String {
+    val text = intent.getCharSequenceExtra(Intent.EXTRA_TEXT)?.toString().orEmpty()
+    return (listOf(intent.action.orEmpty()) + streamUris(intent).map { it.toString() } +
+      listOf(text.hashCode().toString())).joinToString("|")
+  }
+
   private fun isSupported(mime: String) = mime.startsWith("image/") || mime == "application/pdf"
 
   /** Provider type, else the intent's own type if specific, else from the extension. */
   private fun resolveMime(context: Context, intent: Intent, uri: Uri): String? {
     val fromResolver = try { context.contentResolver.getType(uri) } catch (e: Exception) { null }
-    if (fromResolver != null && !fromResolver.contains('*')) return fromResolver
+    if (isSpecific(fromResolver)) return fromResolver
     val fromIntent = intent.type
-    if (fromIntent != null && !fromIntent.contains('*')) return fromIntent
+    if (isSpecific(fromIntent)) return fromIntent
     val ext = MimeTypeMap.getFileExtensionFromUrl(uri.toString())?.lowercase()
     val fromExt = ext?.let { MimeTypeMap.getSingleton().getMimeTypeFromExtension(it) }
     // A wildcard image type (e.g. "image/*") is still usable: the AI reads the bytes.

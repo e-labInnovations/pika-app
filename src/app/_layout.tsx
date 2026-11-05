@@ -32,7 +32,7 @@ function ShareIntentListener() {
   useEffect(() => {
     if (!share || isLoading || !isAuthenticated) return;
     const current = share;
-    clear();
+    clear(current.id);
 
     async function handle() {
       if (current.type === "error") {

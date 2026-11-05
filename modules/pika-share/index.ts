@@ -25,9 +25,9 @@ export const PikaShare = {
 
 /**
  * The latest share, from the launch intent or one received while running.
- * Call `clear()` once it has been handled so it isn't served again.
+ * Call `clear(id)` once it has been handled so it isn't served again.
  */
-export function useIncomingShare(): { share: IncomingShare | null; clear: () => void } {
+export function useIncomingShare(): { share: IncomingShare | null; clear: (id: number) => void } {
   const [share, setShare] = useState<IncomingShare | null>(null);
 
   useEffect(() => {
@@ -40,11 +40,10 @@ export function useIncomingShare(): { share: IncomingShare | null; clear: () => 
     return () => sub.remove();
   }, []);
 
-  const clear = useCallback(() => {
-    setShare((cur) => {
-      if (cur) native?.clearPendingShare(cur.id);
-      return null;
-    });
+  // Clears only the share that was handled: a newer one that arrived meanwhile stays.
+  const clear = useCallback((id: number) => {
+    native?.clearPendingShare(id);
+    setShare((cur) => (cur?.id === id ? null : cur));
   }, []);
 
   return { share, clear };
