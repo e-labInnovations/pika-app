@@ -10,6 +10,7 @@ import {
   UndoAutoConfirmedSmsDocument,
   MarkCapturedSmsDuplicateDocument,
   PossibleDuplicatesDocument,
+  RefineCapturedSmsDocument,
   type CapturedSmsFieldsFragment,
 } from '../types/graphql';
 import { TRANSACTION_REFETCH_QUERIES } from '../transactions/transactions.service';
@@ -36,7 +37,7 @@ export type SmsSuggestion = {
   toAccount: string | null;
   /** Split from a reply to the notification ("lunch with @Rony, split"). */
   shares?: { person: string; amount: string }[];
-  from: 'sms' | 'note' | 'model' | 'default' | 'reply';
+  from: 'sms' | 'note' | 'model' | 'default' | 'reply' | 'ai';
   /** A transaction that may already record this payment. */
   possibleDuplicate?: { id: string; title: string; amount: string; date: string };
 };
@@ -78,6 +79,39 @@ export const useConfirmSms = () => {
   return {
     confirmSms: (id: string, overrides?: Record<string, unknown>) =>
       confirm({ variables: { id, overrides } }),
+    loading,
+  };
+};
+
+export type RefineInput = {
+  /** Extra details ("team lunch, split with Rony"). */
+  text?: string;
+  /** A receipt or screenshot. */
+  image?: { base64: string; mimeType: string };
+};
+
+/**
+ * Re-reads a pending SMS with the AI. With text and/or an image they're read together
+ * with the SMS; with neither it simply tries again. Saves the suggestion, never confirms.
+ */
+export const useRefineSms = () => {
+  const [refine, { loading }] = useMutation(RefineCapturedSmsDocument, {
+    refetchQueries: ['GetPendingSms', 'GetCapturedSms'],
+    awaitRefetchQueries: true,
+  });
+  return {
+    refineSms: async (id: string, input: RefineInput = {}) => {
+      const res = await refine({
+        variables: {
+          id,
+          text: input.text?.trim() || null,
+          image: input.image?.base64 ?? null,
+          mimeType: input.image?.mimeType ?? null,
+        },
+      });
+      if (res.error) throw res.error;
+      return res.data?.refineCapturedSms as { suggestion: SmsSuggestion; complete: boolean } | undefined;
+    },
     loading,
   };
 };

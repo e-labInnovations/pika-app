@@ -85,3 +85,10 @@ mutation MarkCapturedSmsDuplicate($id: String!, $transaction: String!) {
 query PossibleDuplicates($type: String!, $amount: String!, $date: String!, $title: String, $exclude: String) {
   possibleDuplicates(type: $type, amount: $amount, date: $date, title: $title, exclude: $exclude)
 }
+
+mutation RefineCapturedSms($id: String!, $text: String, $image: String, $mimeType: String) {
+  refineCapturedSms(id: $id, text: $text, image: $image, mimeType: $mimeType) {
+    suggestion
+    complete
+  }
+}

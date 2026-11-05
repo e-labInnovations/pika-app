@@ -14,6 +14,7 @@ import { DynamicIcon } from "@/components/Icon";
 import { showAlert } from "@/components/ui/AlertDialog";
 import { TransactionPreviewCard } from "@/components/transaction/TransactionPreviewCard";
 import { OriginalSms } from "@/components/sms/OriginalSms";
+import { SmsRefineButton } from "@/components/sms/SmsRefineSheet";
 import { SmsDuplicateNotice } from "@/components/transaction/DuplicateNotice";
 import { canQuickConfirm, toPreview, useSmsLookups, type SmsLookups as Lookups } from "@/components/sms/preview";
 import {
@@ -61,6 +62,7 @@ function SmsCard({
         >
           <Text className="text-[13px] font-semibold text-on-surface-variant">Dismiss</Text>
         </TouchableOpacity>
+        <SmsRefineButton smsId={sms.id} disabled={busy} className="px-3 py-2 rounded-xl items-center justify-center" />
         <View className="flex-1" />
         <TouchableOpacity
           onPress={onEdit}

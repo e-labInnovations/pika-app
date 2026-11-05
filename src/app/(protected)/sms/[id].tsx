@@ -2,6 +2,7 @@ import { router, useLocalSearchParams } from "expo-router";
 import React from "react";
 import { ActivityIndicator, View } from "react-native";
 import { showAlert } from "@/components/ui/AlertDialog";
+import { SmsRefineActions } from "@/components/sms/SmsRefineSheet";
 import { OriginalSms } from "@/components/sms/OriginalSms";
 import { SmsDuplicateNotice } from "@/components/transaction/DuplicateNotice";
 import { TransactionForm, type TxFormValues } from "@/components/transaction/TransactionForm";
@@ -90,6 +91,8 @@ export default function ReviewSmsScreen() {
 
   return (
     <TransactionForm
+      // A new AI suggestion replaces the form's starting values.
+      key={JSON.stringify(s ?? null)}
       initialValues={initialValues}
       onSubmit={handleSubmit}
       onCancel={() => router.back()}
@@ -99,6 +102,7 @@ export default function ReviewSmsScreen() {
       header={
         <View style={{ gap: 8 }}>
           <OriginalSms sms={sms} collapsedLines={6} style={{ backgroundColor: C.surfaceMid }} />
+          <SmsRefineActions smsId={sms.id} />
           <SmsDuplicateNotice sms={sms} onMarked={() => router.back()} />
         </View>
       }

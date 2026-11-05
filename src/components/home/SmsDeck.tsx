@@ -5,6 +5,7 @@ import { ScrollView } from "react-native-gesture-handler";
 import { DynamicIcon } from "../Icon";
 import { showAlert } from "../ui/AlertDialog";
 import { OriginalSms } from "../sms/OriginalSms";
+import { SmsRefineButton } from "../sms/SmsRefineSheet";
 import { canQuickConfirm, toPreview, useSmsLookups, type SmsLookups } from "../sms/preview";
 import { TransactionPreviewCard } from "../transaction/TransactionPreviewCard";
 import { SmsDuplicateNotice } from "../transaction/DuplicateNotice";
@@ -59,6 +60,7 @@ function DeckCard({
             >
               <DynamicIcon name="x" size={16} color={C.onSurfaceVariant} />
             </TouchableOpacity>
+            <SmsRefineButton smsId={sms.id} disabled={busy} />
             <TouchableOpacity
               onPress={edit}
               disabled={busy}
