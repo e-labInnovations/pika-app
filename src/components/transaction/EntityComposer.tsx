@@ -67,7 +67,7 @@ function compact(segs: Segment[]): Segment[] {
 
 const TYPE_LABEL: Record<EntityType, string> = { person: "Person", account: "Account", category: "Category", tag: "Tag" };
 
-function EntityIcon({ e, size }: { e: ComposerEntity; size: number }) {
+export function EntityIcon({ e, size }: { e: ComposerEntity; size: number }) {
   if (e.type === "person")
     return <UserAvatar id={e.id} name={e.name} avatarUrl={e.avatarUrl} size={size} radius={size / 2} />;
   if (e.type === "account")
@@ -115,7 +115,7 @@ function Chip({ e, onPress }: { e: ComposerEntity; onPress?: () => void }) {
 }
 
 /** All entities the user can tag, from the same (cached) queries the pickers use. */
-function useEntities(): ComposerEntity[] {
+export function useEntities(): ComposerEntity[] {
   const { people } = useGetPeople({ limit: 200, sort: "name" });
   const { accounts } = useGetAccounts({ limit: 200, sort: "name" });
   const { categories } = useGetCategories({ limit: 500, sort: "name" });
@@ -152,11 +152,7 @@ export function EntityComposer({ value, onChange, placeholder, editable = true, 
 
   // "@query" being typed at the end of the draft
   const mention = /(^|\s)@([^\s@]*)$/.exec(value.draft);
-  const query = mention ? mention[2].toLowerCase() : null;
-  const suggestions = useMemo(() => {
-    if (query === null) return [];
-    return entities.filter((e) => !query || e.name.toLowerCase().includes(query)).slice(0, 30);
-  }, [entities, query]);
+  const query = mention ? mention[2] : null;
 
   const insert = (e: ComposerEntity) => {
     const cut = value.draft.slice(0, value.draft.length - (mention ? mention[2].length + 1 : 0));
@@ -237,38 +233,62 @@ export function EntityComposer({ value, onChange, placeholder, editable = true, 
         {afterC.map((s, i) => renderSeg(s, `a${i}`, () => moveTo(all, beforeC.length + 1 + i)))}
       </TouchableOpacity>
 
-      {/* Suggestions while typing "@…" */}
-      {query !== null && editable && (
-        <View className="mt-2">
-          {suggestions.length === 0 ? (
-            <Text className="text-[12px] text-on-surface-variant px-1">No match for "@{mention![2]}"</Text>
-          ) : (
-            <ScrollView horizontal keyboardShouldPersistTaps="always" showsHorizontalScrollIndicator={false}>
-              <View className="flex-row gap-2 pr-2">
-                {suggestions.map((e) => (
-                  <TouchableOpacity
-                    key={`${e.type}:${e.id}`}
-                    onPress={() => insert(e)}
-                    activeOpacity={0.8}
-                    className="flex-row items-center gap-2 rounded-full pl-1 pr-3 py-1"
-                    style={{ backgroundColor: C.surfaceHigh }}
-                  >
-                    <EntityIcon e={e} size={24} />
-                    <View>
-                      <Text className="text-[13px] font-semibold text-on-surface">{e.name}</Text>
-                      <Text className="text-[10px] text-on-surface-variant">{TYPE_LABEL[e.type]}</Text>
-                    </View>
-                  </TouchableOpacity>
-                ))}
-              </View>
-            </ScrollView>
-          )}
-        </View>
-      )}
-      {query === null && editable && (
-        <Text className="text-[11px] text-on-surface-variant mt-1.5 px-1">
-          Tip: type @ to tag a person, account, category or tag.
-        </Text>
+      {editable && <MentionSuggestions query={query} entities={entities} onPick={insert} />}
+    </View>
+  );
+}
+
+/**
+ * The strip under a composer: matches for the "@query" being typed, or a tip when
+ * nothing is being typed after "@".
+ */
+export function MentionSuggestions({
+  query,
+  entities,
+  onPick,
+}: {
+  query: string | null;
+  entities: ComposerEntity[];
+  onPick: (e: ComposerEntity) => void;
+}) {
+  const C = useColors();
+  const q = query?.toLowerCase() ?? null;
+  const suggestions = useMemo(
+    () => (q === null ? [] : entities.filter((e) => !q || e.name.toLowerCase().includes(q)).slice(0, 30)),
+    [entities, q],
+  );
+
+  if (query === null)
+    return (
+      <Text className="text-[11px] text-on-surface-variant mt-1.5 px-1">
+        Tip: type @ to tag a person, account, category or tag.
+      </Text>
+    );
+
+  return (
+    <View className="mt-2">
+      {suggestions.length === 0 ? (
+        <Text className="text-[12px] text-on-surface-variant px-1">No match for "@{query}"</Text>
+      ) : (
+        <ScrollView horizontal keyboardShouldPersistTaps="always" showsHorizontalScrollIndicator={false}>
+          <View className="flex-row gap-2 pr-2">
+            {suggestions.map((e) => (
+              <TouchableOpacity
+                key={`${e.type}:${e.id}`}
+                onPress={() => onPick(e)}
+                activeOpacity={0.8}
+                className="flex-row items-center gap-2 rounded-full pl-1 pr-3 py-1"
+                style={{ backgroundColor: C.surfaceHigh }}
+              >
+                <EntityIcon e={e} size={24} />
+                <View>
+                  <Text className="text-[13px] font-semibold text-on-surface">{e.name}</Text>
+                  <Text className="text-[10px] text-on-surface-variant">{TYPE_LABEL[e.type]}</Text>
+                </View>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </ScrollView>
       )}
     </View>
   );

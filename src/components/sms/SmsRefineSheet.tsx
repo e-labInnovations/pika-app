@@ -3,11 +3,8 @@ import React, { useState } from "react";
 import {
   ActivityIndicator,
   Image,
-  KeyboardAvoidingView,
   Modal,
-  Platform,
   Text,
-  TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
@@ -15,6 +12,8 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { DynamicIcon } from "../Icon";
 import { showAlert } from "../ui/AlertDialog";
 import { useColors } from "../../theme/colors";
+import { MentionInput, mentionsToPlain } from "../mentions/MentionInput";
+import { ModalKeyboardView } from "../ui/ModalKeyboardView";
 import { useRefineSms } from "../../services/gql/sms/sms.service";
 import { useAuth } from "../../context/AuthContext";
 
@@ -81,7 +80,7 @@ export function SmsRefineSheet({
   const run = async (mode: "apply" | "retry") => {
     setRunning(mode);
     try {
-      await refineSms(smsId, mode === "apply" ? { text, image: image ?? undefined } : {});
+      await refineSms(smsId, mode === "apply" ? { text: text.trim(), image: image ?? undefined } : {});
       reset();
       onDone?.();
       onClose();
@@ -91,14 +90,11 @@ export function SmsRefineSheet({
     }
   };
 
-  const canApply = !!text.trim() || !!image;
+  const canApply = !!mentionsToPlain(text).trim() || !!image;
 
   return (
     <Modal visible={visible} animationType="slide" transparent onRequestClose={close}>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        style={{ flex: 1, justifyContent: "flex-end" }}
-      >
+      <ModalKeyboardView fillColor={C.surfaceLow} style={{ justifyContent: "flex-end" }}>
         <TouchableOpacity
           style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, backgroundColor: "rgba(0,0,0,0.45)" }}
           activeOpacity={1}
@@ -126,24 +122,14 @@ export function SmsRefineSheet({
             the bank sent them.
           </Text>
 
-          <TextInput
+          <MentionInput
             value={text}
-            onChangeText={setText}
-            placeholder="e.g. team lunch, split with Rony"
-            placeholderTextColor={C.onSurfaceVariant}
-            multiline
+            onChange={setText}
+            placeholder="e.g. team lunch, split with @Rony"
             maxLength={1000}
             editable={!loading}
-            style={{
-              minHeight: 80,
-              maxHeight: 160,
-              textAlignVertical: "top",
-              backgroundColor: C.surfaceMid,
-              color: C.onSurface,
-              borderRadius: 16,
-              padding: 14,
-              fontSize: 15,
-            }}
+            minHeight={80}
+            maxHeight={180}
           />
 
           {image ? (
@@ -209,7 +195,7 @@ export function SmsRefineSheet({
             </TouchableOpacity>
           </View>
         </View>
-      </KeyboardAvoidingView>
+      </ModalKeyboardView>
     </Modal>
   );
 }

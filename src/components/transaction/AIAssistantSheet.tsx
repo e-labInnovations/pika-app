@@ -12,19 +12,13 @@
 import * as DocumentPicker from "expo-document-picker";
 import { EncodingType, readAsStringAsync } from "expo-file-system/legacy";
 import * as ImagePicker from "expo-image-picker";
-import {
-  EntityComposer,
-  composerIsEmpty,
-  emptyComposer,
-  serializeComposer,
-  type ComposerValue,
-} from "./EntityComposer";
+import { MentionInput, mentionsToPlain } from "../mentions/MentionInput";
+import { ModalKeyboardView } from "../ui/ModalKeyboardView";
 import React, { useState } from "react";
 import {
   ActivityIndicator,
   Dimensions,
   Image,
-  KeyboardAvoidingView,
   Modal,
   Platform,
   ScrollView,
@@ -218,9 +212,9 @@ export function AIAssistantSheet({ visible, onClose, onUseDetails, onCreated, in
   const insets = useSafeAreaInsets();
 
   const [tab, setTab] = useState<"text" | "receipt">("text");
-  const [composer, setComposer] = useState<ComposerValue>(emptyComposer());
+  const [composer, setComposer] = useState("");
   // Optional note typed with a receipt (e.g. "split with @Rony")
-  const [receiptNote, setReceiptNote] = useState<ComposerValue>(emptyComposer());
+  const [receiptNote, setReceiptNote] = useState("");
   const [image, setImage] = useState<{
     uri: string;
     base64: string;
@@ -245,7 +239,7 @@ export function AIAssistantSheet({ visible, onClose, onUseDetails, onCreated, in
       setResult(null);
     } else if (initialText) {
       setTab("text");
-      setComposer(emptyComposer(initialText));
+      setComposer(initialText);
       setResult(null);
     } else if (initialTab) {
       setTab(initialTab);
@@ -257,8 +251,8 @@ export function AIAssistantSheet({ visible, onClose, onUseDetails, onCreated, in
 
   const resetState = () => {
     setTab("text");
-    setComposer(emptyComposer());
-    setReceiptNote(emptyComposer());
+    setComposer("");
+    setReceiptNote("");
     setImage(null);
     setResult(null);
     setPromptId(null);
@@ -312,7 +306,7 @@ export function AIAssistantSheet({ visible, onClose, onUseDetails, onCreated, in
   const handleAnalyze = async () => {
     try {
       if (tab === "text") {
-        const text = serializeComposer(composer);
+        const text = composer.trim();
         if (!text) return;
         const res = await textToTransaction(text);
         const data = res.data?.textToTransaction?.data;
@@ -321,7 +315,7 @@ export function AIAssistantSheet({ visible, onClose, onUseDetails, onCreated, in
         setPromptId(res.data?.textToTransaction?.promptId ?? null);
       } else {
         if (!image) return;
-        const note = serializeComposer(receiptNote);
+        const note = receiptNote.trim();
         const res = await imageToTransaction(image.base64, image.mimeType, undefined, note || undefined);
         const data = res.data?.imageToTransaction?.data;
         if (!data) throw new Error("No result from AI.");
@@ -385,7 +379,7 @@ export function AIAssistantSheet({ visible, onClose, onUseDetails, onCreated, in
   // ── Derived ─────────────────────────────────────────────────────────────────
 
   const canAnalyze =
-    tab === "text" ? !composerIsEmpty(composer) : image !== null;
+    tab === "text" ? mentionsToPlain(composer).trim().length > 0 : image !== null;
 
   const canCreateDirect = (() => {
     if (!result) return false;
@@ -409,10 +403,7 @@ export function AIAssistantSheet({ visible, onClose, onUseDetails, onCreated, in
       transparent
       onRequestClose={handleClose}
     >
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        style={{ flex: 1, justifyContent: "flex-end" }}
-      >
+      <ModalKeyboardView fillColor={C.surfaceLow} style={{ justifyContent: "flex-end" }}>
         {/* Backdrop */}
         <TouchableOpacity
           style={{
@@ -570,7 +561,7 @@ export function AIAssistantSheet({ visible, onClose, onUseDetails, onCreated, in
           >
             {/* Text tab */}
             {tab === "text" && !result && (
-              <EntityComposer
+              <MentionInput
                 value={composer}
                 onChange={setComposer}
                 editable={!analyzing}
@@ -704,7 +695,7 @@ export function AIAssistantSheet({ visible, onClose, onUseDetails, onCreated, in
             {/* Receipt tab — optional note with tags, e.g. a split */}
             {tab === "receipt" && image && !result && (
               <View style={{ marginTop: 10 }}>
-                <EntityComposer
+                <MentionInput
                   value={receiptNote}
                   onChange={setReceiptNote}
                   editable={!analyzing}
@@ -965,7 +956,7 @@ export function AIAssistantSheet({ visible, onClose, onUseDetails, onCreated, in
             )}
           </View>
         </View>
-      </KeyboardAvoidingView>
+      </ModalKeyboardView>
     </Modal>
   );
 }
