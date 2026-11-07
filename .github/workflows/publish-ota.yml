@@ -1,0 +1,67 @@
+# Publishes a JS-only (OTA) update to the production channel. Builds with the same
+# native code (runtime fingerprint) pick it up on their next start. A mandatory one is
+# also written to the manifest, so the app loads it before it can be used.
+name: Publish OTA update
+
+on:
+  workflow_dispatch:
+    inputs:
+      message:
+        description: What changed
+        required: true
+        type: string
+      mandatory:
+        description: Mandatory (the app applies it before it can be used)
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: app-release
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      GH_TOKEN: ${{ github.token }}
+      EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+      MESSAGE: ${{ inputs.message }}
+      MANDATORY: ${{ inputs.mandatory }}
+      # eas update bundles here; build-profile env from eas.json does not apply.
+      EXPO_PUBLIC_API_URL: https://pika.elabins.com
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - run: npm ci
+
+      - name: Publish
+        run: |
+          npx eas-cli update --channel production --platform android --message "$MESSAGE" \
+            --environment production --non-interactive --json > update.json
+          cat update.json
+
+      - name: Mark as mandatory
+        if: ${{ inputs.mandatory }}
+        run: |
+          node -e '
+            const list = JSON.parse(require("fs").readFileSync("update.json", "utf8"));
+            const u = (Array.isArray(list) ? list : [list]).find((x) => x.platform === "android");
+            if (!u?.group || !u?.runtimeVersion || !u?.createdAt) throw new Error("no android update in output");
+            require("fs").appendFileSync(process.env.GITHUB_ENV,
+              `GROUP=${u.group}\nRUNTIME=${u.runtimeVersion}\nCREATED_AT=${u.createdAt}\n`);
+          '
+          gh release view app-manifest > /dev/null 2>&1 || \
+            gh release create app-manifest --prerelease --title "App update manifest" \
+              --notes "latest.json here tells the app which update to offer. Do not delete."
+          gh release download app-manifest --pattern latest.json --output latest.json || echo '{}' > latest.json
+          node scripts/release-manifest.mjs ota latest.json "$RUNTIME" "$GROUP" "$CREATED_AT" "$MESSAGE"
+          gh release upload app-manifest latest.json --clobber

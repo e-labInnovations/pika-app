@@ -19,6 +19,8 @@ import { UserAvatar } from "@/components/UserAvatar";
 import { useAuth } from "@/context/AuthContext";
 import { useColors } from "@/theme/colors";
 import { smsCaptureAvailable } from "@/lib/sms-capture";
+import { selfUpdateEnabled, versionLabel } from "@/lib/updates";
+import { checkForUpdatesNow } from "@/components/updates/UpdateGate";
 
 const SECTIONS: SettingSection[] = [
   {
@@ -174,8 +176,21 @@ export default function SettingsScreen() {
           />
           <Text className="text-[16px] font-bold text-on-surface">Pika</Text>
           <Text className="text-[12px] text-on-surface-variant">
-            Version 1.0.0
+            Version {versionLabel()}
           </Text>
+          {selfUpdateEnabled && (
+            <TouchableOpacity
+              onPress={checkForUpdatesNow}
+              activeOpacity={0.8}
+              className="flex-row items-center gap-1.5 rounded-full px-3 py-1.5 mt-1"
+              style={{ backgroundColor: `${C.primary}22` }}
+            >
+              <DynamicIcon name="refresh-cw" size={13} color={C.primary} />
+              <Text className="text-[12px] font-semibold" style={{ color: C.primary }}>
+                Check for updates
+              </Text>
+            </TouchableOpacity>
+          )}
           <Text className="text-[11px] text-on-surface-variant text-center opacity-60 leading-relaxed">
             {"AI-Powered Personal Finance\n& Expense Tracking"}
           </Text>

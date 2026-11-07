@@ -1,0 +1,76 @@
+# Builds the production APK on EAS, publishes it as a GitHub release and updates the
+# manifest the app reads to offer the update (see scripts/release-manifest.mjs).
+name: Release APK
+
+on:
+  workflow_dispatch:
+    inputs:
+      notes:
+        description: Release notes shown in the app
+        required: true
+        type: string
+      mandatory:
+        description: Mandatory (older installs must update before using the app)
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: app-release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    env:
+      GH_TOKEN: ${{ github.token }}
+      EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+      NOTES: ${{ inputs.notes }}
+      MANDATORY: ${{ inputs.mandatory }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - run: npm ci
+
+      - name: Build on EAS
+        run: npx eas-cli build --platform android --profile production-apk --non-interactive --wait --json > build.json
+
+      - name: Read the build
+        run: |
+          node -e '
+            const b = JSON.parse(require("fs").readFileSync("build.json", "utf8"))[0];
+            if (b.status !== "FINISHED" || !b.artifacts?.buildUrl) throw new Error("build did not finish: " + b.status);
+            const lines = [
+              "VERSION=" + b.appVersion,
+              "CODE=" + b.appBuildVersion,
+              "BUILD_URL=" + b.artifacts.buildUrl,
+            ];
+            require("fs").appendFileSync(process.env.GITHUB_ENV, lines.join("\n") + "\n");
+          '
+
+      - name: Create the release
+        run: |
+          TAG="v${VERSION}-${CODE}"
+          APK="pika-${VERSION}-${CODE}.apk"
+          curl -fsSL -o "$APK" "$BUILD_URL"
+          printf '%s\n' "$NOTES" > notes.txt
+          gh release create "$TAG" "$APK" --title "Pika ${VERSION} (${CODE})" --notes-file notes.txt --latest
+          echo "APK_URL=https://github.com/${GITHUB_REPOSITORY}/releases/download/${TAG}/${APK}" >> "$GITHUB_ENV"
+
+      - name: Update the manifest
+        run: |
+          gh release view app-manifest > /dev/null 2>&1 || \
+            gh release create app-manifest --prerelease --title "App update manifest" \
+              --notes "latest.json here tells the app which update to offer. Do not delete."
+          gh release download app-manifest --pattern latest.json --output latest.json || echo '{}' > latest.json
+          node scripts/release-manifest.mjs apk latest.json "$VERSION" "$CODE" "$APK_URL" \
+            "$(date -u +%Y-%m-%dT%H:%M:%SZ)" "$MANDATORY" notes.txt
+          gh release upload app-manifest latest.json --clobber

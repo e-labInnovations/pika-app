@@ -16,6 +16,7 @@ import { AIPrefillBridgeProvider } from "../context/AIPrefillBridgeContext";
 import { apolloClient } from "../services/gql/client";
 import { AlertProvider, showAlert } from "../components/ui/AlertDialog";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { UpdateGate } from "../components/updates/UpdateGate";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -93,6 +94,7 @@ export default function Layout() {
             <AuthProvider>
               <ShareIntentListener />
               <Routes />
+              <UpdateGate />
               <AlertProvider />
             </AuthProvider>
           </ApolloProvider>

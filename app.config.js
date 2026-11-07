@@ -6,7 +6,14 @@ export default {
     name: IS_DEV ? 'Pika (Dev)' : 'Pika',
     slug: 'pika',
     scheme: 'pika',
-    version: '1.0.0',
+    version: '1.1.0',
+    // OTA updates (EAS Update) only reach builds with the same native code.
+    runtimeVersion: { policy: 'fingerprint' },
+    updates: {
+      url: 'https://u.expo.dev/22e0e671-4565-4627-b55c-c682985bce0d',
+      checkAutomatically: 'ON_LOAD',
+      fallbackToCacheTimeout: 0,
+    },
     orientation: 'portrait',
     userInterfaceStyle: 'dark',
     icon: './assets/icons/ios-light.png',
@@ -33,7 +40,12 @@ export default {
         backgroundColor: '#0d1322',
       },
       package: appPackage,
-      permissions: ['android.permission.CAMERA', 'android.permission.READ_MEDIA_IMAGES'],
+      permissions: [
+        'android.permission.CAMERA',
+        'android.permission.READ_MEDIA_IMAGES',
+        // Self-update: open the installer for an APK downloaded from a GitHub release.
+        'android.permission.REQUEST_INSTALL_PACKAGES',
+      ],
       // Contacts are only read (import people); expo-contacts would also add WRITE_CONTACTS.
       blockedPermissions: ['android.permission.WRITE_CONTACTS'],
     },
