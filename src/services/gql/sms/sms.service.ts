@@ -1,3 +1,4 @@
+import { gql } from '@apollo/client';
 import { useMutation, useQuery } from '@apollo/client/react';
 import { useEffect, useState } from 'react';
 import {
@@ -40,6 +41,19 @@ export type SmsSuggestion = {
   from: 'sms' | 'note' | 'model' | 'default' | 'reply' | 'ai';
   /** A transaction that may already record this payment. */
   possibleDuplicate?: { id: string; title: string; amount: string; date: string };
+  /** The payment split into parts, confirmed as one transaction each. */
+  parts?: SmsPart[];
+  /** `history`: like the payee's last split payment; `ai`: Split with AI. */
+  partsFrom?: 'history' | 'ai';
+};
+
+/** One part of a split SMS; the parts add up to the bank amount. */
+export type SmsPart = {
+  title: string;
+  amount: string;
+  category: string | null;
+  tags: string[];
+  person: string | null;
 };
 
 export type PendingSms = CapturedSmsFieldsFragment & {
@@ -191,4 +205,28 @@ export const usePossibleDuplicates = (
     fetchPolicy: 'cache-and-network',
   });
   return ready ? ((data?.possibleDuplicates ?? []).filter(Boolean) as PossibleDuplicate[]) : [];
+};
+
+// Defined here rather than in sms.gql: added after the last codegen run (the server must
+// be running with the new schema to regenerate). Result is the parts as JSON.
+const SPLIT_SMS_WITH_AI = gql`
+  mutation SplitCapturedSmsWithAI($id: String!, $text: String) {
+    splitCapturedSmsWithAI(id: $id, text: $text)
+  }
+`;
+
+/** Splits a pending SMS into parts with the AI; saves them as the suggestion, never confirms. */
+export const useSplitSmsWithAI = () => {
+  const [split, { loading }] = useMutation<{ splitCapturedSmsWithAI: SmsPart[] }>(SPLIT_SMS_WITH_AI, {
+    refetchQueries: ['GetPendingSms', 'GetCapturedSms'],
+    awaitRefetchQueries: true,
+  });
+  return {
+    splitWithAI: async (id: string, text: string) => {
+      const res = await split({ variables: { id, text: text.trim() || null } });
+      if (res.error) throw res.error;
+      return res.data?.splitCapturedSmsWithAI ?? [];
+    },
+    loading,
+  };
 };

@@ -3,12 +3,24 @@
  * APK is current and which OTA updates are mandatory (see docs/superpowers/specs/
  * 2026-11-07-in-app-updates-design.md). Decisions live in ./decide.
  */
-import * as Application from "expo-application";
+import { requireOptionalNativeModule } from "expo";
 import * as FileSystem from "expo-file-system/legacy";
-import * as IntentLauncher from "expo-intent-launcher";
 import * as SecureStore from "expo-secure-store";
-import * as Updates from "expo-updates";
 import { Platform } from "react-native";
+
+// Loaded only when the build has their native code: a dev client built before they were
+// added would otherwise crash on import.
+/* eslint-disable @typescript-eslint/no-require-imports */
+const Application: typeof import("expo-application") | null = requireOptionalNativeModule("ExpoApplication")
+  ? require("expo-application")
+  : null;
+const IntentLauncher: typeof import("expo-intent-launcher") | null = requireOptionalNativeModule("ExpoIntentLauncher")
+  ? require("expo-intent-launcher")
+  : null;
+const Updates: typeof import("expo-updates") | null = requireOptionalNativeModule("ExpoUpdates")
+  ? require("expo-updates")
+  : null;
+/* eslint-enable @typescript-eslint/no-require-imports */
 import { decideUpdate, type Installed, type ReleaseManifest, type UpdateDecision } from "./decide";
 
 export type { ApkRelease, UpdateDecision } from "./decide";
@@ -19,20 +31,33 @@ const SKIPPED_KEY = "pika_update_skipped_version_code";
 
 /** Only the production Android app updates itself; dev builds and Expo Go never do. */
 export const selfUpdateEnabled =
-  Platform.OS === "android" && !__DEV__ && Application.applicationId === PRODUCTION_ID;
+  Platform.OS === "android" &&
+  !__DEV__ &&
+  !!Updates &&
+  !!IntentLauncher &&
+  Application?.applicationId === PRODUCTION_ID;
+
+/** An OTA update downloaded in the background and waiting for a restart. */
+export function useUpdatePending(): boolean {
+  // `Updates` never changes at runtime, so the hook is always or never called.
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  return Updates ? Updates.useUpdates().isUpdatePending : false;
+}
+
+export const reloadApp = () => Updates?.reloadAsync() ?? Promise.resolve();
 
 export function installedInfo(): Installed {
   return {
-    versionCode: Number(Application.nativeBuildVersion ?? 0) || 0,
-    runtimeVersion: Updates.runtimeVersion ?? null,
-    bundleCreatedAt: Updates.createdAt ?? null,
+    versionCode: Number(Application?.nativeBuildVersion ?? 0) || 0,
+    runtimeVersion: Updates?.runtimeVersion ?? null,
+    bundleCreatedAt: Updates?.createdAt ?? null,
   };
 }
 
 /** "1.1.0 (7)" plus the OTA update id when one is running. */
 export function versionLabel(): string {
-  const base = `${Application.nativeApplicationVersion ?? "?"} (${Application.nativeBuildVersion ?? "?"})`;
-  return Updates.isEmbeddedLaunch || !Updates.updateId ? base : `${base} · ${Updates.updateId.slice(0, 8)}`;
+  const base = `${Application?.nativeApplicationVersion ?? "?"} (${Application?.nativeBuildVersion ?? "?"})`;
+  return !Updates || Updates.isEmbeddedLaunch || !Updates.updateId ? base : `${base} · ${Updates.updateId.slice(0, 8)}`;
 }
 
 async function fetchManifest(): Promise<ReleaseManifest> {
@@ -72,6 +97,7 @@ export async function installApk(url: string, versionCode: number, onProgress: (
   if (!res || res.status !== 200) throw new Error(`Download failed (${res?.status ?? "no response"})`);
   onProgress(1);
   const contentUri = await FileSystem.getContentUriAsync(res.uri);
+  if (!IntentLauncher) throw new Error("This build can't install updates.");
   await IntentLauncher.startActivityAsync("android.intent.action.VIEW", {
     data: contentUri,
     type: "application/vnd.android.package-archive",
@@ -85,6 +111,7 @@ export async function installApk(url: string, versionCode: number, onProgress: (
  * pending update, reloading would only restart into the same bundle, so it throws.
  */
 export async function applyOtaNow(pending: boolean): Promise<void> {
+  if (!Updates) throw new Error("This build can't load updates.");
   const res = await Updates.fetchUpdateAsync();
   if (!res.isNew && !pending) throw new Error("The update isn't available yet. Try again in a minute.");
   await Updates.reloadAsync();

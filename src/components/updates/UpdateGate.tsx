@@ -5,7 +5,6 @@
  * - an OTA update downloaded in the background: a small Restart banner.
  * `checkForUpdatesNow()` runs the same check from Settings.
  */
-import * as Updates from "expo-updates";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { ActivityIndicator, Modal, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -15,8 +14,10 @@ import {
   applyOtaNow,
   checkForUpdate,
   installApk,
+  reloadApp,
   selfUpdateEnabled,
   skipVersion,
+  useUpdatePending,
   type UpdateDecision,
 } from "../../lib/updates";
 import { useColors } from "../../theme/colors";
@@ -42,7 +43,7 @@ export async function checkForUpdatesNow(): Promise<void> {
 
 export function UpdateGate() {
   const [decision, setDecision] = useState<Shown | null>(null);
-  const { isUpdatePending } = Updates.useUpdates();
+  const isUpdatePending = useUpdatePending();
   const [bannerDismissed, setBannerDismissed] = useState(false);
 
   useEffect(() => {
@@ -76,7 +77,7 @@ function UpdateView({ decision, mandatory, onClose }: { decision: Shown; mandato
   const insets = useSafeAreaInsets();
   const [progress, setProgress] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const { isUpdatePending } = Updates.useUpdates();
+  const isUpdatePending = useUpdatePending();
 
   const isApk = decision.kind === "apk";
   const title = isApk ? `Pika ${decision.apk.version}` : "Update required";
@@ -212,7 +213,7 @@ function RestartBanner({ onDismiss }: { onDismiss: () => void }) {
       <View className="flex-row items-center gap-3 rounded-2xl px-4 py-3 bg-surface-high" style={{ elevation: 6 }}>
         <DynamicIcon name="sparkles" size={18} color={C.primary} />
         <Text className="flex-1 text-[13px] text-on-surface">An update is ready.</Text>
-        <TouchableOpacity onPress={() => Updates.reloadAsync().catch(() => {})} activeOpacity={0.8}>
+        <TouchableOpacity onPress={() => reloadApp().catch(() => {})} activeOpacity={0.8}>
           <Text className="text-[13px] font-bold" style={{ color: C.primary }}>Restart</Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={onDismiss} accessibilityLabel="Dismiss">

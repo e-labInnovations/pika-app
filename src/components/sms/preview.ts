@@ -4,7 +4,7 @@ import { useGetAccounts } from "../../services/gql/accounts/accounts.service";
 import { useGetCategories } from "../../services/gql/categories/categories.service";
 import { useGetPeople } from "../../services/gql/people/people.service";
 import { useGetTags } from "../../services/gql/tags/tags.service";
-import type { PendingSms } from "../../services/gql/sms/sms.service";
+import type { PendingSms, SmsPart } from "../../services/gql/sms/sms.service";
 import type {
   AccountFieldsFragment,
   CategoryFieldsFragment,
@@ -45,7 +45,10 @@ export function useSmsLookups(): SmsLookups {
 export function canQuickConfirm(sms: PendingSms): boolean {
   const s = sms.suggestion;
   // A possible duplicate needs a look first.
-  if (!s?.category || !sms.account || s.possibleDuplicate) return false;
+  if (!s || !sms.account || s.possibleDuplicate) return false;
+  const parts = s.parts as SmsPart[] | undefined;
+  if (parts?.length) return parts.every((p) => !!p.category);
+  if (!s.category) return false;
   return s.type !== "transfer" || !!s.toAccount;
 }
 

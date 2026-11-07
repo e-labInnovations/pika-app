@@ -3,6 +3,7 @@ import React from "react";
 import { ActivityIndicator, View } from "react-native";
 import { showAlert } from "@/components/ui/AlertDialog";
 import { SmsRefineActions } from "@/components/sms/SmsRefineSheet";
+import { SmsSplitActions } from "@/components/sms/SmsSplitSheet";
 import { OriginalSms } from "@/components/sms/OriginalSms";
 import { SmsDuplicateNotice } from "@/components/transaction/DuplicateNotice";
 import { TransactionForm, type TxFormValues } from "@/components/transaction/TransactionForm";
@@ -82,6 +83,8 @@ export default function ReviewSmsScreen() {
         // Empty: the server writes a note with the bank reference.
         note: values.note.trim() || undefined,
         attachments: attachmentIds,
+        // The form is one transaction; a suggested split is confirmed from its own sheet.
+        parts: [],
       });
       router.back();
     } catch (err: any) {
@@ -103,6 +106,7 @@ export default function ReviewSmsScreen() {
         <View style={{ gap: 8 }}>
           <OriginalSms sms={sms} collapsedLines={6} style={{ backgroundColor: C.surfaceMid }} />
           <SmsRefineActions smsId={sms.id} />
+          <SmsSplitActions sms={sms} onConfirmed={() => router.back()} />
           <SmsDuplicateNotice sms={sms} onMarked={() => router.back()} />
         </View>
       }

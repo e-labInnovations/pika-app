@@ -15,6 +15,7 @@ import { showAlert } from "@/components/ui/AlertDialog";
 import { TransactionPreviewCard } from "@/components/transaction/TransactionPreviewCard";
 import { OriginalSms } from "@/components/sms/OriginalSms";
 import { SmsRefineButton } from "@/components/sms/SmsRefineSheet";
+import { SmsSplitSummary } from "@/components/sms/SmsSplitSheet";
 import { SmsDuplicateNotice } from "@/components/transaction/DuplicateNotice";
 import { canQuickConfirm, toPreview, useSmsLookups, type SmsLookups as Lookups } from "@/components/sms/preview";
 import {
@@ -47,6 +48,7 @@ function SmsCard({
     <View className="gap-2">
       <TouchableOpacity activeOpacity={0.85} onPress={onEdit}>
         <TransactionPreviewCard data={toPreview(sms, find)} missing={{ category: true, account: true }}>
+          <SmsSplitSummary sms={sms} find={find} />
           <OriginalSms sms={sms} />
           <SmsDuplicateNotice sms={sms} />
         </TransactionPreviewCard>
