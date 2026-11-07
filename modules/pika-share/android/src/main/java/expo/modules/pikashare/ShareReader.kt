@@ -30,7 +30,8 @@ private class TooLargeException : IOException()
  */
 object ShareReader {
   const val MAX_BYTES = 20L * 1024 * 1024
-  private const val MAX_AGE_MS = 24L * 60 * 60 * 1000
+  /** A share can wait (app not opened, not signed in) for a week before its file goes. */
+  private const val MAX_AGE_MS = 7L * 24 * 60 * 60 * 1000
 
   fun isShareIntent(intent: Intent?): Boolean =
     intent?.action == Intent.ACTION_SEND || intent?.action == Intent.ACTION_SEND_MULTIPLE
@@ -59,7 +60,8 @@ object ShareReader {
       }
     }
 
-    val text = intent.getCharSequenceExtra(Intent.EXTRA_TEXT)?.toString()?.trim()
+    // Some apps send an empty EXTRA_TEXT with the content in the subject.
+    val text = intent.getCharSequenceExtra(Intent.EXTRA_TEXT)?.toString()?.trim()?.takeIf { it.isNotEmpty() }
       ?: intent.getStringExtra(Intent.EXTRA_SUBJECT)?.trim()
     if (!text.isNullOrEmpty()) return ShareResult.TextShare(text)
 
@@ -70,7 +72,7 @@ object ShareReader {
     return null
   }
 
-  /** Deletes cached shares older than a day. */
+  /** Deletes cached shares older than a week. */
   fun pruneOld(context: Context) {
     val dir = File(context.cacheDir, "shares")
     val cutoff = System.currentTimeMillis() - MAX_AGE_MS
