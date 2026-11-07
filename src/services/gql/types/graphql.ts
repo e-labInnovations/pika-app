@@ -30,7 +30,9 @@ export type Scalars = {
   PossibleDuplicate: { input: any; output: any; }
   /** { suggestions: detected monthly payments not yet tracked, due: tracked reminders due soon or missed } */
   RecurringOverview: { input: any; output: any; }
-  /** Optional fields to change before confirming: title, type, category, account, toAccount, person, tags, note, shares, amount, date, attachments */
+  /** JSON (search where / summary / insights) */
+  SearchJSON: { input: any; output: any; }
+  /** Optional fields to change before confirming: title, type, category, account, toAccount, person, tags, note, shares, amount, date, attachments, parts (split: [{title, amount, category, tags, person}], [] = not split) */
   SmsConfirmOverrides: { input: any; output: any; }
   /** Statement parse result / import rows (JSON) */
   StatementJSON: { input: any; output: any; }
@@ -82,6 +84,7 @@ export type Access = {
   ai_prompts?: Maybe<ai_promptsAccess>;
   ai_usages?: Maybe<ai_usagesAccess>;
   app_settings?: Maybe<app_settingsAccess>;
+  budgets?: Maybe<budgetsAccess>;
   canAccessAdmin: Scalars['Boolean']['output'];
   captured_sms?: Maybe<captured_smsAccess>;
   categories?: Maybe<categoriesAccess>;
@@ -4263,6 +4266,536 @@ export enum Banner_style {
   warning = 'warning'
 }
 
+export type Budget = {
+  __typename?: 'Budget';
+  amount: Scalars['Float']['output'];
+  category: Category;
+  createdAt?: Maybe<Scalars['DateTime']['output']>;
+  id: Scalars['String']['output'];
+  isActive?: Maybe<Scalars['Boolean']['output']>;
+  updatedAt?: Maybe<Scalars['DateTime']['output']>;
+  user: User;
+};
+
+export type Budget_amount_operator = {
+  equals?: InputMaybe<Scalars['Float']['input']>;
+  greater_than?: InputMaybe<Scalars['Float']['input']>;
+  greater_than_equal?: InputMaybe<Scalars['Float']['input']>;
+  less_than?: InputMaybe<Scalars['Float']['input']>;
+  less_than_equal?: InputMaybe<Scalars['Float']['input']>;
+  not_equals?: InputMaybe<Scalars['Float']['input']>;
+};
+
+export type Budget_category_operator = {
+  all?: InputMaybe<Array<InputMaybe<Scalars['JSON']['input']>>>;
+  equals?: InputMaybe<Scalars['JSON']['input']>;
+  in?: InputMaybe<Array<InputMaybe<Scalars['JSON']['input']>>>;
+  not_equals?: InputMaybe<Scalars['JSON']['input']>;
+  not_in?: InputMaybe<Array<InputMaybe<Scalars['JSON']['input']>>>;
+};
+
+export type Budget_createdAt_operator = {
+  equals?: InputMaybe<Scalars['DateTime']['input']>;
+  exists?: InputMaybe<Scalars['Boolean']['input']>;
+  greater_than?: InputMaybe<Scalars['DateTime']['input']>;
+  greater_than_equal?: InputMaybe<Scalars['DateTime']['input']>;
+  less_than?: InputMaybe<Scalars['DateTime']['input']>;
+  less_than_equal?: InputMaybe<Scalars['DateTime']['input']>;
+  like?: InputMaybe<Scalars['DateTime']['input']>;
+  not_equals?: InputMaybe<Scalars['DateTime']['input']>;
+};
+
+export type Budget_id_operator = {
+  all?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  contains?: InputMaybe<Scalars['String']['input']>;
+  equals?: InputMaybe<Scalars['String']['input']>;
+  exists?: InputMaybe<Scalars['Boolean']['input']>;
+  in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  like?: InputMaybe<Scalars['String']['input']>;
+  not_equals?: InputMaybe<Scalars['String']['input']>;
+  not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+};
+
+export type Budget_isActive_operator = {
+  equals?: InputMaybe<Scalars['Boolean']['input']>;
+  exists?: InputMaybe<Scalars['Boolean']['input']>;
+  not_equals?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+export type Budget_updatedAt_operator = {
+  equals?: InputMaybe<Scalars['DateTime']['input']>;
+  exists?: InputMaybe<Scalars['Boolean']['input']>;
+  greater_than?: InputMaybe<Scalars['DateTime']['input']>;
+  greater_than_equal?: InputMaybe<Scalars['DateTime']['input']>;
+  less_than?: InputMaybe<Scalars['DateTime']['input']>;
+  less_than_equal?: InputMaybe<Scalars['DateTime']['input']>;
+  like?: InputMaybe<Scalars['DateTime']['input']>;
+  not_equals?: InputMaybe<Scalars['DateTime']['input']>;
+};
+
+export type Budget_user_operator = {
+  all?: InputMaybe<Array<InputMaybe<Scalars['JSON']['input']>>>;
+  equals?: InputMaybe<Scalars['JSON']['input']>;
+  in?: InputMaybe<Array<InputMaybe<Scalars['JSON']['input']>>>;
+  not_equals?: InputMaybe<Scalars['JSON']['input']>;
+  not_in?: InputMaybe<Array<InputMaybe<Scalars['JSON']['input']>>>;
+};
+
+export type Budget_where = {
+  AND?: InputMaybe<Array<InputMaybe<Budget_where_and>>>;
+  OR?: InputMaybe<Array<InputMaybe<Budget_where_or>>>;
+  amount?: InputMaybe<Budget_amount_operator>;
+  category?: InputMaybe<Budget_category_operator>;
+  createdAt?: InputMaybe<Budget_createdAt_operator>;
+  id?: InputMaybe<Budget_id_operator>;
+  isActive?: InputMaybe<Budget_isActive_operator>;
+  updatedAt?: InputMaybe<Budget_updatedAt_operator>;
+  user?: InputMaybe<Budget_user_operator>;
+};
+
+export type Budget_where_and = {
+  AND?: InputMaybe<Array<InputMaybe<Budget_where_and>>>;
+  OR?: InputMaybe<Array<InputMaybe<Budget_where_or>>>;
+  amount?: InputMaybe<Budget_amount_operator>;
+  category?: InputMaybe<Budget_category_operator>;
+  createdAt?: InputMaybe<Budget_createdAt_operator>;
+  id?: InputMaybe<Budget_id_operator>;
+  isActive?: InputMaybe<Budget_isActive_operator>;
+  updatedAt?: InputMaybe<Budget_updatedAt_operator>;
+  user?: InputMaybe<Budget_user_operator>;
+};
+
+export type Budget_where_or = {
+  AND?: InputMaybe<Array<InputMaybe<Budget_where_and>>>;
+  OR?: InputMaybe<Array<InputMaybe<Budget_where_or>>>;
+  amount?: InputMaybe<Budget_amount_operator>;
+  category?: InputMaybe<Budget_category_operator>;
+  createdAt?: InputMaybe<Budget_createdAt_operator>;
+  id?: InputMaybe<Budget_id_operator>;
+  isActive?: InputMaybe<Budget_isActive_operator>;
+  updatedAt?: InputMaybe<Budget_updatedAt_operator>;
+  user?: InputMaybe<Budget_user_operator>;
+};
+
+export type Budgets = {
+  __typename?: 'Budgets';
+  docs: Array<Budget>;
+  hasNextPage: Scalars['Boolean']['output'];
+  hasPrevPage: Scalars['Boolean']['output'];
+  limit: Scalars['Int']['output'];
+  nextPage?: Maybe<Scalars['Int']['output']>;
+  offset?: Maybe<Scalars['Int']['output']>;
+  page: Scalars['Int']['output'];
+  pagingCounter: Scalars['Int']['output'];
+  prevPage?: Maybe<Scalars['Int']['output']>;
+  totalDocs: Scalars['Int']['output'];
+  totalPages: Scalars['Int']['output'];
+};
+
+export type BudgetsCreateAccess = {
+  __typename?: 'BudgetsCreateAccess';
+  permission: Scalars['Boolean']['output'];
+  where?: Maybe<Scalars['JSONObject']['output']>;
+};
+
+export type BudgetsCreateDocAccess = {
+  __typename?: 'BudgetsCreateDocAccess';
+  permission: Scalars['Boolean']['output'];
+  where?: Maybe<Scalars['JSONObject']['output']>;
+};
+
+export type BudgetsDeleteAccess = {
+  __typename?: 'BudgetsDeleteAccess';
+  permission: Scalars['Boolean']['output'];
+  where?: Maybe<Scalars['JSONObject']['output']>;
+};
+
+export type BudgetsDeleteDocAccess = {
+  __typename?: 'BudgetsDeleteDocAccess';
+  permission: Scalars['Boolean']['output'];
+  where?: Maybe<Scalars['JSONObject']['output']>;
+};
+
+export type BudgetsDocAccessFields = {
+  __typename?: 'BudgetsDocAccessFields';
+  amount?: Maybe<BudgetsDocAccessFields_amount>;
+  category?: Maybe<BudgetsDocAccessFields_category>;
+  createdAt?: Maybe<BudgetsDocAccessFields_createdAt>;
+  isActive?: Maybe<BudgetsDocAccessFields_isActive>;
+  updatedAt?: Maybe<BudgetsDocAccessFields_updatedAt>;
+  user?: Maybe<BudgetsDocAccessFields_user>;
+};
+
+export type BudgetsDocAccessFields_amount = {
+  __typename?: 'BudgetsDocAccessFields_amount';
+  create?: Maybe<BudgetsDocAccessFields_amount_Create>;
+  delete?: Maybe<BudgetsDocAccessFields_amount_Delete>;
+  read?: Maybe<BudgetsDocAccessFields_amount_Read>;
+  update?: Maybe<BudgetsDocAccessFields_amount_Update>;
+};
+
+export type BudgetsDocAccessFields_amount_Create = {
+  __typename?: 'BudgetsDocAccessFields_amount_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type BudgetsDocAccessFields_amount_Delete = {
+  __typename?: 'BudgetsDocAccessFields_amount_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type BudgetsDocAccessFields_amount_Read = {
+  __typename?: 'BudgetsDocAccessFields_amount_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type BudgetsDocAccessFields_amount_Update = {
+  __typename?: 'BudgetsDocAccessFields_amount_Update';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type BudgetsDocAccessFields_category = {
+  __typename?: 'BudgetsDocAccessFields_category';
+  create?: Maybe<BudgetsDocAccessFields_category_Create>;
+  delete?: Maybe<BudgetsDocAccessFields_category_Delete>;
+  read?: Maybe<BudgetsDocAccessFields_category_Read>;
+  update?: Maybe<BudgetsDocAccessFields_category_Update>;
+};
+
+export type BudgetsDocAccessFields_category_Create = {
+  __typename?: 'BudgetsDocAccessFields_category_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type BudgetsDocAccessFields_category_Delete = {
+  __typename?: 'BudgetsDocAccessFields_category_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type BudgetsDocAccessFields_category_Read = {
+  __typename?: 'BudgetsDocAccessFields_category_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type BudgetsDocAccessFields_category_Update = {
+  __typename?: 'BudgetsDocAccessFields_category_Update';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type BudgetsDocAccessFields_createdAt = {
+  __typename?: 'BudgetsDocAccessFields_createdAt';
+  create?: Maybe<BudgetsDocAccessFields_createdAt_Create>;
+  delete?: Maybe<BudgetsDocAccessFields_createdAt_Delete>;
+  read?: Maybe<BudgetsDocAccessFields_createdAt_Read>;
+  update?: Maybe<BudgetsDocAccessFields_createdAt_Update>;
+};
+
+export type BudgetsDocAccessFields_createdAt_Create = {
+  __typename?: 'BudgetsDocAccessFields_createdAt_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type BudgetsDocAccessFields_createdAt_Delete = {
+  __typename?: 'BudgetsDocAccessFields_createdAt_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type BudgetsDocAccessFields_createdAt_Read = {
+  __typename?: 'BudgetsDocAccessFields_createdAt_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type BudgetsDocAccessFields_createdAt_Update = {
+  __typename?: 'BudgetsDocAccessFields_createdAt_Update';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type BudgetsDocAccessFields_isActive = {
+  __typename?: 'BudgetsDocAccessFields_isActive';
+  create?: Maybe<BudgetsDocAccessFields_isActive_Create>;
+  delete?: Maybe<BudgetsDocAccessFields_isActive_Delete>;
+  read?: Maybe<BudgetsDocAccessFields_isActive_Read>;
+  update?: Maybe<BudgetsDocAccessFields_isActive_Update>;
+};
+
+export type BudgetsDocAccessFields_isActive_Create = {
+  __typename?: 'BudgetsDocAccessFields_isActive_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type BudgetsDocAccessFields_isActive_Delete = {
+  __typename?: 'BudgetsDocAccessFields_isActive_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type BudgetsDocAccessFields_isActive_Read = {
+  __typename?: 'BudgetsDocAccessFields_isActive_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type BudgetsDocAccessFields_isActive_Update = {
+  __typename?: 'BudgetsDocAccessFields_isActive_Update';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type BudgetsDocAccessFields_updatedAt = {
+  __typename?: 'BudgetsDocAccessFields_updatedAt';
+  create?: Maybe<BudgetsDocAccessFields_updatedAt_Create>;
+  delete?: Maybe<BudgetsDocAccessFields_updatedAt_Delete>;
+  read?: Maybe<BudgetsDocAccessFields_updatedAt_Read>;
+  update?: Maybe<BudgetsDocAccessFields_updatedAt_Update>;
+};
+
+export type BudgetsDocAccessFields_updatedAt_Create = {
+  __typename?: 'BudgetsDocAccessFields_updatedAt_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type BudgetsDocAccessFields_updatedAt_Delete = {
+  __typename?: 'BudgetsDocAccessFields_updatedAt_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type BudgetsDocAccessFields_updatedAt_Read = {
+  __typename?: 'BudgetsDocAccessFields_updatedAt_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type BudgetsDocAccessFields_updatedAt_Update = {
+  __typename?: 'BudgetsDocAccessFields_updatedAt_Update';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type BudgetsDocAccessFields_user = {
+  __typename?: 'BudgetsDocAccessFields_user';
+  create?: Maybe<BudgetsDocAccessFields_user_Create>;
+  delete?: Maybe<BudgetsDocAccessFields_user_Delete>;
+  read?: Maybe<BudgetsDocAccessFields_user_Read>;
+  update?: Maybe<BudgetsDocAccessFields_user_Update>;
+};
+
+export type BudgetsDocAccessFields_user_Create = {
+  __typename?: 'BudgetsDocAccessFields_user_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type BudgetsDocAccessFields_user_Delete = {
+  __typename?: 'BudgetsDocAccessFields_user_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type BudgetsDocAccessFields_user_Read = {
+  __typename?: 'BudgetsDocAccessFields_user_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type BudgetsDocAccessFields_user_Update = {
+  __typename?: 'BudgetsDocAccessFields_user_Update';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type BudgetsFields = {
+  __typename?: 'BudgetsFields';
+  amount?: Maybe<BudgetsFields_amount>;
+  category?: Maybe<BudgetsFields_category>;
+  createdAt?: Maybe<BudgetsFields_createdAt>;
+  isActive?: Maybe<BudgetsFields_isActive>;
+  updatedAt?: Maybe<BudgetsFields_updatedAt>;
+  user?: Maybe<BudgetsFields_user>;
+};
+
+export type BudgetsFields_amount = {
+  __typename?: 'BudgetsFields_amount';
+  create?: Maybe<BudgetsFields_amount_Create>;
+  delete?: Maybe<BudgetsFields_amount_Delete>;
+  read?: Maybe<BudgetsFields_amount_Read>;
+  update?: Maybe<BudgetsFields_amount_Update>;
+};
+
+export type BudgetsFields_amount_Create = {
+  __typename?: 'BudgetsFields_amount_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type BudgetsFields_amount_Delete = {
+  __typename?: 'BudgetsFields_amount_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type BudgetsFields_amount_Read = {
+  __typename?: 'BudgetsFields_amount_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type BudgetsFields_amount_Update = {
+  __typename?: 'BudgetsFields_amount_Update';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type BudgetsFields_category = {
+  __typename?: 'BudgetsFields_category';
+  create?: Maybe<BudgetsFields_category_Create>;
+  delete?: Maybe<BudgetsFields_category_Delete>;
+  read?: Maybe<BudgetsFields_category_Read>;
+  update?: Maybe<BudgetsFields_category_Update>;
+};
+
+export type BudgetsFields_category_Create = {
+  __typename?: 'BudgetsFields_category_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type BudgetsFields_category_Delete = {
+  __typename?: 'BudgetsFields_category_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type BudgetsFields_category_Read = {
+  __typename?: 'BudgetsFields_category_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type BudgetsFields_category_Update = {
+  __typename?: 'BudgetsFields_category_Update';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type BudgetsFields_createdAt = {
+  __typename?: 'BudgetsFields_createdAt';
+  create?: Maybe<BudgetsFields_createdAt_Create>;
+  delete?: Maybe<BudgetsFields_createdAt_Delete>;
+  read?: Maybe<BudgetsFields_createdAt_Read>;
+  update?: Maybe<BudgetsFields_createdAt_Update>;
+};
+
+export type BudgetsFields_createdAt_Create = {
+  __typename?: 'BudgetsFields_createdAt_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type BudgetsFields_createdAt_Delete = {
+  __typename?: 'BudgetsFields_createdAt_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type BudgetsFields_createdAt_Read = {
+  __typename?: 'BudgetsFields_createdAt_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type BudgetsFields_createdAt_Update = {
+  __typename?: 'BudgetsFields_createdAt_Update';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type BudgetsFields_isActive = {
+  __typename?: 'BudgetsFields_isActive';
+  create?: Maybe<BudgetsFields_isActive_Create>;
+  delete?: Maybe<BudgetsFields_isActive_Delete>;
+  read?: Maybe<BudgetsFields_isActive_Read>;
+  update?: Maybe<BudgetsFields_isActive_Update>;
+};
+
+export type BudgetsFields_isActive_Create = {
+  __typename?: 'BudgetsFields_isActive_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type BudgetsFields_isActive_Delete = {
+  __typename?: 'BudgetsFields_isActive_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type BudgetsFields_isActive_Read = {
+  __typename?: 'BudgetsFields_isActive_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type BudgetsFields_isActive_Update = {
+  __typename?: 'BudgetsFields_isActive_Update';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type BudgetsFields_updatedAt = {
+  __typename?: 'BudgetsFields_updatedAt';
+  create?: Maybe<BudgetsFields_updatedAt_Create>;
+  delete?: Maybe<BudgetsFields_updatedAt_Delete>;
+  read?: Maybe<BudgetsFields_updatedAt_Read>;
+  update?: Maybe<BudgetsFields_updatedAt_Update>;
+};
+
+export type BudgetsFields_updatedAt_Create = {
+  __typename?: 'BudgetsFields_updatedAt_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type BudgetsFields_updatedAt_Delete = {
+  __typename?: 'BudgetsFields_updatedAt_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type BudgetsFields_updatedAt_Read = {
+  __typename?: 'BudgetsFields_updatedAt_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type BudgetsFields_updatedAt_Update = {
+  __typename?: 'BudgetsFields_updatedAt_Update';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type BudgetsFields_user = {
+  __typename?: 'BudgetsFields_user';
+  create?: Maybe<BudgetsFields_user_Create>;
+  delete?: Maybe<BudgetsFields_user_Delete>;
+  read?: Maybe<BudgetsFields_user_Read>;
+  update?: Maybe<BudgetsFields_user_Update>;
+};
+
+export type BudgetsFields_user_Create = {
+  __typename?: 'BudgetsFields_user_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type BudgetsFields_user_Delete = {
+  __typename?: 'BudgetsFields_user_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type BudgetsFields_user_Read = {
+  __typename?: 'BudgetsFields_user_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type BudgetsFields_user_Update = {
+  __typename?: 'BudgetsFields_user_Update';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type BudgetsReadAccess = {
+  __typename?: 'BudgetsReadAccess';
+  permission: Scalars['Boolean']['output'];
+  where?: Maybe<Scalars['JSONObject']['output']>;
+};
+
+export type BudgetsReadDocAccess = {
+  __typename?: 'BudgetsReadDocAccess';
+  permission: Scalars['Boolean']['output'];
+  where?: Maybe<Scalars['JSONObject']['output']>;
+};
+
+export type BudgetsUpdateAccess = {
+  __typename?: 'BudgetsUpdateAccess';
+  permission: Scalars['Boolean']['output'];
+  where?: Maybe<Scalars['JSONObject']['output']>;
+};
+
+export type BudgetsUpdateDocAccess = {
+  __typename?: 'BudgetsUpdateDocAccess';
+  permission: Scalars['Boolean']['output'];
+  where?: Maybe<Scalars['JSONObject']['output']>;
+};
+
 export type CalendarDay = {
   __typename?: 'CalendarDay';
   balance: Scalars['Float']['output'];
@@ -4287,6 +4820,7 @@ export type CapturedSms = {
   id: Scalars['String']['output'];
   merchantKey?: Maybe<Scalars['String']['output']>;
   parsed?: Maybe<Scalars['JSON']['output']>;
+  parts?: Maybe<Array<Transaction>>;
   receivedAt: Scalars['DateTime']['output'];
   sender: Scalars['String']['output'];
   status: CapturedSms_status;
@@ -4330,6 +4864,7 @@ export type CapturedSmsDocAccessFields = {
   hash?: Maybe<CapturedSmsDocAccessFields_hash>;
   merchantKey?: Maybe<CapturedSmsDocAccessFields_merchantKey>;
   parsed?: Maybe<CapturedSmsDocAccessFields_parsed>;
+  parts?: Maybe<CapturedSmsDocAccessFields_parts>;
   receivedAt?: Maybe<CapturedSmsDocAccessFields_receivedAt>;
   sender?: Maybe<CapturedSmsDocAccessFields_sender>;
   status?: Maybe<CapturedSmsDocAccessFields_status>;
@@ -4563,6 +5098,34 @@ export type CapturedSmsDocAccessFields_parsed_Update = {
   permission: Scalars['Boolean']['output'];
 };
 
+export type CapturedSmsDocAccessFields_parts = {
+  __typename?: 'CapturedSmsDocAccessFields_parts';
+  create?: Maybe<CapturedSmsDocAccessFields_parts_Create>;
+  delete?: Maybe<CapturedSmsDocAccessFields_parts_Delete>;
+  read?: Maybe<CapturedSmsDocAccessFields_parts_Read>;
+  update?: Maybe<CapturedSmsDocAccessFields_parts_Update>;
+};
+
+export type CapturedSmsDocAccessFields_parts_Create = {
+  __typename?: 'CapturedSmsDocAccessFields_parts_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type CapturedSmsDocAccessFields_parts_Delete = {
+  __typename?: 'CapturedSmsDocAccessFields_parts_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type CapturedSmsDocAccessFields_parts_Read = {
+  __typename?: 'CapturedSmsDocAccessFields_parts_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type CapturedSmsDocAccessFields_parts_Update = {
+  __typename?: 'CapturedSmsDocAccessFields_parts_Update';
+  permission: Scalars['Boolean']['output'];
+};
+
 export type CapturedSmsDocAccessFields_receivedAt = {
   __typename?: 'CapturedSmsDocAccessFields_receivedAt';
   create?: Maybe<CapturedSmsDocAccessFields_receivedAt_Create>;
@@ -4769,6 +5332,7 @@ export type CapturedSmsFields = {
   hash?: Maybe<CapturedSmsFields_hash>;
   merchantKey?: Maybe<CapturedSmsFields_merchantKey>;
   parsed?: Maybe<CapturedSmsFields_parsed>;
+  parts?: Maybe<CapturedSmsFields_parts>;
   receivedAt?: Maybe<CapturedSmsFields_receivedAt>;
   sender?: Maybe<CapturedSmsFields_sender>;
   status?: Maybe<CapturedSmsFields_status>;
@@ -4999,6 +5563,34 @@ export type CapturedSmsFields_parsed_Read = {
 
 export type CapturedSmsFields_parsed_Update = {
   __typename?: 'CapturedSmsFields_parsed_Update';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type CapturedSmsFields_parts = {
+  __typename?: 'CapturedSmsFields_parts';
+  create?: Maybe<CapturedSmsFields_parts_Create>;
+  delete?: Maybe<CapturedSmsFields_parts_Delete>;
+  read?: Maybe<CapturedSmsFields_parts_Read>;
+  update?: Maybe<CapturedSmsFields_parts_Update>;
+};
+
+export type CapturedSmsFields_parts_Create = {
+  __typename?: 'CapturedSmsFields_parts_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type CapturedSmsFields_parts_Delete = {
+  __typename?: 'CapturedSmsFields_parts_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type CapturedSmsFields_parts_Read = {
+  __typename?: 'CapturedSmsFields_parts_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type CapturedSmsFields_parts_Update = {
+  __typename?: 'CapturedSmsFields_parts_Update';
   permission: Scalars['Boolean']['output'];
 };
 
@@ -5326,6 +5918,15 @@ export type CapturedSms_parsed_operator = {
   within?: InputMaybe<Scalars['JSON']['input']>;
 };
 
+export type CapturedSms_parts_operator = {
+  all?: InputMaybe<Array<InputMaybe<Scalars['JSON']['input']>>>;
+  equals?: InputMaybe<Scalars['JSON']['input']>;
+  exists?: InputMaybe<Scalars['Boolean']['input']>;
+  in?: InputMaybe<Array<InputMaybe<Scalars['JSON']['input']>>>;
+  not_equals?: InputMaybe<Scalars['JSON']['input']>;
+  not_in?: InputMaybe<Array<InputMaybe<Scalars['JSON']['input']>>>;
+};
+
 export type CapturedSms_receivedAt_operator = {
   equals?: InputMaybe<Scalars['DateTime']['input']>;
   greater_than?: InputMaybe<Scalars['DateTime']['input']>;
@@ -5428,6 +6029,7 @@ export type CapturedSms_where = {
   id?: InputMaybe<CapturedSms_id_operator>;
   merchantKey?: InputMaybe<CapturedSms_merchantKey_operator>;
   parsed?: InputMaybe<CapturedSms_parsed_operator>;
+  parts?: InputMaybe<CapturedSms_parts_operator>;
   receivedAt?: InputMaybe<CapturedSms_receivedAt_operator>;
   sender?: InputMaybe<CapturedSms_sender_operator>;
   status?: InputMaybe<CapturedSms_status_operator>;
@@ -5449,6 +6051,7 @@ export type CapturedSms_where_and = {
   id?: InputMaybe<CapturedSms_id_operator>;
   merchantKey?: InputMaybe<CapturedSms_merchantKey_operator>;
   parsed?: InputMaybe<CapturedSms_parsed_operator>;
+  parts?: InputMaybe<CapturedSms_parts_operator>;
   receivedAt?: InputMaybe<CapturedSms_receivedAt_operator>;
   sender?: InputMaybe<CapturedSms_sender_operator>;
   status?: InputMaybe<CapturedSms_status_operator>;
@@ -5470,6 +6073,7 @@ export type CapturedSms_where_or = {
   id?: InputMaybe<CapturedSms_id_operator>;
   merchantKey?: InputMaybe<CapturedSms_merchantKey_operator>;
   parsed?: InputMaybe<CapturedSms_parsed_operator>;
+  parts?: InputMaybe<CapturedSms_parts_operator>;
   receivedAt?: InputMaybe<CapturedSms_receivedAt_operator>;
   sender?: InputMaybe<CapturedSms_sender_operator>;
   status?: InputMaybe<CapturedSms_status_operator>;
@@ -7766,6 +8370,7 @@ export type Mutation = {
   createAccount?: Maybe<Account>;
   createAiPrompt?: Maybe<AiPrompt>;
   createAiUsage?: Maybe<AiUsage>;
+  createBudget?: Maybe<Budget>;
   createCapturedSms?: Maybe<CapturedSms>;
   createCategory?: Maybe<Category>;
   createMedia?: Maybe<Media>;
@@ -7787,6 +8392,7 @@ export type Mutation = {
   deleteAccount?: Maybe<Account>;
   deleteAiPrompt?: Maybe<AiPrompt>;
   deleteAiUsage?: Maybe<AiUsage>;
+  deleteBudget?: Maybe<Budget>;
   deleteCapturedSms?: Maybe<CapturedSms>;
   deleteCategory?: Maybe<Category>;
   deleteMedia?: Maybe<Media>;
@@ -7809,6 +8415,7 @@ export type Mutation = {
   duplicateAccount?: Maybe<Account>;
   duplicateAiPrompt?: Maybe<AiPrompt>;
   duplicateAiUsage?: Maybe<AiUsage>;
+  duplicateBudget?: Maybe<Budget>;
   duplicateCapturedSms?: Maybe<CapturedSms>;
   duplicateCategory?: Maybe<Category>;
   duplicateMedia?: Maybe<Media>;
@@ -7838,6 +8445,9 @@ export type Mutation = {
   refreshTokenPayloadMcpApiKey?: Maybe<payload_mcp_api_keysRefreshedPayloadMcpApiKey>;
   refreshTokenUser?: Maybe<usersRefreshedUser>;
   resetPasswordUser?: Maybe<usersResetPassword>;
+  splitCapturedSmsWithAI: Scalars['SmsConfirmOverrides']['output'];
+  splitTransaction: Scalars['SmsConfirmOverrides']['output'];
+  splitTransactionWithAI: Scalars['SmsConfirmOverrides']['output'];
   suggestCategory?: Maybe<AICategorySuggestionResult>;
   textToTransaction?: Maybe<AITransactionResult>;
   undoAutoConfirmedSms?: Maybe<Scalars['Boolean']['output']>;
@@ -7846,6 +8456,7 @@ export type Mutation = {
   updateAiPrompt?: Maybe<AiPrompt>;
   updateAiUsage?: Maybe<AiUsage>;
   updateAppSetting?: Maybe<AppSetting>;
+  updateBudget?: Maybe<Budget>;
   updateCapturedSms?: Maybe<CapturedSms>;
   updateCategory?: Maybe<Category>;
   updateMedia?: Maybe<Media>;
@@ -7888,6 +8499,12 @@ export type MutationcreateAiPromptArgs = {
 
 export type MutationcreateAiUsageArgs = {
   data: mutationAiUsageInput;
+  draft?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+
+export type MutationcreateBudgetArgs = {
+  data: mutationBudgetInput;
   draft?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
@@ -8013,6 +8630,12 @@ export type MutationdeleteAiPromptArgs = {
 
 
 export type MutationdeleteAiUsageArgs = {
+  id: Scalars['String']['input'];
+  trash?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+
+export type MutationdeleteBudgetArgs = {
   id: Scalars['String']['input'];
   trash?: InputMaybe<Scalars['Boolean']['input']>;
 };
@@ -8145,6 +8768,12 @@ export type MutationduplicateAiPromptArgs = {
 
 export type MutationduplicateAiUsageArgs = {
   data: mutationAiUsageInput;
+  id: Scalars['String']['input'];
+};
+
+
+export type MutationduplicateBudgetArgs = {
+  data: mutationBudgetInput;
   id: Scalars['String']['input'];
 };
 
@@ -8315,6 +8944,24 @@ export type MutationresetPasswordUserArgs = {
 };
 
 
+export type MutationsplitCapturedSmsWithAIArgs = {
+  id: Scalars['String']['input'];
+  text?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type MutationsplitTransactionArgs = {
+  id: Scalars['String']['input'];
+  parts: Scalars['SmsConfirmOverrides']['input'];
+};
+
+
+export type MutationsplitTransactionWithAIArgs = {
+  id: Scalars['String']['input'];
+  text?: InputMaybe<Scalars['String']['input']>;
+};
+
+
 export type MutationsuggestCategoryArgs = {
   amount?: InputMaybe<Scalars['String']['input']>;
   date?: InputMaybe<Scalars['String']['input']>;
@@ -8373,6 +9020,15 @@ export type MutationupdateAiUsageArgs = {
 export type MutationupdateAppSettingArgs = {
   data: mutationAppSettingInput;
   draft?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+
+export type MutationupdateBudgetArgs = {
+  autosave?: InputMaybe<Scalars['Boolean']['input']>;
+  data: mutationBudgetUpdateInput;
+  draft?: InputMaybe<Scalars['Boolean']['input']>;
+  id: Scalars['String']['input'];
+  trash?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 
@@ -10993,6 +11649,7 @@ export enum PayloadLockedDocumentUpdate_DocumentRelationshipInputRelationTo {
   accounts = 'accounts',
   ai_prompts = 'ai_prompts',
   ai_usages = 'ai_usages',
+  budgets = 'budgets',
   captured_sms = 'captured_sms',
   categories = 'categories',
   media = 'media',
@@ -11020,7 +11677,7 @@ export enum PayloadLockedDocumentUpdate_UserRelationshipInputRelationTo {
   users = 'users'
 }
 
-export type PayloadLockedDocument_Document = Account | AiPrompt | AiUsage | CapturedSms | Category | Media | OauthAccount | OauthCode | Page | PayloadMcpApiKey | Person | Reminder | Tag | Transaction | TransactionEmbedding | TransactionLink | User | UserSetting;
+export type PayloadLockedDocument_Document = Account | AiPrompt | AiUsage | Budget | CapturedSms | Category | Media | OauthAccount | OauthCode | Page | PayloadMcpApiKey | Person | Reminder | Tag | Transaction | TransactionEmbedding | TransactionLink | User | UserSetting;
 
 export type PayloadLockedDocument_DocumentRelationshipInput = {
   relationTo?: InputMaybe<PayloadLockedDocument_DocumentRelationshipInputRelationTo>;
@@ -11031,6 +11688,7 @@ export enum PayloadLockedDocument_DocumentRelationshipInputRelationTo {
   accounts = 'accounts',
   ai_prompts = 'ai_prompts',
   ai_usages = 'ai_usages',
+  budgets = 'budgets',
   captured_sms = 'captured_sms',
   categories = 'categories',
   media = 'media',
@@ -11052,6 +11710,7 @@ export enum PayloadLockedDocument_Document_RelationTo {
   accounts = 'accounts',
   ai_prompts = 'ai_prompts',
   ai_usages = 'ai_usages',
+  budgets = 'budgets',
   captured_sms = 'captured_sms',
   categories = 'categories',
   media = 'media',
@@ -11118,6 +11777,7 @@ export enum PayloadLockedDocument_document_Relation_RelationTo {
   accounts = 'accounts',
   ai_prompts = 'ai_prompts',
   ai_usages = 'ai_usages',
+  budgets = 'budgets',
   captured_sms = 'captured_sms',
   categories = 'categories',
   media = 'media',
@@ -17570,6 +18230,8 @@ export type Query = {
   AiUsage?: Maybe<AiUsage>;
   AiUsages?: Maybe<AiUsages>;
   AppSetting?: Maybe<AppSetting>;
+  Budget?: Maybe<Budget>;
+  Budgets?: Maybe<Budgets>;
   CapturedSms?: Maybe<CapturedSms>;
   CapturedSmsList?: Maybe<CapturedSmsList>;
   Categories?: Maybe<Categories>;
@@ -17607,10 +18269,12 @@ export type Query = {
   Users?: Maybe<Users>;
   allMedia?: Maybe<allMedia>;
   balanceChecks: Array<BalanceCheck>;
+  budgetsOverview: Scalars['SearchJSON']['output'];
   categoryReview?: Maybe<Array<Maybe<Scalars['CategoryReviewItem']['output']>>>;
   countAccounts?: Maybe<countAccounts>;
   countAiPrompts?: Maybe<countAiPrompts>;
   countAiUsages?: Maybe<countAiUsages>;
+  countBudgets?: Maybe<countBudgets>;
   countCapturedSmsList?: Maybe<countCapturedSmsList>;
   countCategories?: Maybe<countCategories>;
   countOauthAccounts?: Maybe<countOauthAccounts>;
@@ -17636,6 +18300,7 @@ export type Query = {
   docAccessAiPrompt?: Maybe<ai_promptsDocAccess>;
   docAccessAiUsage?: Maybe<ai_usagesDocAccess>;
   docAccessAppSetting?: Maybe<app_settingsDocAccess>;
+  docAccessBudget?: Maybe<budgetsDocAccess>;
   docAccessCapturedSms?: Maybe<captured_smsDocAccess>;
   docAccessCategory?: Maybe<categoriesDocAccess>;
   docAccessMedia?: Maybe<mediaDocAccess>;
@@ -17656,6 +18321,7 @@ export type Query = {
   docAccessUserSetting?: Maybe<user_settingsDocAccess>;
   initializedPayloadMcpApiKey?: Maybe<Scalars['Boolean']['output']>;
   initializedUser?: Maybe<Scalars['Boolean']['output']>;
+  insights: Scalars['SearchJSON']['output'];
   mePayloadMcpApiKey?: Maybe<payload_mcp_api_keysMe>;
   meUser?: Maybe<usersMe>;
   monthlyCalendar?: Maybe<MonthlyCalendarResult>;
@@ -17664,6 +18330,7 @@ export type Query = {
   monthlyTags?: Maybe<MonthlyTagsResult>;
   possibleDuplicates?: Maybe<Array<Maybe<Scalars['PossibleDuplicate']['output']>>>;
   recurringOverview?: Maybe<Scalars['RecurringOverview']['output']>;
+  searchSummary: Scalars['SearchJSON']['output'];
   similarTransactionIds: Array<Scalars['String']['output']>;
   timezone?: Maybe<Timezone>;
   timezones?: Maybe<TimezonesResult>;
@@ -17734,6 +18401,26 @@ export type QueryAiUsagesArgs = {
 export type QueryAppSettingArgs = {
   draft?: InputMaybe<Scalars['Boolean']['input']>;
   select?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+
+export type QueryBudgetArgs = {
+  draft?: InputMaybe<Scalars['Boolean']['input']>;
+  id: Scalars['String']['input'];
+  select?: InputMaybe<Scalars['Boolean']['input']>;
+  trash?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+
+export type QueryBudgetsArgs = {
+  draft?: InputMaybe<Scalars['Boolean']['input']>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  page?: InputMaybe<Scalars['Int']['input']>;
+  pagination?: InputMaybe<Scalars['Boolean']['input']>;
+  select?: InputMaybe<Scalars['Boolean']['input']>;
+  sort?: InputMaybe<Scalars['String']['input']>;
+  trash?: InputMaybe<Scalars['Boolean']['input']>;
+  where?: InputMaybe<Budget_where>;
 };
 
 
@@ -18123,6 +18810,13 @@ export type QuerycountAiUsagesArgs = {
 };
 
 
+export type QuerycountBudgetsArgs = {
+  draft?: InputMaybe<Scalars['Boolean']['input']>;
+  trash?: InputMaybe<Scalars['Boolean']['input']>;
+  where?: InputMaybe<Budget_where>;
+};
+
+
 export type QuerycountCapturedSmsListArgs = {
   draft?: InputMaybe<Scalars['Boolean']['input']>;
   trash?: InputMaybe<Scalars['Boolean']['input']>;
@@ -18269,6 +18963,11 @@ export type QuerydocAccessAiUsageArgs = {
 };
 
 
+export type QuerydocAccessBudgetArgs = {
+  id: Scalars['String']['input'];
+};
+
+
 export type QuerydocAccessCapturedSmsArgs = {
   id: Scalars['String']['input'];
 };
@@ -18389,6 +19088,11 @@ export type QuerypossibleDuplicatesArgs = {
   exclude?: InputMaybe<Scalars['String']['input']>;
   title?: InputMaybe<Scalars['String']['input']>;
   type: Scalars['String']['input'];
+};
+
+
+export type QuerysearchSummaryArgs = {
+  where?: InputMaybe<Scalars['SearchJSON']['input']>;
 };
 
 
@@ -20801,6 +21505,7 @@ export type Transaction = {
   __typename?: 'Transaction';
   account: Account;
   amount: Scalars['String']['output'];
+  amountValue?: Maybe<Scalars['Float']['output']>;
   attachments?: Maybe<Array<Media>>;
   category: Category;
   createdAt?: Maybe<Scalars['DateTime']['output']>;
@@ -22121,6 +22826,16 @@ export type Transaction_account_operator = {
   not_in?: InputMaybe<Array<InputMaybe<Scalars['JSON']['input']>>>;
 };
 
+export type Transaction_amountValue_operator = {
+  equals?: InputMaybe<Scalars['Float']['input']>;
+  exists?: InputMaybe<Scalars['Boolean']['input']>;
+  greater_than?: InputMaybe<Scalars['Float']['input']>;
+  greater_than_equal?: InputMaybe<Scalars['Float']['input']>;
+  less_than?: InputMaybe<Scalars['Float']['input']>;
+  less_than_equal?: InputMaybe<Scalars['Float']['input']>;
+  not_equals?: InputMaybe<Scalars['Float']['input']>;
+};
+
 export type Transaction_amount_operator = {
   all?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
   contains?: InputMaybe<Scalars['String']['input']>;
@@ -22372,6 +23087,7 @@ export type Transaction_where = {
   OR?: InputMaybe<Array<InputMaybe<Transaction_where_or>>>;
   account?: InputMaybe<Transaction_account_operator>;
   amount?: InputMaybe<Transaction_amount_operator>;
+  amountValue?: InputMaybe<Transaction_amountValue_operator>;
   attachments?: InputMaybe<Transaction_attachments_operator>;
   category?: InputMaybe<Transaction_category_operator>;
   createdAt?: InputMaybe<Transaction_createdAt_operator>;
@@ -22400,6 +23116,7 @@ export type Transaction_where_and = {
   OR?: InputMaybe<Array<InputMaybe<Transaction_where_or>>>;
   account?: InputMaybe<Transaction_account_operator>;
   amount?: InputMaybe<Transaction_amount_operator>;
+  amountValue?: InputMaybe<Transaction_amountValue_operator>;
   attachments?: InputMaybe<Transaction_attachments_operator>;
   category?: InputMaybe<Transaction_category_operator>;
   createdAt?: InputMaybe<Transaction_createdAt_operator>;
@@ -22428,6 +23145,7 @@ export type Transaction_where_or = {
   OR?: InputMaybe<Array<InputMaybe<Transaction_where_or>>>;
   account?: InputMaybe<Transaction_account_operator>;
   amount?: InputMaybe<Transaction_amount_operator>;
+  amountValue?: InputMaybe<Transaction_amountValue_operator>;
   attachments?: InputMaybe<Transaction_attachments_operator>;
   category?: InputMaybe<Transaction_category_operator>;
   createdAt?: InputMaybe<Transaction_createdAt_operator>;
@@ -22494,6 +23212,7 @@ export type TransactionsDocAccessFields = {
   __typename?: 'TransactionsDocAccessFields';
   account?: Maybe<TransactionsDocAccessFields_account>;
   amount?: Maybe<TransactionsDocAccessFields_amount>;
+  amountValue?: Maybe<TransactionsDocAccessFields_amountValue>;
   attachments?: Maybe<TransactionsDocAccessFields_attachments>;
   category?: Maybe<TransactionsDocAccessFields_category>;
   createdAt?: Maybe<TransactionsDocAccessFields_createdAt>;
@@ -22550,6 +23269,34 @@ export type TransactionsDocAccessFields_amount = {
   delete?: Maybe<TransactionsDocAccessFields_amount_Delete>;
   read?: Maybe<TransactionsDocAccessFields_amount_Read>;
   update?: Maybe<TransactionsDocAccessFields_amount_Update>;
+};
+
+export type TransactionsDocAccessFields_amountValue = {
+  __typename?: 'TransactionsDocAccessFields_amountValue';
+  create?: Maybe<TransactionsDocAccessFields_amountValue_Create>;
+  delete?: Maybe<TransactionsDocAccessFields_amountValue_Delete>;
+  read?: Maybe<TransactionsDocAccessFields_amountValue_Read>;
+  update?: Maybe<TransactionsDocAccessFields_amountValue_Update>;
+};
+
+export type TransactionsDocAccessFields_amountValue_Create = {
+  __typename?: 'TransactionsDocAccessFields_amountValue_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type TransactionsDocAccessFields_amountValue_Delete = {
+  __typename?: 'TransactionsDocAccessFields_amountValue_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type TransactionsDocAccessFields_amountValue_Read = {
+  __typename?: 'TransactionsDocAccessFields_amountValue_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type TransactionsDocAccessFields_amountValue_Update = {
+  __typename?: 'TransactionsDocAccessFields_amountValue_Update';
+  permission: Scalars['Boolean']['output'];
 };
 
 export type TransactionsDocAccessFields_amount_Create = {
@@ -23228,6 +23975,7 @@ export type TransactionsFields = {
   __typename?: 'TransactionsFields';
   account?: Maybe<TransactionsFields_account>;
   amount?: Maybe<TransactionsFields_amount>;
+  amountValue?: Maybe<TransactionsFields_amountValue>;
   attachments?: Maybe<TransactionsFields_attachments>;
   category?: Maybe<TransactionsFields_category>;
   createdAt?: Maybe<TransactionsFields_createdAt>;
@@ -23284,6 +24032,34 @@ export type TransactionsFields_amount = {
   delete?: Maybe<TransactionsFields_amount_Delete>;
   read?: Maybe<TransactionsFields_amount_Read>;
   update?: Maybe<TransactionsFields_amount_Update>;
+};
+
+export type TransactionsFields_amountValue = {
+  __typename?: 'TransactionsFields_amountValue';
+  create?: Maybe<TransactionsFields_amountValue_Create>;
+  delete?: Maybe<TransactionsFields_amountValue_Delete>;
+  read?: Maybe<TransactionsFields_amountValue_Read>;
+  update?: Maybe<TransactionsFields_amountValue_Update>;
+};
+
+export type TransactionsFields_amountValue_Create = {
+  __typename?: 'TransactionsFields_amountValue_Create';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type TransactionsFields_amountValue_Delete = {
+  __typename?: 'TransactionsFields_amountValue_Delete';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type TransactionsFields_amountValue_Read = {
+  __typename?: 'TransactionsFields_amountValue_Read';
+  permission: Scalars['Boolean']['output'];
+};
+
+export type TransactionsFields_amountValue_Update = {
+  __typename?: 'TransactionsFields_amountValue_Update';
+  permission: Scalars['Boolean']['output'];
 };
 
 export type TransactionsFields_amount_Create = {
@@ -26417,6 +27193,24 @@ export type app_settingsDocAccess = {
   update?: Maybe<AppSettingsUpdateDocAccess>;
 };
 
+export type budgetsAccess = {
+  __typename?: 'budgetsAccess';
+  create?: Maybe<BudgetsCreateAccess>;
+  delete?: Maybe<BudgetsDeleteAccess>;
+  fields?: Maybe<BudgetsFields>;
+  read?: Maybe<BudgetsReadAccess>;
+  update?: Maybe<BudgetsUpdateAccess>;
+};
+
+export type budgetsDocAccess = {
+  __typename?: 'budgetsDocAccess';
+  create?: Maybe<BudgetsCreateDocAccess>;
+  delete?: Maybe<BudgetsDeleteDocAccess>;
+  fields?: Maybe<BudgetsDocAccessFields>;
+  read?: Maybe<BudgetsReadDocAccess>;
+  update?: Maybe<BudgetsUpdateDocAccess>;
+};
+
 export type captured_smsAccess = {
   __typename?: 'captured_smsAccess';
   create?: Maybe<CapturedSmsCreateAccess>;
@@ -26465,6 +27259,11 @@ export type countAiPrompts = {
 
 export type countAiUsages = {
   __typename?: 'countAiUsages';
+  totalDocs?: Maybe<Scalars['Int']['output']>;
+};
+
+export type countBudgets = {
+  __typename?: 'countBudgets';
   totalDocs?: Maybe<Scalars['Int']['output']>;
 };
 
@@ -26693,6 +27492,24 @@ export type mutationAppSetting_Ai_ModelsInput = {
   provider: AppSetting_Ai_Models_provider_MutationInput;
 };
 
+export type mutationBudgetInput = {
+  amount: Scalars['Float']['input'];
+  category?: InputMaybe<Scalars['String']['input']>;
+  createdAt?: InputMaybe<Scalars['String']['input']>;
+  isActive?: InputMaybe<Scalars['Boolean']['input']>;
+  updatedAt?: InputMaybe<Scalars['String']['input']>;
+  user?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type mutationBudgetUpdateInput = {
+  amount?: InputMaybe<Scalars['Float']['input']>;
+  category?: InputMaybe<Scalars['String']['input']>;
+  createdAt?: InputMaybe<Scalars['String']['input']>;
+  isActive?: InputMaybe<Scalars['Boolean']['input']>;
+  updatedAt?: InputMaybe<Scalars['String']['input']>;
+  user?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type mutationCapturedSmsInput = {
   account?: InputMaybe<Scalars['String']['input']>;
   autoConfirmed?: InputMaybe<Scalars['Boolean']['input']>;
@@ -26702,6 +27519,7 @@ export type mutationCapturedSmsInput = {
   hash: Scalars['String']['input'];
   merchantKey?: InputMaybe<Scalars['String']['input']>;
   parsed?: InputMaybe<Scalars['JSON']['input']>;
+  parts?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
   receivedAt: Scalars['String']['input'];
   sender: Scalars['String']['input'];
   status: CapturedSms_status_MutationInput;
@@ -26720,6 +27538,7 @@ export type mutationCapturedSmsUpdateInput = {
   hash?: InputMaybe<Scalars['String']['input']>;
   merchantKey?: InputMaybe<Scalars['String']['input']>;
   parsed?: InputMaybe<Scalars['JSON']['input']>;
+  parts?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
   receivedAt?: InputMaybe<Scalars['String']['input']>;
   sender?: InputMaybe<Scalars['String']['input']>;
   status?: InputMaybe<CapturedSmsUpdate_status_MutationInput>;
@@ -27240,6 +28059,7 @@ export type mutationTransactionEmbeddingUpdateInput = {
 export type mutationTransactionInput = {
   account?: InputMaybe<Scalars['String']['input']>;
   amount: Scalars['String']['input'];
+  amountValue?: InputMaybe<Scalars['Float']['input']>;
   attachments?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
   category?: InputMaybe<Scalars['String']['input']>;
   createdAt?: InputMaybe<Scalars['String']['input']>;
@@ -27283,6 +28103,7 @@ export type mutationTransactionLinkUpdateInput = {
 export type mutationTransactionUpdateInput = {
   account?: InputMaybe<Scalars['String']['input']>;
   amount?: InputMaybe<Scalars['String']['input']>;
+  amountValue?: InputMaybe<Scalars['Float']['input']>;
   attachments?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
   category?: InputMaybe<Scalars['String']['input']>;
   createdAt?: InputMaybe<Scalars['String']['input']>;
@@ -27894,6 +28715,34 @@ export type RefreshTokenUserMutationVariables = Exact<{ [key: string]: never; }>
 
 export type RefreshTokenUserMutation = { __typename?: 'Mutation', refreshTokenUser?: { __typename?: 'usersRefreshedUser', refreshedToken?: string | null, exp?: number | null } | null };
 
+export type BudgetsOverviewQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type BudgetsOverviewQuery = { __typename?: 'Query', budgetsOverview: any };
+
+export type CreateBudgetMutationVariables = Exact<{
+  category: Scalars['String']['input'];
+  amount: Scalars['Float']['input'];
+}>;
+
+
+export type CreateBudgetMutation = { __typename?: 'Mutation', createBudget?: { __typename?: 'Budget', id: string } | null };
+
+export type UpdateBudgetMutationVariables = Exact<{
+  id: Scalars['String']['input'];
+  amount: Scalars['Float']['input'];
+}>;
+
+
+export type UpdateBudgetMutation = { __typename?: 'Mutation', updateBudget?: { __typename?: 'Budget', id: string } | null };
+
+export type DeleteBudgetMutationVariables = Exact<{
+  id: Scalars['String']['input'];
+}>;
+
+
+export type DeleteBudgetMutation = { __typename?: 'Mutation', deleteBudget?: { __typename?: 'Budget', id: string } | null };
+
 export type CategoryFieldsFragment = { __typename?: 'Category', id: string, name: string, type: Category_type, icon: string, color?: string | null, bgColor?: string | null, description?: string | null, isActive?: boolean | null, createdAt?: any | null, updatedAt?: any | null, user: { __typename?: 'User', id: string }, parent?: { __typename?: 'Category', id: string, name: string, icon: string, color?: string | null, bgColor?: string | null, description?: string | null } | null };
 
 export type GetCategoriesQueryVariables = Exact<{
@@ -28057,6 +28906,18 @@ export type DeleteReminderMutationVariables = Exact<{
 
 export type DeleteReminderMutation = { __typename?: 'Mutation', deleteReminder?: { __typename?: 'Reminder', id: string } | null };
 
+export type SearchSummaryQueryVariables = Exact<{
+  where?: InputMaybe<Scalars['SearchJSON']['input']>;
+}>;
+
+
+export type SearchSummaryQuery = { __typename?: 'Query', searchSummary: any };
+
+export type InsightsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type InsightsQuery = { __typename?: 'Query', insights: any };
+
 export type CapturedSmsFieldsFragment = { __typename?: 'CapturedSms', id: string, sender: string, body: string, receivedAt: any, status: CapturedSms_status, parsed?: any | null, suggestion?: any | null, account?: { __typename?: 'Account', id: string, name: string } | null };
 
 export type GetPendingSmsQueryVariables = Exact<{
@@ -28135,6 +28996,30 @@ export type RefineCapturedSmsMutationVariables = Exact<{
 
 
 export type RefineCapturedSmsMutation = { __typename?: 'Mutation', refineCapturedSms?: { __typename?: 'RefineSmsResult', suggestion: any, complete: boolean } | null };
+
+export type SplitCapturedSmsWithAIMutationVariables = Exact<{
+  id: Scalars['String']['input'];
+  text?: InputMaybe<Scalars['String']['input']>;
+}>;
+
+
+export type SplitCapturedSmsWithAIMutation = { __typename?: 'Mutation', splitCapturedSmsWithAI: any };
+
+export type SplitTransactionMutationVariables = Exact<{
+  id: Scalars['String']['input'];
+  parts: Scalars['SmsConfirmOverrides']['input'];
+}>;
+
+
+export type SplitTransactionMutation = { __typename?: 'Mutation', splitTransaction: any };
+
+export type SplitTransactionWithAIMutationVariables = Exact<{
+  id: Scalars['String']['input'];
+  text?: InputMaybe<Scalars['String']['input']>;
+}>;
+
+
+export type SplitTransactionWithAIMutation = { __typename?: 'Mutation', splitTransactionWithAI: any };
 
 export type ParseStatementMutationVariables = Exact<{
   file: Scalars['String']['input'];
@@ -28350,6 +29235,10 @@ export const MeUserDocument = {"kind":"Document","definitions":[{"kind":"Operati
 export const LoginUserDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"LoginUser"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"email"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"password"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"loginUser"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"email"},"value":{"kind":"Variable","name":{"kind":"Name","value":"email"}}},{"kind":"Argument","name":{"kind":"Name","value":"password"},"value":{"kind":"Variable","name":{"kind":"Name","value":"password"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"token"}},{"kind":"Field","name":{"kind":"Name","value":"exp"}},{"kind":"Field","name":{"kind":"Name","value":"user"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"AuthUserFields"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"AuthUserFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"User"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"thumbnailURL"}}]}},{"kind":"Field","name":{"kind":"Name","value":"settings"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"docs"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"currency"}},{"kind":"Field","name":{"kind":"Name","value":"timezone"}},{"kind":"Field","name":{"kind":"Name","value":"locale"}},{"kind":"Field","name":{"kind":"Name","value":"theme"}},{"kind":"Field","name":{"kind":"Name","value":"geminiApiKey"}},{"kind":"Field","name":{"kind":"Name","value":"hfApiKey"}},{"kind":"Field","name":{"kind":"Name","value":"preferredModel"}},{"kind":"Field","name":{"kind":"Name","value":"allowFallback"}},{"kind":"Field","name":{"kind":"Name","value":"categoryAiMethod"}},{"kind":"Field","name":{"kind":"Name","value":"defaultAccount"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"hasNextPage"}}]}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode<LoginUserMutation, LoginUserMutationVariables>;
 export const LogoutUserDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"LogoutUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"logoutUser"}}]}}]} as unknown as DocumentNode<LogoutUserMutation, LogoutUserMutationVariables>;
 export const RefreshTokenUserDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"RefreshTokenUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"refreshTokenUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"refreshedToken"}},{"kind":"Field","name":{"kind":"Name","value":"exp"}}]}}]}}]} as unknown as DocumentNode<RefreshTokenUserMutation, RefreshTokenUserMutationVariables>;
+export const BudgetsOverviewDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"BudgetsOverview"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"budgetsOverview"}}]}}]} as unknown as DocumentNode<BudgetsOverviewQuery, BudgetsOverviewQueryVariables>;
+export const CreateBudgetDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateBudget"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"category"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"amount"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Float"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createBudget"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"data"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"category"},"value":{"kind":"Variable","name":{"kind":"Name","value":"category"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"amount"},"value":{"kind":"Variable","name":{"kind":"Name","value":"amount"}}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]} as unknown as DocumentNode<CreateBudgetMutation, CreateBudgetMutationVariables>;
+export const UpdateBudgetDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateBudget"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"amount"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Float"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateBudget"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}},{"kind":"Argument","name":{"kind":"Name","value":"data"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"amount"},"value":{"kind":"Variable","name":{"kind":"Name","value":"amount"}}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]} as unknown as DocumentNode<UpdateBudgetMutation, UpdateBudgetMutationVariables>;
+export const DeleteBudgetDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"DeleteBudget"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deleteBudget"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]} as unknown as DocumentNode<DeleteBudgetMutation, DeleteBudgetMutationVariables>;
 export const GetCategoriesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetCategories"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"page"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"limit"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"sort"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"where"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Category_where"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"Categories"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"page"},"value":{"kind":"Variable","name":{"kind":"Name","value":"page"}}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"Variable","name":{"kind":"Name","value":"limit"}}},{"kind":"Argument","name":{"kind":"Name","value":"sort"},"value":{"kind":"Variable","name":{"kind":"Name","value":"sort"}}},{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"Variable","name":{"kind":"Name","value":"where"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"docs"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"CategoryFields"}}]}},{"kind":"Field","name":{"kind":"Name","value":"totalDocs"}},{"kind":"Field","name":{"kind":"Name","value":"page"}},{"kind":"Field","name":{"kind":"Name","value":"totalPages"}},{"kind":"Field","name":{"kind":"Name","value":"hasNextPage"}},{"kind":"Field","name":{"kind":"Name","value":"hasPrevPage"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"CategoryFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Category"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}},{"kind":"Field","name":{"kind":"Name","value":"color"}},{"kind":"Field","name":{"kind":"Name","value":"bgColor"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"user"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}},{"kind":"Field","name":{"kind":"Name","value":"parent"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}},{"kind":"Field","name":{"kind":"Name","value":"color"}},{"kind":"Field","name":{"kind":"Name","value":"bgColor"}},{"kind":"Field","name":{"kind":"Name","value":"description"}}]}}]}}]} as unknown as DocumentNode<GetCategoriesQuery, GetCategoriesQueryVariables>;
 export const GetCategoryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetCategory"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"Category"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"CategoryFields"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"CategoryFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Category"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}},{"kind":"Field","name":{"kind":"Name","value":"color"}},{"kind":"Field","name":{"kind":"Name","value":"bgColor"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"user"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}},{"kind":"Field","name":{"kind":"Name","value":"parent"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}},{"kind":"Field","name":{"kind":"Name","value":"color"}},{"kind":"Field","name":{"kind":"Name","value":"bgColor"}},{"kind":"Field","name":{"kind":"Name","value":"description"}}]}}]}}]} as unknown as DocumentNode<GetCategoryQuery, GetCategoryQueryVariables>;
 export const CreateCategoryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateCategory"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"data"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"mutationCategoryInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createCategory"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"data"},"value":{"kind":"Variable","name":{"kind":"Name","value":"data"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"CategoryFields"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"CategoryFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Category"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}},{"kind":"Field","name":{"kind":"Name","value":"color"}},{"kind":"Field","name":{"kind":"Name","value":"bgColor"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"user"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}},{"kind":"Field","name":{"kind":"Name","value":"parent"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}},{"kind":"Field","name":{"kind":"Name","value":"color"}},{"kind":"Field","name":{"kind":"Name","value":"bgColor"}},{"kind":"Field","name":{"kind":"Name","value":"description"}}]}}]}}]} as unknown as DocumentNode<CreateCategoryMutation, CreateCategoryMutationVariables>;
@@ -28371,6 +29260,8 @@ export const GetReminderDocument = {"kind":"Document","definitions":[{"kind":"Op
 export const CreateReminderDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateReminder"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"data"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"mutationReminderInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createReminder"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"data"},"value":{"kind":"Variable","name":{"kind":"Name","value":"data"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"ReminderFields"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ReminderFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Reminder"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"amount"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"date"}},{"kind":"Field","name":{"kind":"Name","value":"isRecurring"}},{"kind":"Field","name":{"kind":"Name","value":"recurrencePeriod"}},{"kind":"Field","name":{"kind":"Name","value":"recurrenceType"}},{"kind":"Field","name":{"kind":"Name","value":"lastTriggeredAt"}},{"kind":"Field","name":{"kind":"Name","value":"nextDueDate"}},{"kind":"Field","name":{"kind":"Name","value":"archived"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"category"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}},{"kind":"Field","name":{"kind":"Name","value":"color"}}]}},{"kind":"Field","name":{"kind":"Name","value":"account"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}}]}},{"kind":"Field","name":{"kind":"Name","value":"member"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"tags"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}},{"kind":"Field","name":{"kind":"Name","value":"color"}}]}},{"kind":"Field","name":{"kind":"Name","value":"completedDates"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"date"}}]}}]}}]} as unknown as DocumentNode<CreateReminderMutation, CreateReminderMutationVariables>;
 export const UpdateReminderDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateReminder"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"data"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"mutationReminderUpdateInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateReminder"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}},{"kind":"Argument","name":{"kind":"Name","value":"data"},"value":{"kind":"Variable","name":{"kind":"Name","value":"data"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"ReminderFields"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ReminderFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Reminder"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"amount"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"date"}},{"kind":"Field","name":{"kind":"Name","value":"isRecurring"}},{"kind":"Field","name":{"kind":"Name","value":"recurrencePeriod"}},{"kind":"Field","name":{"kind":"Name","value":"recurrenceType"}},{"kind":"Field","name":{"kind":"Name","value":"lastTriggeredAt"}},{"kind":"Field","name":{"kind":"Name","value":"nextDueDate"}},{"kind":"Field","name":{"kind":"Name","value":"archived"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"category"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}},{"kind":"Field","name":{"kind":"Name","value":"color"}}]}},{"kind":"Field","name":{"kind":"Name","value":"account"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}}]}},{"kind":"Field","name":{"kind":"Name","value":"member"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"tags"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}},{"kind":"Field","name":{"kind":"Name","value":"color"}}]}},{"kind":"Field","name":{"kind":"Name","value":"completedDates"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"date"}}]}}]}}]} as unknown as DocumentNode<UpdateReminderMutation, UpdateReminderMutationVariables>;
 export const DeleteReminderDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"DeleteReminder"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deleteReminder"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]} as unknown as DocumentNode<DeleteReminderMutation, DeleteReminderMutationVariables>;
+export const SearchSummaryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"SearchSummary"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"where"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"SearchJSON"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"searchSummary"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"Variable","name":{"kind":"Name","value":"where"}}}]}]}}]} as unknown as DocumentNode<SearchSummaryQuery, SearchSummaryQueryVariables>;
+export const InsightsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"Insights"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"insights"}}]}}]} as unknown as DocumentNode<InsightsQuery, InsightsQueryVariables>;
 export const GetPendingSmsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetPendingSms"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"limit"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"CapturedSmsList"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"status"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"equals"},"value":{"kind":"EnumValue","value":"pending"}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"sort"},"value":{"kind":"StringValue","value":"-receivedAt","block":false}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"Variable","name":{"kind":"Name","value":"limit"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"docs"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"CapturedSmsFields"}}]}},{"kind":"Field","name":{"kind":"Name","value":"totalDocs"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"CapturedSmsFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"CapturedSms"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"sender"}},{"kind":"Field","name":{"kind":"Name","value":"body"}},{"kind":"Field","name":{"kind":"Name","value":"receivedAt"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"parsed"}},{"kind":"Field","name":{"kind":"Name","value":"suggestion"}},{"kind":"Field","name":{"kind":"Name","value":"account"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]} as unknown as DocumentNode<GetPendingSmsQuery, GetPendingSmsQueryVariables>;
 export const GetCapturedSmsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetCapturedSms"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"CapturedSms"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"CapturedSmsFields"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"CapturedSmsFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"CapturedSms"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"sender"}},{"kind":"Field","name":{"kind":"Name","value":"body"}},{"kind":"Field","name":{"kind":"Name","value":"receivedAt"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"parsed"}},{"kind":"Field","name":{"kind":"Name","value":"suggestion"}},{"kind":"Field","name":{"kind":"Name","value":"account"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]} as unknown as DocumentNode<GetCapturedSmsQuery, GetCapturedSmsQueryVariables>;
 export const ConfirmCapturedSmsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"ConfirmCapturedSms"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"overrides"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"SmsConfirmOverrides"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"confirmCapturedSms"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}},{"kind":"Argument","name":{"kind":"Name","value":"overrides"},"value":{"kind":"Variable","name":{"kind":"Name","value":"overrides"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"transaction"}},{"kind":"Field","name":{"kind":"Name","value":"linked"}}]}}]}}]} as unknown as DocumentNode<ConfirmCapturedSmsMutation, ConfirmCapturedSmsMutationVariables>;
@@ -28381,6 +29272,9 @@ export const GetBalanceChecksDocument = {"kind":"Document","definitions":[{"kind
 export const MarkCapturedSmsDuplicateDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"MarkCapturedSmsDuplicate"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"transaction"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"markCapturedSmsDuplicate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}},{"kind":"Argument","name":{"kind":"Name","value":"transaction"},"value":{"kind":"Variable","name":{"kind":"Name","value":"transaction"}}}]}]}}]} as unknown as DocumentNode<MarkCapturedSmsDuplicateMutation, MarkCapturedSmsDuplicateMutationVariables>;
 export const PossibleDuplicatesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"PossibleDuplicates"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"type"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"amount"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"date"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"title"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"exclude"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"possibleDuplicates"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"type"},"value":{"kind":"Variable","name":{"kind":"Name","value":"type"}}},{"kind":"Argument","name":{"kind":"Name","value":"amount"},"value":{"kind":"Variable","name":{"kind":"Name","value":"amount"}}},{"kind":"Argument","name":{"kind":"Name","value":"date"},"value":{"kind":"Variable","name":{"kind":"Name","value":"date"}}},{"kind":"Argument","name":{"kind":"Name","value":"title"},"value":{"kind":"Variable","name":{"kind":"Name","value":"title"}}},{"kind":"Argument","name":{"kind":"Name","value":"exclude"},"value":{"kind":"Variable","name":{"kind":"Name","value":"exclude"}}}]}]}}]} as unknown as DocumentNode<PossibleDuplicatesQuery, PossibleDuplicatesQueryVariables>;
 export const RefineCapturedSmsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"RefineCapturedSms"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"text"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"image"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"mimeType"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"refineCapturedSms"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}},{"kind":"Argument","name":{"kind":"Name","value":"text"},"value":{"kind":"Variable","name":{"kind":"Name","value":"text"}}},{"kind":"Argument","name":{"kind":"Name","value":"image"},"value":{"kind":"Variable","name":{"kind":"Name","value":"image"}}},{"kind":"Argument","name":{"kind":"Name","value":"mimeType"},"value":{"kind":"Variable","name":{"kind":"Name","value":"mimeType"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"suggestion"}},{"kind":"Field","name":{"kind":"Name","value":"complete"}}]}}]}}]} as unknown as DocumentNode<RefineCapturedSmsMutation, RefineCapturedSmsMutationVariables>;
+export const SplitCapturedSmsWithAIDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"SplitCapturedSmsWithAI"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"text"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"splitCapturedSmsWithAI"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}},{"kind":"Argument","name":{"kind":"Name","value":"text"},"value":{"kind":"Variable","name":{"kind":"Name","value":"text"}}}]}]}}]} as unknown as DocumentNode<SplitCapturedSmsWithAIMutation, SplitCapturedSmsWithAIMutationVariables>;
+export const SplitTransactionDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"SplitTransaction"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"parts"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SmsConfirmOverrides"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"splitTransaction"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}},{"kind":"Argument","name":{"kind":"Name","value":"parts"},"value":{"kind":"Variable","name":{"kind":"Name","value":"parts"}}}]}]}}]} as unknown as DocumentNode<SplitTransactionMutation, SplitTransactionMutationVariables>;
+export const SplitTransactionWithAIDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"SplitTransactionWithAI"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"text"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"splitTransactionWithAI"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}},{"kind":"Argument","name":{"kind":"Name","value":"text"},"value":{"kind":"Variable","name":{"kind":"Name","value":"text"}}}]}]}}]} as unknown as DocumentNode<SplitTransactionWithAIMutation, SplitTransactionWithAIMutationVariables>;
 export const ParseStatementDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"ParseStatement"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"file"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"password"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"account"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"parseStatement"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"file"},"value":{"kind":"Variable","name":{"kind":"Name","value":"file"}}},{"kind":"Argument","name":{"kind":"Name","value":"password"},"value":{"kind":"Variable","name":{"kind":"Name","value":"password"}}},{"kind":"Argument","name":{"kind":"Name","value":"account"},"value":{"kind":"Variable","name":{"kind":"Name","value":"account"}}}]}]}}]} as unknown as DocumentNode<ParseStatementMutation, ParseStatementMutationVariables>;
 export const ImportStatementRowsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"ImportStatementRows"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"account"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"rows"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"StatementJSON"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"importStatementRows"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"account"},"value":{"kind":"Variable","name":{"kind":"Name","value":"account"}}},{"kind":"Argument","name":{"kind":"Name","value":"rows"},"value":{"kind":"Variable","name":{"kind":"Name","value":"rows"}}}]}]}}]} as unknown as DocumentNode<ImportStatementRowsMutation, ImportStatementRowsMutationVariables>;
 export const GetTagsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetTags"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"page"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"limit"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"sort"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"Tags"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"page"},"value":{"kind":"Variable","name":{"kind":"Name","value":"page"}}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"Variable","name":{"kind":"Name","value":"limit"}}},{"kind":"Argument","name":{"kind":"Name","value":"sort"},"value":{"kind":"Variable","name":{"kind":"Name","value":"sort"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"docs"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"TagFields"}}]}},{"kind":"Field","name":{"kind":"Name","value":"totalDocs"}},{"kind":"Field","name":{"kind":"Name","value":"page"}},{"kind":"Field","name":{"kind":"Name","value":"totalPages"}},{"kind":"Field","name":{"kind":"Name","value":"hasNextPage"}},{"kind":"Field","name":{"kind":"Name","value":"hasPrevPage"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"TagFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Tag"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}},{"kind":"Field","name":{"kind":"Name","value":"color"}},{"kind":"Field","name":{"kind":"Name","value":"bgColor"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"user"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]} as unknown as DocumentNode<GetTagsQuery, GetTagsQueryVariables>;

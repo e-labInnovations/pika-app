@@ -1,7 +1,5 @@
-import { gql } from '@apollo/client';
 import { useQuery } from '@apollo/client/react';
-
-// Inline documents: added after the last codegen run (see sms.service.ts).
+import { InsightsDocument, SearchSummaryDocument } from '../types/graphql';
 
 export type SearchSummary = {
   count: number;
@@ -12,20 +10,14 @@ export type SearchSummary = {
   months: { month: string; spent: number }[];
 };
 
-const SEARCH_SUMMARY = gql`
-  query SearchSummary($where: SearchJSON) {
-    searchSummary(where: $where)
-  }
-`;
-
 /** Totals for exactly the transactions `where` lists (same where as the list query). */
 export const useSearchSummary = (where: Record<string, unknown> | undefined, skip: boolean) => {
-  const { data, loading, refetch } = useQuery<{ searchSummary: SearchSummary }>(SEARCH_SUMMARY, {
+  const { data, loading, refetch } = useQuery(SearchSummaryDocument, {
     variables: { where: where ?? null },
     skip,
     fetchPolicy: 'cache-and-network',
   });
-  return { summary: data?.searchSummary ?? null, loading, refetch };
+  return { summary: (data?.searchSummary ?? null) as SearchSummary | null, loading, refetch };
 };
 
 export type Insight = {
@@ -38,16 +30,10 @@ export type Insight = {
   filter: { categories?: string[]; dateFrom: string; dateTo: string; query?: string };
 };
 
-const INSIGHTS = gql`
-  query Insights {
-    insights
-  }
-`;
-
 /** What stands out this month (server rules; see pika-v2 utilities/insights.ts). */
 export const useInsights = () => {
-  const { data, loading, refetch } = useQuery<{ insights: Insight[] }>(INSIGHTS, {
+  const { data, loading, refetch } = useQuery(InsightsDocument, {
     fetchPolicy: 'cache-and-network',
   });
-  return { insights: data?.insights ?? [], loading, refetch };
+  return { insights: (data?.insights ?? []) as Insight[], loading, refetch };
 };

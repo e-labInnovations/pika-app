@@ -1,4 +1,3 @@
-import { gql } from '@apollo/client';
 import { useMutation, useQuery } from '@apollo/client/react';
 import { useEffect, useState } from 'react';
 import {
@@ -12,6 +11,9 @@ import {
   MarkCapturedSmsDuplicateDocument,
   PossibleDuplicatesDocument,
   RefineCapturedSmsDocument,
+  SplitCapturedSmsWithAIDocument,
+  SplitTransactionDocument,
+  SplitTransactionWithAIDocument,
   type CapturedSmsFieldsFragment,
 } from '../types/graphql';
 import { TRANSACTION_REFETCH_QUERIES } from '../transactions/transactions.service';
@@ -207,17 +209,10 @@ export const usePossibleDuplicates = (
   return ready ? ((data?.possibleDuplicates ?? []).filter(Boolean) as PossibleDuplicate[]) : [];
 };
 
-// Defined here rather than in sms.gql: added after the last codegen run (the server must
-// be running with the new schema to regenerate). Result is the parts as JSON.
-const SPLIT_SMS_WITH_AI = gql`
-  mutation SplitCapturedSmsWithAI($id: String!, $text: String) {
-    splitCapturedSmsWithAI(id: $id, text: $text)
-  }
-`;
 
 /** Splits a pending SMS into parts with the AI; saves them as the suggestion, never confirms. */
 export const useSplitSmsWithAI = () => {
-  const [split, { loading }] = useMutation<{ splitCapturedSmsWithAI: SmsPart[] }>(SPLIT_SMS_WITH_AI, {
+  const [split, { loading }] = useMutation(SplitCapturedSmsWithAIDocument, {
     refetchQueries: ['GetPendingSms', 'GetCapturedSms'],
     awaitRefetchQueries: true,
   });
@@ -225,40 +220,30 @@ export const useSplitSmsWithAI = () => {
     splitWithAI: async (id: string, text: string) => {
       const res = await split({ variables: { id, text: text.trim() || null } });
       if (res.error) throw res.error;
-      return res.data?.splitCapturedSmsWithAI ?? [];
+      return (res.data?.splitCapturedSmsWithAI ?? []) as SmsPart[];
     },
     loading,
   };
 };
 
-const SPLIT_TRANSACTION = gql`
-  mutation SplitTransaction($id: String!, $parts: SmsConfirmOverrides!) {
-    splitTransaction(id: $id, parts: $parts)
-  }
-`;
-const SPLIT_TRANSACTION_WITH_AI = gql`
-  mutation SplitTransactionWithAI($id: String!, $text: String) {
-    splitTransactionWithAI(id: $id, text: $text)
-  }
-`;
 
 /** Splits a saved transaction into parts (it stays as the first); refreshes lists. */
 export const useSplitTransaction = () => {
-  const [split] = useMutation<{ splitTransaction: string[] }>(SPLIT_TRANSACTION, {
+  const [split] = useMutation(SplitTransactionDocument, {
     refetchQueries: [...TRANSACTION_REFETCH_QUERIES, 'GetTransaction'],
     awaitRefetchQueries: true,
   });
-  const [ai] = useMutation<{ splitTransactionWithAI: SmsPart[] }>(SPLIT_TRANSACTION_WITH_AI);
+  const [ai] = useMutation(SplitTransactionWithAIDocument);
   return {
     splitTransaction: async (id: string, parts: SmsPart[]) => {
       const res = await split({ variables: { id, parts } });
       if (res.error) throw res.error;
-      return res.data?.splitTransaction ?? [];
+      return (res.data?.splitTransaction ?? []) as string[];
     },
     splitTransactionWithAI: async (id: string, text: string) => {
       const res = await ai({ variables: { id, text: text.trim() || null } });
       if (res.error) throw res.error;
-      return res.data?.splitTransactionWithAI ?? [];
+      return (res.data?.splitTransactionWithAI ?? []) as SmsPart[];
     },
   };
 };

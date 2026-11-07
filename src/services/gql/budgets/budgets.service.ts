@@ -1,7 +1,10 @@
-import { gql } from '@apollo/client';
 import { useMutation, useQuery } from '@apollo/client/react';
-
-// Inline documents: added after the last codegen run.
+import {
+  BudgetsOverviewDocument,
+  CreateBudgetDocument,
+  DeleteBudgetDocument,
+  UpdateBudgetDocument,
+} from '../types/graphql';
 
 export type BudgetProgress = {
   id: string;
@@ -14,47 +17,21 @@ export type BudgetProgress = {
   categories: string[];
 };
 
-const BUDGETS_OVERVIEW = gql`
-  query BudgetsOverview {
-    budgetsOverview
-  }
-`;
-const CREATE_BUDGET = gql`
-  mutation CreateBudget($category: String!, $amount: Float!) {
-    createBudget(data: { category: $category, amount: $amount }) {
-      id
-    }
-  }
-`;
-const UPDATE_BUDGET = gql`
-  mutation UpdateBudget($id: String!, $amount: Float!) {
-    updateBudget(id: $id, data: { amount: $amount }) {
-      id
-    }
-  }
-`;
-const DELETE_BUDGET = gql`
-  mutation DeleteBudget($id: String!) {
-    deleteBudget(id: $id) {
-      id
-    }
-  }
-`;
 
 const REFETCH = ['BudgetsOverview', 'Insights'];
 
 /** This month's progress for each active budget, most used first. */
 export const useBudgets = () => {
-  const { data, loading, refetch } = useQuery<{ budgetsOverview: BudgetProgress[] }>(BUDGETS_OVERVIEW, {
+  const { data, loading, refetch } = useQuery(BudgetsOverviewDocument, {
     fetchPolicy: 'cache-and-network',
   });
-  return { budgets: data?.budgetsOverview ?? [], loading, refetch };
+  return { budgets: (data?.budgetsOverview ?? []) as BudgetProgress[], loading, refetch };
 };
 
 export const useBudgetMutations = () => {
-  const [create] = useMutation(CREATE_BUDGET, { refetchQueries: REFETCH, awaitRefetchQueries: true });
-  const [update] = useMutation(UPDATE_BUDGET, { refetchQueries: REFETCH, awaitRefetchQueries: true });
-  const [remove] = useMutation(DELETE_BUDGET, { refetchQueries: REFETCH, awaitRefetchQueries: true });
+  const [create] = useMutation(CreateBudgetDocument, { refetchQueries: REFETCH, awaitRefetchQueries: true });
+  const [update] = useMutation(UpdateBudgetDocument, { refetchQueries: REFETCH, awaitRefetchQueries: true });
+  const [remove] = useMutation(DeleteBudgetDocument, { refetchQueries: REFETCH, awaitRefetchQueries: true });
   const run = async (p: Promise<{ error?: unknown }>) => {
     const res = await p;
     if (res.error) throw res.error;

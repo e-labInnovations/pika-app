@@ -1,0 +1,21 @@
+query BudgetsOverview {
+  budgetsOverview
+}
+
+mutation CreateBudget($category: String!, $amount: Float!) {
+  createBudget(data: { category: $category, amount: $amount }) {
+    id
+  }
+}
+
+mutation UpdateBudget($id: String!, $amount: Float!) {
+  updateBudget(id: $id, data: { amount: $amount }) {
+    id
+  }
+}
+
+mutation DeleteBudget($id: String!) {
+  deleteBudget(id: $id) {
+    id
+  }
+}

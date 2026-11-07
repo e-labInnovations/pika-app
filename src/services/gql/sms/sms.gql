@@ -92,3 +92,15 @@ mutation RefineCapturedSms($id: String!, $text: String, $image: String, $mimeTyp
     complete
   }
 }
+
+mutation SplitCapturedSmsWithAI($id: String!, $text: String) {
+  splitCapturedSmsWithAI(id: $id, text: $text)
+}
+
+mutation SplitTransaction($id: String!, $parts: SmsConfirmOverrides!) {
+  splitTransaction(id: $id, parts: $parts)
+}
+
+mutation SplitTransactionWithAI($id: String!, $text: String) {
+  splitTransactionWithAI(id: $id, text: $text)
+}

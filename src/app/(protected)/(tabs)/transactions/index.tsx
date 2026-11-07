@@ -146,8 +146,7 @@ function buildWhere(
         ...(names.accounts.length
           ? [{ account: { in: names.accounts } }, { toAccount: { in: names.accounts } }]
           : []),
-        // amountValue: not in the generated types until the next codegen run.
-        ...(Number.isFinite(asAmount) ? [{ amountValue: { equals: asAmount } } as Transaction_where] : []),
+        ...(Number.isFinite(asAmount) ? [{ amountValue: { equals: asAmount } }] : []),
       ],
     });
   }
@@ -179,15 +178,14 @@ function buildWhere(
   if (filter.dateTo) {
     ands.push({ date: { less_than_equal: filter.dateTo } });
   }
-  // amountValue: the amount as a number (amount itself is text). Not in the generated
-  // types until the next codegen run against a server that has it.
+  // amountValue: the amount as a number (amount itself is text).
   const min = parseFloat(filter.amountMin);
   const max = parseFloat(filter.amountMax);
   if (Number.isFinite(min)) {
-    ands.push({ amountValue: { greater_than_equal: min } } as Transaction_where);
+    ands.push({ amountValue: { greater_than_equal: min } });
   }
   if (Number.isFinite(max)) {
-    ands.push({ amountValue: { less_than_equal: max } } as Transaction_where);
+    ands.push({ amountValue: { less_than_equal: max } });
   }
 
   if (ands.length === 0) return undefined;

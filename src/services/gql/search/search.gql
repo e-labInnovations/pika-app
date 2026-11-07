@@ -1,0 +1,7 @@
+query SearchSummary($where: SearchJSON) {
+  searchSummary(where: $where)
+}
+
+query Insights {
+  insights
+}
