@@ -34,6 +34,7 @@ import {
 } from "@/services/gql/user-settings/user-settings.service";
 import { useAuth } from "@/context/AuthContext";
 import { useColors } from "@/theme/colors";
+import { ModalKeyboardView } from "@/components/ui/ModalKeyboardView";
 
 // ── Section label ─────────────────────────────────────────────────────────────
 
@@ -942,12 +943,14 @@ export default function GeneralSettingsScreen() {
         presentationStyle="pageSheet"
         onRequestClose={() => setTzModal(false)}
       >
-        <TimezoneModal
-          timezones={timezones}
-          current={timezone}
-          onSelect={handleTimezone}
-          onClose={() => setTzModal(false)}
-        />
+        <ModalKeyboardView fillColor={C.surface}>
+          <TimezoneModal
+            timezones={timezones}
+            current={timezone}
+            onSelect={handleTimezone}
+            onClose={() => setTzModal(false)}
+          />
+        </ModalKeyboardView>
       </Modal>
 
       {/* ── Currency modal ─────────────────────────────────────────────────── */}
@@ -957,12 +960,14 @@ export default function GeneralSettingsScreen() {
         presentationStyle="pageSheet"
         onRequestClose={() => setCurrModal(false)}
       >
-        <CurrencyModal
-          currencies={currencies}
-          current={currency}
-          onSelect={handleCurrency}
-          onClose={() => setCurrModal(false)}
-        />
+        <ModalKeyboardView fillColor={C.surface}>
+          <CurrencyModal
+            currencies={currencies}
+            current={currency}
+            onSelect={handleCurrency}
+            onClose={() => setCurrModal(false)}
+          />
+        </ModalKeyboardView>
       </Modal>
 
       {/* ── Account picker modal ───────────────────────────────────────────── */}

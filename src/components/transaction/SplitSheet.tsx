@@ -13,6 +13,7 @@ import { useGetPeople } from "../../services/gql/people/people.service";
 import { type PersonFieldsFragment } from "../../services/gql/types/graphql";
 import { useFormatMoney } from "../../lib/format-currency";
 import { useColors } from "../../theme/colors";
+import { ModalKeyboardView } from "../ui/ModalKeyboardView";
 
 export type SplitShare = { person: PersonFieldsFragment; amount: string };
 
@@ -87,6 +88,7 @@ export function SplitSheet({ visible, onClose, total, value, onApply }: Props) {
 
   return (
     <Modal visible={visible} animationType="slide" transparent onRequestClose={onClose}>
+      <ModalKeyboardView fillColor={C.surfaceLow}>
       <View className="flex-1 justify-end bg-black/45">
         <View
           className="bg-surface-low rounded-t-3xl max-h-[85%]"
@@ -217,6 +219,7 @@ export function SplitSheet({ visible, onClose, total, value, onApply }: Props) {
           </View>
         </View>
       </View>
+      </ModalKeyboardView>
     </Modal>
   );
 }

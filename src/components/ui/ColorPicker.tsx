@@ -1,14 +1,13 @@
 import React, { useState } from "react";
 import {
-  KeyboardAvoidingView,
   Modal,
-  Platform,
   Pressable,
   Text,
   TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
+import { ModalKeyboardView } from "./ModalKeyboardView";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { DynamicIcon } from "../Icon";
 import { useColors } from "../../theme/colors";
@@ -85,9 +84,9 @@ export function ColorPicker({ value, onChange, label }: Props) {
         transparent
         onRequestClose={() => setOpen(false)}
       >
+        <ModalKeyboardView fillColor={C.surfaceLow}>
         <View className="flex-1 justify-end" style={{ backgroundColor: "rgba(0,0,0,0.5)" }}>
           <Pressable className="absolute inset-0" onPress={() => setOpen(false)} />
-          <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"}>
             <Pressable>
               <View
                 className="rounded-t-3xl bg-surface-low px-5 pt-4"
@@ -153,8 +152,8 @@ export function ColorPicker({ value, onChange, label }: Props) {
                 </TouchableOpacity>
               </View>
             </Pressable>
-          </KeyboardAvoidingView>
         </View>
+        </ModalKeyboardView>
       </Modal>
     </>
   );

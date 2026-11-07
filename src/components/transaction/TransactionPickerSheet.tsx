@@ -3,14 +3,13 @@ import {
   ActivityIndicator,
   Dimensions,
   FlatList,
-  KeyboardAvoidingView,
   Modal,
-  Platform,
   Text,
   TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
+import { ModalKeyboardView } from "../ui/ModalKeyboardView";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { DynamicIcon } from "../Icon";
 import { useColors } from "../../theme/colors";
@@ -209,10 +208,7 @@ export function TransactionPickerSheet({
       transparent
       onRequestClose={handleClose}
     >
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        style={{ flex: 1, justifyContent: "flex-end" }}
-      >
+      <ModalKeyboardView fillColor={C.surfaceLow} style={{ justifyContent: "flex-end" }}>
         {/* Backdrop */}
         <TouchableOpacity
           style={{
@@ -428,7 +424,7 @@ export function TransactionPickerSheet({
             </TouchableOpacity>
           </View>
         </View>
-      </KeyboardAvoidingView>
+      </ModalKeyboardView>
     </Modal>
   );
 }

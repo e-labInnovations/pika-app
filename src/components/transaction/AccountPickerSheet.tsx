@@ -16,6 +16,7 @@ import { useGetAccounts } from "../../services/gql/accounts/accounts.service";
 import { type AccountFieldsFragment } from "../../services/gql/types/graphql";
 import { useFormatMoney } from "../../lib/format-currency";
 import { useColors } from "../../theme/colors";
+import { ModalKeyboardView } from "../ui/ModalKeyboardView";
 
 interface Props {
   visible: boolean;
@@ -44,6 +45,7 @@ export function AccountPickerSheet({ visible, onClose, selectedId, onSelect, exc
 
   return (
     <Modal visible={visible} animationType="slide" transparent onRequestClose={onClose}>
+      <ModalKeyboardView fillColor={C.surfaceLow}>
       <View className="flex-1 justify-end bg-black/45">
         <View
           className="bg-surface-low rounded-t-3xl max-h-[75%]"
@@ -139,6 +141,7 @@ export function AccountPickerSheet({ visible, onClose, selectedId, onSelect, exc
           </ScrollView>
         </View>
       </View>
+      </ModalKeyboardView>
     </Modal>
   );
 }

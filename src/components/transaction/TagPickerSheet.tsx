@@ -16,6 +16,7 @@ import { isSystem } from "../../lib/ownership";
 import { useGetTags } from "../../services/gql/tags/tags.service";
 import { type TagFieldsFragment } from "../../services/gql/types/graphql";
 import { useColors } from "../../theme/colors";
+import { ModalKeyboardView } from "../ui/ModalKeyboardView";
 
 interface Props {
   visible: boolean;
@@ -58,6 +59,7 @@ export function TagPickerSheet({ visible, onClose, selectedIds, onApply }: Props
 
   return (
     <Modal visible={visible} animationType="slide" transparent onRequestClose={onClose}>
+      <ModalKeyboardView fillColor={C.surfaceLow}>
       <View className="flex-1 justify-end bg-black/45">
         <View
           className="bg-surface-low rounded-t-3xl max-h-[75%]"
@@ -170,6 +172,7 @@ export function TagPickerSheet({ visible, onClose, selectedIds, onApply }: Props
           </View>
         </View>
       </View>
+      </ModalKeyboardView>
     </Modal>
   );
 }

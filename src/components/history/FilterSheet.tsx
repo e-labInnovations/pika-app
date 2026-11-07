@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import { ModalKeyboardView } from '../ui/ModalKeyboardView';
 import { DatePicker } from '../transaction/DateTimePicker';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { DynamicIcon } from '../Icon';
@@ -727,6 +728,7 @@ export function FilterSheet({ visible, filter, onApply, onClose }: Props) {
 
   return (
     <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
+      <ModalKeyboardView fillColor={C.surface}>
       <TouchableOpacity
         style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.4)' }}
         activeOpacity={1}
@@ -880,6 +882,7 @@ export function FilterSheet({ visible, filter, onApply, onClose }: Props) {
           </TouchableOpacity>
         </View>
       </View>
+      </ModalKeyboardView>
     </Modal>
   );
 }

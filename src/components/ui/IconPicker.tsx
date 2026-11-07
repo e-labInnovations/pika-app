@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { ModalKeyboardView } from "./ModalKeyboardView";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { DynamicIcon } from "../Icon";
 import { lucideIcons } from "../../lib/lucide-data";
@@ -109,6 +110,7 @@ export function IconPicker({ value, onChange, bgColor, iconColor, size = 56 }: P
         transparent
         onRequestClose={() => setOpen(false)}
       >
+        <ModalKeyboardView fillColor={C.surfaceLow}>
         <View className="flex-1 justify-end" style={{ backgroundColor: "rgba(0,0,0,0.5)" }}>
           <Pressable className="absolute inset-0" onPress={() => setOpen(false)} />
 
@@ -172,6 +174,7 @@ export function IconPicker({ value, onChange, bgColor, iconColor, size = 56 }: P
             />
           </View>
         </View>
+        </ModalKeyboardView>
       </Modal>
     </>
   );

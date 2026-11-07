@@ -19,6 +19,7 @@ import {
   Category_type_Input,
 } from "../../services/gql/types/graphql";
 import { useColors } from "../../theme/colors";
+import { ModalKeyboardView } from "../ui/ModalKeyboardView";
 
 export type TxType = "expense" | "income" | "transfer";
 
@@ -113,6 +114,7 @@ export function CategoryPickerSheet({
       transparent
       onRequestClose={onClose}
     >
+      <ModalKeyboardView fillColor={C.surfaceLow}>
       <View className="flex-1 justify-end bg-black/45">
         <View
           className="bg-surface-low rounded-t-3xl max-h-[85%]"
@@ -196,6 +198,7 @@ export function CategoryPickerSheet({
           </ScrollView>
         </View>
       </View>
+      </ModalKeyboardView>
     </Modal>
   );
 }

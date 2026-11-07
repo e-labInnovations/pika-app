@@ -15,6 +15,7 @@ import { useGetPeople } from "../../services/gql/people/people.service";
 import { type PersonFieldsFragment } from "../../services/gql/types/graphql";
 import { useFormatMoney } from "../../lib/format-currency";
 import { useColors } from "../../theme/colors";
+import { ModalKeyboardView } from "../ui/ModalKeyboardView";
 
 interface Props {
   visible: boolean;
@@ -44,6 +45,7 @@ export function PersonPickerSheet({ visible, onClose, selectedId, onSelect }: Pr
 
   return (
     <Modal visible={visible} animationType="slide" transparent onRequestClose={onClose}>
+      <ModalKeyboardView fillColor={C.surfaceLow}>
       <View className="flex-1 justify-end bg-black/45">
         <View
           className="bg-surface-low rounded-t-3xl max-h-[75%]"
@@ -146,6 +148,7 @@ export function PersonPickerSheet({ visible, onClose, selectedId, onSelect }: Pr
           </ScrollView>
         </View>
       </View>
+      </ModalKeyboardView>
     </Modal>
   );
 }

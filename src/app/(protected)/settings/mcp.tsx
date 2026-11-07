@@ -26,6 +26,7 @@ import {
   useDeleteMcpApiKey,
 } from "@/services/gql/mcp-api-keys/mcp-api-keys.service";
 import type { McpApiKeyFieldsFragment } from "@/services/gql/types/graphql";
+import { ModalKeyboardView } from "@/components/ui/ModalKeyboardView";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -759,6 +760,7 @@ function KeyFormSheet({
       presentationStyle="pageSheet"
       onRequestClose={onClose}
     >
+      <ModalKeyboardView fillColor={C.surface}>
       <View style={{ flex: 1, backgroundColor: C.surface }}>
         {/* Handle */}
         <View
@@ -952,6 +954,7 @@ function KeyFormSheet({
           </TouchableOpacity>
         </View>
       </View>
+      </ModalKeyboardView>
     </Modal>
   );
 }
