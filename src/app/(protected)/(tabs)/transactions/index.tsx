@@ -52,6 +52,12 @@ import {
   useDeleteTransaction,
   useSimilarTransactionIds,
 } from "@/services/gql/transactions/transactions.service";
+import { useGetCategories } from "@/services/gql/categories/categories.service";
+import { useGetTags } from "@/services/gql/tags/tags.service";
+import { useGetPeople } from "@/services/gql/people/people.service";
+import { useGetAccounts } from "@/services/gql/accounts/accounts.service";
+import { useSearchSummary } from "@/services/gql/search/search.service";
+import { SearchSummaryPanel } from "@/components/history/SearchSummaryPanel";
 import {
   Transaction_type,
   Transaction_type_Input,
@@ -110,20 +116,37 @@ function formatTime(iso: string): string {
   });
 }
 
+/** Ids of the user's categories, tags, people and accounts whose name contains the search. */
+type NameMatches = { categories: string[]; tags: string[]; people: string[]; accounts: string[] };
+
 function buildWhere(
   filter: TxFilter,
   search: string,
   similarIds: string[] = [],
+  names: NameMatches = { categories: [], tags: [], people: [], accounts: [] },
 ): Transaction_where | undefined {
   const ands: Transaction_where[] = [];
 
-  if (search.trim()) {
+  const q = search.trim();
+  if (q) {
+    // A typed amount ("7000", "₹45.50") also matches the transaction amount.
+    const asAmount = /^₹?\s*\d+(\.\d{1,2})?$/.test(q) ? parseFloat(q.replace(/[₹\s]/g, "")) : NaN;
     ands.push({
       OR: [
-        { title: { contains: search.trim() } },
-        { note: { contains: search.trim() } },
+        { title: { contains: q } },
+        { note: { contains: q } },
         // Titles that mean the same thing ("coffee" → "Tea")
         ...(similarIds.length ? [{ id: { in: similarIds } }] : []),
+        ...(names.categories.length ? [{ category: { in: names.categories } }] : []),
+        ...(names.tags.length ? [{ tags: { in: names.tags } }] : []),
+        ...(names.people.length
+          ? [{ person: { in: names.people } }, { shares__person: { in: names.people } }]
+          : []),
+        ...(names.accounts.length
+          ? [{ account: { in: names.accounts } }, { toAccount: { in: names.accounts } }]
+          : []),
+        // amountValue: not in the generated types until the next codegen run.
+        ...(Number.isFinite(asAmount) ? [{ amountValue: { equals: asAmount } } as Transaction_where] : []),
       ],
     });
   }
@@ -169,6 +192,17 @@ function buildWhere(
   if (ands.length === 0) return undefined;
   if (ands.length === 1) return ands[0];
   return { AND: ands };
+}
+
+/** "2026-11" when dateFrom–dateTo is exactly one local calendar month, else null. */
+function monthOfRange(from: string, to: string): string | null {
+  if (!from || !to) return null;
+  const a = new Date(from);
+  const b = new Date(to);
+  const start = new Date(a.getFullYear(), a.getMonth(), 1).getTime();
+  const end = new Date(a.getFullYear(), a.getMonth() + 1, 0, 23, 59, 59, 999).getTime();
+  if (a.getTime() !== start || b.getTime() !== end) return null;
+  return `${a.getFullYear()}-${String(a.getMonth() + 1).padStart(2, "0")}`;
 }
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -648,7 +682,7 @@ export default function HistoryScreen() {
   const insets = useSafeAreaInsets();
   const topPad = insets.top || (Platform.OS === "ios" ? 44 : 24);
 
-  const { personId, accountId, dateFrom, dateTo, categoryId, tagId } =
+  const { personId, accountId, dateFrom, dateTo, categoryId, tagId, q, focusSearch } =
     useLocalSearchParams<{
       personId?: string;
       accountId?: string;
@@ -656,6 +690,10 @@ export default function HistoryScreen() {
       dateTo?: string;
       categoryId?: string;
       tagId?: string;
+      /** Prefills the search (e.g. from an insight). */
+      q?: string;
+      /** "1": open with the search box focused (Home's search button). */
+      focusSearch?: string;
     }>();
 
   // Pre-apply filters when navigated from person/account/calendar/category/tag pages
@@ -668,7 +706,12 @@ export default function HistoryScreen() {
       if (categoryId)
         setFilter((f) => ({ ...f, categories: categoryId.split(",") }));
       if (tagId) setFilter((f) => ({ ...f, tags: [tagId] }));
-    }, [personId, accountId, dateFrom, dateTo, categoryId, tagId]),
+      if (q) {
+        setSearch(q);
+        setShowSearch(true);
+      }
+      if (focusSearch === "1") setShowSearch(true);
+    }, [personId, accountId, dateFrom, dateTo, categoryId, tagId, q, focusSearch]),
   );
 
   // ── UI state
@@ -692,7 +735,23 @@ export default function HistoryScreen() {
   }, [search]);
 
   const { ids: similarIds } = useSimilarTransactionIds(appliedSearch);
-  const where = buildWhere(filter, appliedSearch, similarIds);
+  // Search also finds transactions by their category, tag, person or account name.
+  const { categories: allCategories } = useGetCategories({ limit: 500, sort: "name" });
+  const { tags: allTags } = useGetTags({ limit: 500, sort: "name" });
+  const { people: allPeople } = useGetPeople({ limit: 500, sort: "name" });
+  const { accounts: allAccounts } = useGetAccounts({ limit: 200, sort: "name" });
+  const nameMatches = useMemo<NameMatches>(() => {
+    const term = appliedSearch.trim().toLowerCase();
+    const pick = (list?: { id: string; name?: string | null }[]) =>
+      term.length < 2 ? [] : (list ?? []).filter((x) => x.name?.toLowerCase().includes(term)).map((x) => x.id);
+    return {
+      categories: pick(allCategories),
+      tags: pick(allTags),
+      people: pick(allPeople),
+      accounts: pick(allAccounts),
+    };
+  }, [appliedSearch, allCategories, allTags, allPeople, allAccounts]);
+  const where = buildWhere(filter, appliedSearch, similarIds, nameMatches);
   // Amount sorts on the server by amountValue (see toSortString), across all pages.
   const backendSortStr = toSortString(sort);
 
@@ -705,6 +764,27 @@ export default function HistoryScreen() {
   const { deleteTransaction } = useDeleteTransaction();
 
   const sortedTransactions = transactions;
+
+  // Totals over every match (server), shown while searching or filtering.
+  const searching = !!appliedSearch.trim() || countActiveFilters(filter) > 0;
+  const { summary, loading: summaryLoading } = useSearchSummary(
+    where as Record<string, unknown> | undefined,
+    !searching,
+  );
+  const selectedMonth = monthOfRange(filter.dateFrom, filter.dateTo);
+  const pickMonth = (month: string) => {
+    if (selectedMonth === month) {
+      setFilter((f) => ({ ...f, dateFrom: "", dateTo: "", datePreset: "" }));
+      return;
+    }
+    const [y, m] = month.split("-").map(Number);
+    setFilter((f) => ({
+      ...f,
+      dateFrom: new Date(y, m - 1, 1).toISOString(),
+      dateTo: new Date(y, m, 0, 23, 59, 59, 999).toISOString(),
+      datePreset: "",
+    }));
+  };
 
   const hasNextPage = data?.hasNextPage ?? false;
   const currentPage = data?.page ?? 1;
@@ -1013,6 +1093,16 @@ export default function HistoryScreen() {
           }
           onEndReached={onLoadMore}
           onEndReachedThreshold={0.3}
+          ListHeaderComponent={
+            searching ? (
+              <SearchSummaryPanel
+                summary={summary}
+                loading={summaryLoading}
+                selectedMonth={selectedMonth}
+                onPickMonth={pickMonth}
+              />
+            ) : null
+          }
           ListFooterComponent={
             loadingMore ? (
               <View className="py-4 items-center">

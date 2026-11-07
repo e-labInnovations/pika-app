@@ -44,6 +44,15 @@ export function HomeHeader({ topPad }: Props) {
         </View>
       </View>
 
+      <View className="flex-row items-center gap-2">
+      <TouchableOpacity
+        className="w-10 h-10 rounded-full items-center justify-center bg-surface-mid"
+        activeOpacity={0.75}
+        onPress={() => router.push({ pathname: "/transactions", params: { focusSearch: "1" } })}
+        accessibilityLabel="Search transactions"
+      >
+        <Ionicons name="search-outline" size={20} color={C.primaryBright} />
+      </TouchableOpacity>
       <TouchableOpacity
         className="w-10 h-10 rounded-full items-center justify-center bg-surface-mid"
         activeOpacity={0.75}
@@ -55,6 +64,7 @@ export function HomeHeader({ topPad }: Props) {
           color={C.primaryBright}
         />
       </TouchableOpacity>
+      </View>
     </View>
   );
 }

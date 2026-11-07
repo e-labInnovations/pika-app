@@ -21,6 +21,7 @@ import { MonthlyCalendarCard } from "@/components/home/MonthlyCalendarCard";
 import { MonthlyPulseCard } from "@/components/home/MonthlyPulseCard";
 import { SmsDeck } from "@/components/home/SmsDeck";
 import { RecurringCard } from "@/components/home/RecurringCard";
+import { InsightsCard } from "@/components/home/InsightsCard";
 import { WalletCheckCard } from "@/components/home/WalletCheckCard";
 import { SplitsDebtsCard } from "@/components/home/SplitsDebtsCard";
 import { SpendingTagsCard } from "@/components/home/SpendingTagsCard";
@@ -104,6 +105,7 @@ export default function HomeScreen() {
             setAiOpen(true);
           }}
         />
+        <InsightsCard />
         <MonthlyPulseCard
           showBalance={showBalance}
           income={pulse?.income}
