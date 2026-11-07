@@ -18,11 +18,13 @@ The production APK is installed outside the Play Store and updates itself. Desig
 Actions → **Release APK** → Run workflow, with release notes and, if older installs must
 not keep running, **Mandatory**.
 
-It builds the `production-apk` profile on EAS (the version code goes up by one each
+Optionally type a **version** (e.g. `1.2.0`); left empty, the patch number goes up
+(1.1.0 → 1.1.1). The workflow commits that to `app.config.js` on `main` ("chore: release
+1.1.1"), builds the `production-apk` profile on EAS (the version code goes up by one each
 time), creates the GitHub release `v<version>-<code>` with the APK, and updates
-`latest.json` on the `app-manifest` release. Apps see it on their next start; Settings →
-Check for updates finds it at once. Bump `version` in `app.config.js` for a user-visible
-version change.
+`latest.json` on the `app-manifest` release. Apps check a few seconds after starting and
+whenever they come back to the foreground (at most every 30 minutes); Settings → Check for
+updates finds it at once. Pull `main` afterwards: the workflow pushed the version commit.
 
 ## JS-only change → OTA update
 

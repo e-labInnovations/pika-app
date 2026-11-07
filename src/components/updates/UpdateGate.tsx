@@ -6,7 +6,7 @@
  * `checkForUpdatesNow()` runs the same check from Settings.
  */
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { ActivityIndicator, Modal, ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, AppState, Modal, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { DynamicIcon } from "../Icon";
 import { showAlert } from "../ui/AlertDialog";
@@ -25,6 +25,9 @@ import { useColors } from "../../theme/colors";
 type Shown = Exclude<UpdateDecision, { kind: "none" }>;
 
 let showDecision: ((d: Shown) => void) | null = null;
+
+const FIRST_CHECK_MS = 4000;
+const RECHECK_MS = 30 * 60 * 1000;
 
 /** Manual check from Settings: shows the update, or says it is up to date. */
 export async function checkForUpdatesNow(): Promise<void> {
@@ -48,12 +51,30 @@ export function UpdateGate() {
 
   useEffect(() => {
     showDecision = setDecision;
-    if (selfUpdateEnabled) {
+    if (!selfUpdateEnabled) return () => void (showDecision = null);
+
+    // Not straight away (the splash screen is up and the network may not be ready yet),
+    // and again whenever the app comes back to the foreground, at most every 30 minutes.
+    let last = 0;
+    let busy = false;
+    const check = () => {
+      if (busy || Date.now() - last < RECHECK_MS) return;
+      busy = true;
       checkForUpdate()
-        .then((d) => d.kind !== "none" && setDecision(d))
-        .catch(() => {}); // offline or no manifest yet: try next start
-    }
+        .then((d) => {
+          last = Date.now();
+          if (d.kind !== "none") setDecision((cur) => cur ?? d);
+        })
+        .catch(() => {}) // offline: the next foreground tries again
+        .finally(() => {
+          busy = false;
+        });
+    };
+    const first = setTimeout(check, FIRST_CHECK_MS);
+    const sub = AppState.addEventListener("change", (state) => state === "active" && check());
     return () => {
+      clearTimeout(first);
+      sub.remove();
       showDecision = null;
     };
   }, []);
@@ -80,7 +101,7 @@ function UpdateView({ decision, mandatory, onClose }: { decision: Shown; mandato
   const isUpdatePending = useUpdatePending();
 
   const isApk = decision.kind === "apk";
-  const title = isApk ? `Pika ${decision.apk.version}` : "Update required";
+  const title = isApk ? `Pika ${decision.apk.version} (build ${decision.apk.versionCode})` : "Update required";
   const notes = isApk ? decision.apk.notes : decision.message;
 
   const run = useCallback(async () => {
