@@ -58,6 +58,7 @@ import { useGetPeople } from "@/services/gql/people/people.service";
 import { useGetAccounts } from "@/services/gql/accounts/accounts.service";
 import { useSearchSummary } from "@/services/gql/search/search.service";
 import { SearchSummaryPanel } from "@/components/history/SearchSummaryPanel";
+import { exportTransactionsCsv } from "@/lib/export-transactions";
 import {
   Transaction_type,
   Transaction_type_Input,
@@ -862,6 +863,18 @@ export default function HistoryScreen() {
     });
   };
 
+  const [exporting, setExporting] = useState(false);
+  const handleExport = async () => {
+    setExporting(true);
+    try {
+      await exportTransactionsCsv(where as Record<string, unknown> | undefined);
+    } catch (err: any) {
+      showAlert({ title: "Could not export", message: err?.message ?? "Something went wrong." });
+    } finally {
+      setExporting(false);
+    }
+  };
+
   const clearAll = () => {
     setFilter(DEFAULT_FILTER);
     setSort(DEFAULT_SORT);
@@ -979,6 +992,22 @@ export default function HistoryScreen() {
                 </View>
               )}
             </View>
+
+            {/* Export what's listed */}
+            <TouchableOpacity
+              onPress={handleExport}
+              disabled={exporting}
+              activeOpacity={0.7}
+              className="w-9 h-9 rounded-full items-center justify-center"
+              style={{ backgroundColor: C.surfaceMid }}
+              accessibilityLabel="Export as CSV"
+            >
+              {exporting ? (
+                <ActivityIndicator size="small" color={C.primary} />
+              ) : (
+                <DynamicIcon name="download" size={17} color={C.onSurface} />
+              )}
+            </TouchableOpacity>
 
             {/* Sort */}
             <TouchableOpacity
