@@ -1,0 +1,41 @@
+# Runs the native modules' JVM unit tests (modules/*/android/src/test), which need an
+# Android build: prebuild the android project, then Gradle. Only when native code changes.
+name: Android unit tests
+
+on:
+  push:
+    branches: [main]
+    paths: ['modules/**', 'package.json', 'package-lock.json', '.github/workflows/android-tests.yml']
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - run: npm ci
+
+      - name: Prebuild Android project
+        run: npx expo prebuild --platform android --no-install
+
+      - name: Unit tests
+        working-directory: android
+        run: ./gradlew :pika-composer:testDebugUnitTest --no-daemon
+
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: test-reports
+          path: modules/*/android/build/reports/tests
