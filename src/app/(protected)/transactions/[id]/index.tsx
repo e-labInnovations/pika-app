@@ -31,6 +31,7 @@ import {
 import { useColors } from "@/theme/colors";
 import { LinkedTransactionsCard } from "@/components/transaction/LinkedTransactionsCard";
 import { AttachmentActionsSheet } from "@/components/transaction/AttachmentActionsSheet";
+import { TransactionSplitButton } from "@/components/split/TransactionSplitButton";
 
 const { width: SCREEN_W } = Dimensions.get("window");
 
@@ -787,6 +788,9 @@ export default function TransactionDetailScreen() {
               </>
             )}
           </View>
+
+          {/* ── Split into parts ── */}
+          <TransactionSplitButton tx={tx} />
 
           {/* ── Delete ── */}
           <TouchableOpacity

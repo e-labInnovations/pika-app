@@ -230,3 +230,35 @@ export const useSplitSmsWithAI = () => {
     loading,
   };
 };
+
+const SPLIT_TRANSACTION = gql`
+  mutation SplitTransaction($id: String!, $parts: SmsConfirmOverrides!) {
+    splitTransaction(id: $id, parts: $parts)
+  }
+`;
+const SPLIT_TRANSACTION_WITH_AI = gql`
+  mutation SplitTransactionWithAI($id: String!, $text: String) {
+    splitTransactionWithAI(id: $id, text: $text)
+  }
+`;
+
+/** Splits a saved transaction into parts (it stays as the first); refreshes lists. */
+export const useSplitTransaction = () => {
+  const [split] = useMutation<{ splitTransaction: string[] }>(SPLIT_TRANSACTION, {
+    refetchQueries: [...TRANSACTION_REFETCH_QUERIES, 'GetTransaction'],
+    awaitRefetchQueries: true,
+  });
+  const [ai] = useMutation<{ splitTransactionWithAI: SmsPart[] }>(SPLIT_TRANSACTION_WITH_AI);
+  return {
+    splitTransaction: async (id: string, parts: SmsPart[]) => {
+      const res = await split({ variables: { id, parts } });
+      if (res.error) throw res.error;
+      return res.data?.splitTransaction ?? [];
+    },
+    splitTransactionWithAI: async (id: string, text: string) => {
+      const res = await ai({ variables: { id, text: text.trim() || null } });
+      if (res.error) throw res.error;
+      return res.data?.splitTransactionWithAI ?? [];
+    },
+  };
+};
