@@ -39,6 +39,7 @@ import {
   DEFAULT_FILTER,
   DEFAULT_SORT,
   countActiveFilters,
+  formatAmountRange,
   formatDateShort,
   isDefaultSort,
   toSortString,
@@ -153,6 +154,16 @@ function buildWhere(
   }
   if (filter.dateTo) {
     ands.push({ date: { less_than_equal: filter.dateTo } });
+  }
+  // amountValue: the amount as a number (amount itself is text). Not in the generated
+  // types until the next codegen run against a server that has it.
+  const min = parseFloat(filter.amountMin);
+  const max = parseFloat(filter.amountMax);
+  if (Number.isFinite(min)) {
+    ands.push({ amountValue: { greater_than_equal: min } } as Transaction_where);
+  }
+  if (Number.isFinite(max)) {
+    ands.push({ amountValue: { less_than_equal: max } } as Transaction_where);
   }
 
   if (ands.length === 0) return undefined;
@@ -501,6 +512,14 @@ function ActiveFiltersBar({
       onPress: onOpenFilter,
     });
   }
+  const amountRange = formatAmountRange(filter);
+  if (amountRange) {
+    chips.push({
+      label: amountRange,
+      color: "#ef4444",
+      onPress: onOpenFilter,
+    });
+  }
   if (filter.categories.length > 0) {
     chips.push({
       label: `${filter.categories.length} categor${filter.categories.length === 1 ? "y" : "ies"}`,
@@ -674,10 +693,8 @@ export default function HistoryScreen() {
 
   const { ids: similarIds } = useSimilarTransactionIds(appliedSearch);
   const where = buildWhere(filter, appliedSearch, similarIds);
-  // Amount is stored as text in Payload, so backend sort is lexicographic.
-  // For amount sorting, fall back to date desc on the backend and sort client-side.
-  const backendSortStr =
-    sort.field === "amount" ? toSortString(DEFAULT_SORT) : toSortString(sort);
+  // Amount sorts on the server by amountValue (see toSortString), across all pages.
+  const backendSortStr = toSortString(sort);
 
   const { data, transactions, loading, refetch, fetchMore } =
     useGetTransactions({
@@ -687,14 +704,7 @@ export default function HistoryScreen() {
     });
   const { deleteTransaction } = useDeleteTransaction();
 
-  // Client-side sort for amount (text field — numeric sort required)
-  const sortedTransactions = useMemo(() => {
-    if (!transactions || sort.field !== "amount") return transactions;
-    return [...transactions].sort((a, b) => {
-      const diff = parseFloat(a.amount) - parseFloat(b.amount);
-      return sort.dir === "asc" ? diff : -diff;
-    });
-  }, [transactions, sort]);
+  const sortedTransactions = transactions;
 
   const hasNextPage = data?.hasNextPage ?? false;
   const currentPage = data?.page ?? 1;

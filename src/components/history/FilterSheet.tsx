@@ -37,11 +37,12 @@ import {
 
 // ── Tab definitions ────────────────────────────────────────────────────────────
 
-type FilterTab = 'type' | 'date' | 'categories' | 'tags' | 'people' | 'accounts';
+type FilterTab = 'type' | 'date' | 'amount' | 'categories' | 'tags' | 'people' | 'accounts';
 
 const TABS: { id: FilterTab; label: string; icon: string }[] = [
   { id: 'type',       label: 'Type',       icon: 'layers' },
   { id: 'date',       label: 'Date',       icon: 'calendar' },
+  { id: 'amount',     label: 'Amount',     icon: 'indian-rupee' },
   { id: 'categories', label: 'Categories', icon: 'tag' },
   { id: 'tags',       label: 'Tags',       icon: 'hash' },
   { id: 'people',     label: 'People',     icon: 'users' },
@@ -52,6 +53,7 @@ function tabCount(tab: FilterTab, f: TxFilter): number {
   switch (tab) {
     case 'type':       return f.types.length;
     case 'date':       return f.dateFrom || f.dateTo ? 1 : 0;
+    case 'amount':     return f.amountMin.trim() || f.amountMax.trim() ? 1 : 0;
     case 'categories': return f.categories.length;
     case 'tags':       return f.tags.length;
     case 'people':     return f.people.length;
@@ -142,6 +144,93 @@ function SearchInput({ value, onChangeText, placeholder }: { value: string; onCh
 }
 
 // ── Tab content panels ─────────────────────────────────────────────────────────
+
+const AMOUNT_PRESETS: { label: string; min: string; max: string }[] = [
+  { label: 'Under ₹500', min: '', max: '500' },
+  { label: '₹500 – ₹2,000', min: '500', max: '2000' },
+  { label: '₹2,000 – ₹10,000', min: '2000', max: '10000' },
+  { label: 'Over ₹10,000', min: '10000', max: '' },
+];
+
+const cleanAmount = (v: string) => {
+  const s = v.replace(/[^0-9.]/g, '');
+  const [whole, ...rest] = s.split('.');
+  return rest.length ? `${whole}.${rest.join('').slice(0, 2)}` : whole;
+};
+
+function AmountPanel({ local, setLocal }: { local: TxFilter; setLocal: React.Dispatch<React.SetStateAction<TxFilter>> }) {
+  const C = useColors();
+  const min = local.amountMin.trim();
+  const max = local.amountMax.trim();
+  const swapped = !!min && !!max && Number(min) > Number(max);
+
+  const box = (label: string, value: string, key: 'amountMin' | 'amountMax') => (
+    <View className="flex-1 gap-1.5">
+      <Text className="text-[11px] font-bold uppercase tracking-[0.8px] text-on-surface-variant px-1">{label}</Text>
+      <View className="flex-row items-center px-3 rounded-xl" style={{ height: 44, backgroundColor: C.surfaceHigh }}>
+        <Text className="text-[14px] text-on-surface-variant mr-1">₹</Text>
+        <TextInput
+          className="flex-1 text-[14px] text-on-surface"
+          value={value}
+          onChangeText={(v) => setLocal((p) => ({ ...p, [key]: cleanAmount(v) }))}
+          placeholder="Any"
+          placeholderTextColor={C.outlineVariant}
+          keyboardType="decimal-pad"
+        />
+        {value.length > 0 && (
+          <TouchableOpacity onPress={() => setLocal((p) => ({ ...p, [key]: '' }))} activeOpacity={0.7}>
+            <DynamicIcon name="x" size={13} color={C.outlineVariant} />
+          </TouchableOpacity>
+        )}
+      </View>
+    </View>
+  );
+
+  return (
+    <View className="gap-3">
+      <View className="flex-row gap-2">
+        {box('Min', local.amountMin, 'amountMin')}
+        {box('Max', local.amountMax, 'amountMax')}
+      </View>
+      {swapped && (
+        <Text className="text-[12px] px-1" style={{ color: '#f59e0b' }}>
+          Min is more than Max — nothing will match.
+        </Text>
+      )}
+      <Text className="text-[11px] font-bold uppercase tracking-[0.8px] text-on-surface-variant px-1 mt-1">
+        Quick Select
+      </Text>
+      <View className="gap-2">
+        {AMOUNT_PRESETS.map((p) => {
+          const active = local.amountMin === p.min && local.amountMax === p.max;
+          return (
+            <TouchableOpacity
+              key={p.label}
+              onPress={() =>
+                setLocal((f) => (active ? { ...f, amountMin: '', amountMax: '' } : { ...f, amountMin: p.min, amountMax: p.max }))
+              }
+              activeOpacity={0.75}
+              className="flex-row items-center justify-between px-4 py-3 rounded-xl"
+              style={{
+                backgroundColor: active ? `${C.primary}15` : C.surfaceHigh,
+                borderWidth: 1.5,
+                borderColor: active ? C.primary : 'transparent',
+              }}
+            >
+              <Text className="text-[13px] font-semibold" style={{ color: active ? C.primary : C.onSurface }}>
+                {p.label}
+              </Text>
+              {active && <DynamicIcon name="check" size={15} color={C.primary} />}
+            </TouchableOpacity>
+          );
+        })}
+      </View>
+      <Text className="text-[11px] text-on-surface-variant px-1">
+        Matches the transaction amount, inclusive. Split shares aren't counted separately.
+      </Text>
+    </View>
+  );
+}
 
 function TypePanel({ local, setLocal }: { local: TxFilter; setLocal: React.Dispatch<React.SetStateAction<TxFilter>> }) {
   const C = useColors();
@@ -858,6 +947,7 @@ export function FilterSheet({ visible, filter, onApply, onClose }: Props) {
           >
             {activeTab === 'type'       && <TypePanel       local={local} setLocal={setLocal} />}
             {activeTab === 'date'       && <DatePanel       local={local} setLocal={setLocal} />}
+            {activeTab === 'amount'     && <AmountPanel     local={local} setLocal={setLocal} />}
             {activeTab === 'categories' && <CategoriesPanel local={local} setLocal={setLocal} />}
             {activeTab === 'tags'       && <TagsPanel       local={local} setLocal={setLocal} />}
             {activeTab === 'people'     && <PeoplePanel     local={local} setLocal={setLocal} />}

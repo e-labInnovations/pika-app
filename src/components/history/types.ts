@@ -15,6 +15,8 @@ export type TxFilter = {
   dateFrom: string;       // ISO string or ''
   dateTo: string;         // ISO string or ''
   datePreset: DatePreset | '';
+  amountMin: string;      // rupees, '' = no lower bound
+  amountMax: string;      // rupees, '' = no upper bound
 };
 
 export const DEFAULT_FILTER: TxFilter = {
@@ -26,6 +28,8 @@ export const DEFAULT_FILTER: TxFilter = {
   dateFrom: '',
   dateTo: '',
   datePreset: '',
+  amountMin: '',
+  amountMax: '',
 };
 
 // ── Sort ──────────────────────────────────────────────────────────────────────
@@ -45,7 +49,22 @@ export const SORT_OPTIONS: { field: SortField; label: string; ascLabel: string; 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
 export function toSortString(sort: TxSort): string {
-  return sort.dir === 'desc' ? `-${sort.field}` : sort.field;
+  // `amount` is text on the server; `amountValue` is its number, so it sorts correctly.
+  const field = sort.field === 'amount' ? 'amountValue' : sort.field;
+  return sort.dir === 'desc' ? `-${field}` : field;
+}
+
+const rupees = (v: string) =>
+  `₹${Number(v).toLocaleString('en-IN', { maximumFractionDigits: 2 })}`;
+
+/** "₹500 – ₹2,000", "≥ ₹500", "≤ ₹2,000", or '' when no amount filter. */
+export function formatAmountRange(f: TxFilter): string {
+  const min = f.amountMin.trim();
+  const max = f.amountMax.trim();
+  if (min && max) return `${rupees(min)} – ${rupees(max)}`;
+  if (min) return `≥ ${rupees(min)}`;
+  if (max) return `≤ ${rupees(max)}`;
+  return '';
 }
 
 export function countActiveFilters(f: TxFilter): number {
@@ -56,6 +75,7 @@ export function countActiveFilters(f: TxFilter): number {
   if (f.people.length > 0) count++;
   if (f.accounts.length > 0) count++;
   if (f.dateFrom || f.dateTo) count++;
+  if (f.amountMin.trim() || f.amountMax.trim()) count++;
   return count;
 }
 
