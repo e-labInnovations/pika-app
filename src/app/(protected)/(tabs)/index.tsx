@@ -22,6 +22,7 @@ import { MonthlyPulseCard } from "@/components/home/MonthlyPulseCard";
 import { SmsDeck } from "@/components/home/SmsDeck";
 import { RecurringCard } from "@/components/home/RecurringCard";
 import { InsightsCard } from "@/components/home/InsightsCard";
+import { BudgetsCard } from "@/components/home/BudgetsCard";
 import { WalletCheckCard } from "@/components/home/WalletCheckCard";
 import { SplitsDebtsCard } from "@/components/home/SplitsDebtsCard";
 import { SpendingTagsCard } from "@/components/home/SpendingTagsCard";
@@ -106,6 +107,7 @@ export default function HomeScreen() {
           }}
         />
         <InsightsCard />
+        <BudgetsCard />
         <MonthlyPulseCard
           showBalance={showBalance}
           income={pulse?.income}

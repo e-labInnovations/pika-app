@@ -64,6 +64,14 @@ const SECTIONS: SettingSection[] = [
     onPress: () => router.push("/settings/ai"),
   },
   {
+    id: "budgets",
+    title: "Budgets",
+    icon: "target",
+    description: "Monthly limits per category",
+    color: "#f97316",
+    onPress: () => router.push("/settings/budgets"),
+  },
+  {
     id: "statement",
     title: "Import statement",
     icon: "file-text",
