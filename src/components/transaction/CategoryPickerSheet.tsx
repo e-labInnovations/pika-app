@@ -14,6 +14,7 @@ import { SystemBadge } from "../ui/SystemBadge";
 import { useAuth } from "../../context/AuthContext";
 import { isSystem } from "../../lib/ownership";
 import { useGetCategories } from "../../services/gql/categories/categories.service";
+import { choosableCategories } from "../../lib/archive";
 import {
   type CategoryFieldsFragment,
   Category_type_Input,
@@ -60,7 +61,7 @@ export function CategoryPickerSheet({
     const roots: CategoryFieldsFragment[] = [];
     const childrenMap = new Map<string, CategoryFieldsFragment[]>();
 
-    for (const cat of categories ?? []) {
+    for (const cat of choosableCategories(categories ?? [], selectedId ? [selectedId] : [])) {
       if (!cat.parent) {
         roots.push(cat);
       } else {
@@ -70,7 +71,7 @@ export function CategoryPickerSheet({
       }
     }
     return { roots, childrenMap };
-  }, [categories]);
+  }, [categories, selectedId]);
 
   const q = search.toLowerCase().trim();
 

@@ -82,7 +82,7 @@ function AccountCard({
                 style={{ backgroundColor: `${C.outlineVariant}33` }}
               >
                 <Text className="text-[9px] font-bold uppercase tracking-[0.5px] text-on-surface-variant">
-                  Inactive
+                  Archived
                 </Text>
               </View>
             )}
@@ -254,7 +254,7 @@ function AccountActionsSheet({
                     style={{ backgroundColor: `${C.outlineVariant}33` }}
                   >
                     <Text className="text-[9px] font-bold uppercase tracking-[0.5px] text-on-surface-variant">
-                      Inactive
+                      Archived
                     </Text>
                   </View>
                 )}

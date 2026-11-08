@@ -32,6 +32,8 @@ import Reanimated, {
   type SharedValue,
 } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { ArchivedSection } from "@/components/ui/ArchivedSection";
+import { splitArchived } from "@/lib/archive";
 import { DynamicIcon } from "@/components/Icon";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { UserAvatar } from "@/components/UserAvatar";
@@ -208,7 +210,7 @@ function PersonRow({
                   style={{ backgroundColor: `${C.outlineVariant}33` }}
                 >
                   <Text className="text-[9px] font-bold tracking-[0.5px] uppercase text-on-surface-variant">
-                    Inactive
+                    Archived
                   </Text>
                 </View>
               )}
@@ -301,6 +303,33 @@ export default function PeopleScreen() {
         p.phone?.toLowerCase().includes(q),
     );
   }, [people, search]);
+
+  const { active: activePeople, archived: archivedPeople } = splitArchived(filtered);
+  const renderPeople = (list: PersonFieldsFragment[]) => (
+          <View className="rounded-2xl overflow-hidden bg-surface-mid">
+            {list.map((person, idx) => (
+              <React.Fragment key={person.id}>
+                {idx > 0 && (
+                  <View
+                    className="mx-4"
+                    style={{
+                      height: 1,
+                      backgroundColor: C.outlineVariant + "33",
+                    }}
+                  />
+                )}
+                <PersonRow
+                  person={person}
+                  deleting={deletingId === person.id}
+                  openRef={openSwipeable}
+                  onPress={() => router.push(`/people/${person.id}`)}
+                  onEdit={() => router.push(`/people/${person.id}/edit`)}
+                  onDelete={() => handleDelete(person)}
+                />
+              </React.Fragment>
+            ))}
+          </View>
+  );
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
@@ -438,29 +467,10 @@ export default function PeopleScreen() {
             )}
           </View>
         ) : (
-          <View className="rounded-2xl overflow-hidden bg-surface-mid">
-            {filtered.map((person, idx) => (
-              <React.Fragment key={person.id}>
-                {idx > 0 && (
-                  <View
-                    className="mx-4"
-                    style={{
-                      height: 1,
-                      backgroundColor: C.outlineVariant + "33",
-                    }}
-                  />
-                )}
-                <PersonRow
-                  person={person}
-                  deleting={deletingId === person.id}
-                  openRef={openSwipeable}
-                  onPress={() => router.push(`/people/${person.id}`)}
-                  onEdit={() => router.push(`/people/${person.id}/edit`)}
-                  onDelete={() => handleDelete(person)}
-                />
-              </React.Fragment>
-            ))}
-          </View>
+          <>
+            {activePeople.length > 0 && renderPeople(activePeople)}
+            <ArchivedSection count={archivedPeople.length}>{renderPeople(archivedPeople)}</ArchivedSection>
+          </>
         )}
       </ScrollView>
     </View>

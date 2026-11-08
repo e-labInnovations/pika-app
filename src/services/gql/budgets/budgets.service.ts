@@ -15,6 +15,8 @@ export type BudgetProgress = {
   percent: number;
   status: 'ok' | 'warn' | 'over';
   categories: string[];
+  /** The category is archived: shown only in Settings, so the budget can be removed. */
+  archived?: boolean;
 };
 
 

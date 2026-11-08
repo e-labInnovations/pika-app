@@ -25,6 +25,8 @@ import Reanimated, {
 } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { AccountAvatar } from "@/components/AccountAvatar";
+import { ArchivedSection } from "@/components/ui/ArchivedSection";
+import { splitArchived } from "@/lib/archive";
 import { DynamicIcon } from "@/components/Icon";
 import { Skeleton } from "@/components/ui/Skeleton";
 import {
@@ -325,6 +327,34 @@ export default function AccountsScreen() {
     0,
   );
 
+  const { active: activeAccounts, archived: archivedAccounts } = splitArchived(sortedAccounts);
+  const renderAccounts = (list: AccountFieldsFragment[]) => (
+          <View className="rounded-2xl overflow-hidden bg-surface-mid">
+            {list.map((account, idx) => (
+              <React.Fragment key={account.id}>
+                {idx > 0 && (
+                  <View
+                    className="mx-4"
+                    style={{
+                      height: 1,
+                      backgroundColor: C.outlineVariant + "33",
+                    }}
+                  />
+                )}
+                <AccountRow
+                  account={account}
+                  deleting={deletingId === account.id}
+                  openRef={openSwipeable}
+                  onEdit={() =>
+                    router.push(`/settings/edit-account/${account.id}`)
+                  }
+                  onDelete={() => handleDelete(account)}
+                />
+              </React.Fragment>
+            ))}
+          </View>
+  );
+
   return (
     <View className="flex-1 bg-surface">
       {/* Header */}
@@ -408,30 +438,10 @@ export default function AccountsScreen() {
             </Text>
           </View>
         ) : (
-          <View className="rounded-2xl overflow-hidden bg-surface-mid">
-            {sortedAccounts.map((account, idx) => (
-              <React.Fragment key={account.id}>
-                {idx > 0 && (
-                  <View
-                    className="mx-4"
-                    style={{
-                      height: 1,
-                      backgroundColor: C.outlineVariant + "33",
-                    }}
-                  />
-                )}
-                <AccountRow
-                  account={account}
-                  deleting={deletingId === account.id}
-                  openRef={openSwipeable}
-                  onEdit={() =>
-                    router.push(`/settings/edit-account/${account.id}`)
-                  }
-                  onDelete={() => handleDelete(account)}
-                />
-              </React.Fragment>
-            ))}
-          </View>
+          <>
+            {activeAccounts.length > 0 && renderAccounts(activeAccounts)}
+            <ArchivedSection count={archivedAccounts.length}>{renderAccounts(archivedAccounts)}</ArchivedSection>
+          </>
         )}
       </ScrollView>
     </View>

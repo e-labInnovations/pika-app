@@ -14,6 +14,8 @@ import { DynamicIcon } from '../Icon';
 import { AccountAvatar } from '../AccountAvatar';
 import { UserAvatar } from '../UserAvatar';
 import { useColors } from '../../theme/colors';
+import { ArchivedSection } from '../ui/ArchivedSection';
+import { splitArchived } from '../../lib/archive';
 import { useGetCategories } from '../../services/gql/categories/categories.service';
 import { useGetTags } from '../../services/gql/tags/tags.service';
 import { useGetPeople } from '../../services/gql/people/people.service';
@@ -511,8 +513,12 @@ function CategoriesPanel({ local, setLocal }: { local: TxFilter; setLocal: React
           <Text className="text-on-surface-variant text-sm">No categories found</Text>
         </View>
       ) : (
-        <View className="gap-2.5">
-          {filteredRoots.map((root) => {
+        <>
+          {(() => {
+            const { active: liveRoots, archived: oldRoots } = splitArchived(filteredRoots);
+            const render = (list: typeof filteredRoots) => (
+              <View className="gap-2.5">
+                {list.map((root) => {
             const children = (childrenMap.get(root.id) ?? []).filter(
               (c) =>
                 !search ||
@@ -612,7 +618,21 @@ function CategoriesPanel({ local, setLocal }: { local: TxFilter; setLocal: React
               </View>
             );
           })}
-        </View>
+              </View>
+            );
+            return (
+              <>
+                {liveRoots.length > 0 && render(liveRoots)}
+                <ArchivedSection
+                  count={oldRoots.length}
+                  forceOpen={!!search || oldRoots.some((r) => local.categories.includes(r.id))}
+                >
+                  {render(oldRoots)}
+                </ArchivedSection>
+              </>
+            );
+          })()}
+        </>
       )}
     </View>
   );
@@ -645,8 +665,12 @@ function TagsPanel({ local, setLocal }: { local: TxFilter; setLocal: React.Dispa
           <Text className="text-on-surface-variant text-sm">No tags found</Text>
         </View>
       ) : (
-        <View className="flex-row flex-wrap gap-2">
-          {filtered.map((tag) => {
+        <>
+          {(() => {
+            const { active: liveItems, archived: oldItems } = splitArchived(filtered);
+            const render = (list: typeof filtered) => (
+              <View className="flex-row flex-wrap gap-2">
+                {list.map((tag) => {
             const active = local.tags.includes(tag.id);
             const color = tag.color ?? C.outlineVariant;
             const bg = tag.bgColor ?? `${color}22`;
@@ -671,7 +695,21 @@ function TagsPanel({ local, setLocal }: { local: TxFilter; setLocal: React.Dispa
               </TouchableOpacity>
             );
           })}
-        </View>
+              </View>
+            );
+            return (
+              <>
+                {liveItems.length > 0 && render(liveItems)}
+                <ArchivedSection
+                  count={oldItems.length}
+                  forceOpen={!!search || oldItems.some((x) => local.tags.includes(x.id))}
+                >
+                  {render(oldItems)}
+                </ArchivedSection>
+              </>
+            );
+          })()}
+        </>
       )}
     </View>
   );
@@ -703,8 +741,12 @@ function PeoplePanel({ local, setLocal }: { local: TxFilter; setLocal: React.Dis
           <Text className="text-on-surface-variant text-sm">No people found</Text>
         </View>
       ) : (
-        <View className="gap-1.5">
-          {filtered.map((person) => (
+        <>
+          {(() => {
+            const { active: liveItems, archived: oldItems } = splitArchived(filtered);
+            const render = (list: typeof filtered) => (
+              <View className="gap-1.5">
+                {list.map((person) => (
             <SelectRow
               key={person.id}
               label={person.name}
@@ -721,7 +763,21 @@ function PeoplePanel({ local, setLocal }: { local: TxFilter; setLocal: React.Dis
               }
             />
           ))}
-        </View>
+              </View>
+            );
+            return (
+              <>
+                {liveItems.length > 0 && render(liveItems)}
+                <ArchivedSection
+                  count={oldItems.length}
+                  forceOpen={!!search || oldItems.some((x) => local.people.includes(x.id))}
+                >
+                  {render(oldItems)}
+                </ArchivedSection>
+              </>
+            );
+          })()}
+        </>
       )}
     </View>
   );
@@ -767,8 +823,12 @@ function AccountsPanel({
           <Text className="text-on-surface-variant text-sm">No accounts found</Text>
         </View>
       ) : (
-        <View className="gap-1.5">
-          {filtered.map((acc) => (
+        <>
+          {(() => {
+            const { active: liveItems, archived: oldItems } = splitArchived(filtered);
+            const render = (list: typeof filtered) => (
+              <View className="gap-1.5">
+                {list.map((acc) => (
             <SelectRow
               key={acc.id}
               label={acc.name}
@@ -787,7 +847,21 @@ function AccountsPanel({
               }
             />
           ))}
-        </View>
+              </View>
+            );
+            return (
+              <>
+                {liveItems.length > 0 && render(liveItems)}
+                <ArchivedSection
+                  count={oldItems.length}
+                  forceOpen={!!search || oldItems.some((x) => local.accounts.includes(x.id))}
+                >
+                  {render(oldItems)}
+                </ArchivedSection>
+              </>
+            );
+          })()}
+        </>
       )}
     </View>
   );

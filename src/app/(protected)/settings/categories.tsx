@@ -30,6 +30,8 @@ import Reanimated, {
   type SharedValue,
 } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { ArchivedSection } from "@/components/ui/ArchivedSection";
+import { splitArchived } from "@/lib/archive";
 import { DynamicIcon } from "@/components/Icon";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { TxTypeSelector } from "@/components/transaction/TxTypeSelector";
@@ -230,7 +232,7 @@ function ChildRow({
       )}
     >
       <Reanimated.View
-        style={rowStyle}
+        style={[rowStyle, child.isActive === false && { opacity: 0.5 }]}
         className="flex-row items-center gap-3 pl-3 py-2.5"
       >
         <View
@@ -258,6 +260,7 @@ function ChildRow({
             numberOfLines={1}
           >
             {child.name}
+            {child.isActive === false ? "  · Archived" : ""}
           </Text>
           {child.description ? (
             <Text
@@ -527,6 +530,34 @@ export default function CategoriesScreen() {
     return { parents, childrenMap };
   }, [categories, activeType]);
 
+  const { active: activeParents, archived: archivedParents } = splitArchived(parents);
+  const renderParent = (parent: CategoryFieldsFragment) => (
+            <CategoryCard
+              key={parent.id}
+              parent={parent}
+              children={(childrenMap[parent.id] ?? []).sort((a, b) =>
+                a.name.localeCompare(b.name),
+              )}
+              isSystemParent={isSystem(parent)}
+              isSystemChild={isSystem}
+              deletingId={deletingId}
+              openRef={openSwipeable}
+              onEditParent={() =>
+                router.push(`/settings/edit-category/${parent.id}`)
+              }
+              onDeleteParent={() => handleDeleteCategory(parent)}
+              onEditChild={(child) =>
+                router.push(`/settings/edit-category/${child.id}`)
+              }
+              onDeleteChild={(child) => handleDeleteCategory(child)}
+              onAddChild={() =>
+                router.push(
+                  `/settings/add-category?type=${activeType}&parentId=${parent.id}`,
+                )
+              }
+            />
+  );
+
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
     await refetch();
@@ -629,32 +660,12 @@ export default function CategoriesScreen() {
             </Text>
           </View>
         ) : (
-          parents.map((parent) => (
-            <CategoryCard
-              key={parent.id}
-              parent={parent}
-              children={(childrenMap[parent.id] ?? []).sort((a, b) =>
-                a.name.localeCompare(b.name),
-              )}
-              isSystemParent={isSystem(parent)}
-              isSystemChild={isSystem}
-              deletingId={deletingId}
-              openRef={openSwipeable}
-              onEditParent={() =>
-                router.push(`/settings/edit-category/${parent.id}`)
-              }
-              onDeleteParent={() => handleDeleteCategory(parent)}
-              onEditChild={(child) =>
-                router.push(`/settings/edit-category/${child.id}`)
-              }
-              onDeleteChild={(child) => handleDeleteCategory(child)}
-              onAddChild={() =>
-                router.push(
-                  `/settings/add-category?type=${activeType}&parentId=${parent.id}`,
-                )
-              }
-            />
-          ))
+          <>
+            {activeParents.map(renderParent)}
+            <ArchivedSection count={archivedParents.length}>
+              <View style={{ gap: 10 }}>{archivedParents.map(renderParent)}</View>
+            </ArchivedSection>
+          </>
         )}
       </ScrollView>
     </View>

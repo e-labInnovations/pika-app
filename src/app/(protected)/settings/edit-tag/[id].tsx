@@ -12,6 +12,7 @@ import {
 } from "react-native";
 import { showAlert } from "@/components/ui/AlertDialog";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { ArchiveCard } from "@/components/ui/ArchiveCard";
 import { DynamicIcon } from "@/components/Icon";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { ColorPicker } from "@/components/ui/ColorPicker";
@@ -278,6 +279,14 @@ export default function EditTagScreen() {
               </Text>
             </View>
           </View>
+
+          {!isSystem && tag && (
+            <ArchiveCard
+              kind="tag"
+              archived={tag.isActive === false}
+              onChange={(archived) => updateTag({ id: tag.id, data: { isActive: !archived } })}
+            />
+          )}
         </ScrollView>
       )}
 

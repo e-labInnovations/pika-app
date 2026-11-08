@@ -10,6 +10,7 @@ import { UserAvatar } from "../UserAvatar";
 import { DynamicIcon } from "../Icon";
 import { PickerListSkeleton } from "../ui/PickerSkeletons";
 import { useGetPeople } from "../../services/gql/people/people.service";
+import { choosable } from "../../lib/archive";
 import { type PersonFieldsFragment } from "../../services/gql/types/graphql";
 import { useFormatMoney } from "../../lib/format-currency";
 import { useColors } from "../../theme/colors";
@@ -68,8 +69,9 @@ export function SplitSheet({ visible, onClose, total, value, onApply }: Props) {
 
   const filtered = useMemo(() => {
     const q = search.toLowerCase().trim();
-    return (people ?? []).filter((p) => !q || p.name.toLowerCase().includes(q));
-  }, [people, search]);
+    // Archived people aren't offered, except ones already in this split.
+    return choosable(people ?? [], picked.map((s) => s.person.id)).filter((p) => !q || p.name.toLowerCase().includes(q));
+  }, [people, search, picked]);
 
   const toggle = (person: PersonFieldsFragment) =>
     setPicked((cur) =>

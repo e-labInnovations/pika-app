@@ -14,6 +14,7 @@ import { SystemBadge } from "../ui/SystemBadge";
 import { useAuth } from "../../context/AuthContext";
 import { isSystem } from "../../lib/ownership";
 import { useGetTags } from "../../services/gql/tags/tags.service";
+import { choosable } from "../../lib/archive";
 import { type TagFieldsFragment } from "../../services/gql/types/graphql";
 import { useColors } from "../../theme/colors";
 import { ModalKeyboardView } from "../ui/ModalKeyboardView";
@@ -40,10 +41,12 @@ export function TagPickerSheet({ visible, onClose, selectedIds, onApply }: Props
   const { tags, loading } = useGetTags({ limit: 500, sort: "name" });
 
   const filtered = useMemo(() => {
+    // Archived tags aren't offered, except ones this transaction already has.
+    const all = choosable(tags ?? [], selectedIds);
     const q = search.toLowerCase().trim();
-    if (!q) return tags ?? [];
-    return (tags ?? []).filter((t) => t.name.toLowerCase().includes(q));
-  }, [tags, search]);
+    if (!q) return all;
+    return all.filter((t) => t.name.toLowerCase().includes(q));
+  }, [tags, search, selectedIds]);
 
   const toggle = (id: string) => {
     setLocalSelected((prev) =>

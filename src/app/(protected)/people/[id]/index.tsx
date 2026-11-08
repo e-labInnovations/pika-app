@@ -367,7 +367,7 @@ export default function PersonDetailScreen() {
               {person.isActive === false && (
                 <View className="px-2.5 py-0.5 rounded-full bg-surface-high">
                   <Text className="text-[10px] font-bold uppercase tracking-[0.8px] text-on-surface-variant">
-                    Inactive
+                    Archived
                   </Text>
                 </View>
               )}

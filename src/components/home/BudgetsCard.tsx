@@ -9,7 +9,8 @@ import { useColors } from "../../theme/colors";
 
 export function BudgetsCard() {
   const C = useColors();
-  const { budgets } = useBudgets();
+  const { budgets: all } = useBudgets();
+  const budgets = all.filter((b) => !b.archived);
   if (!budgets.length) return null;
   return (
     <View className="rounded-2xl bg-surface-low p-5" style={{ gap: 14 }}>

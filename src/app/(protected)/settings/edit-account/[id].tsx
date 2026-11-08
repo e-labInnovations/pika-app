@@ -14,6 +14,7 @@ import {
 import { showAlert } from "@/components/ui/AlertDialog";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { AccountAvatar } from "@/components/AccountAvatar";
+import { ArchiveCard } from "@/components/ui/ArchiveCard";
 import { DynamicIcon } from "@/components/Icon";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { ColorPicker } from "@/components/ui/ColorPicker";
@@ -509,6 +510,14 @@ export default function EditAccountScreen() {
               </View>
             </View>
           </View>
+
+          {account && (
+            <ArchiveCard
+              kind="account"
+              archived={account.isActive === false}
+              onChange={(archived) => updateAccount({ id: account.id, data: { isActive: !archived } })}
+            />
+          )}
         </ScrollView>
       )}
 

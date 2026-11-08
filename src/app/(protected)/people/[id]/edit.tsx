@@ -14,6 +14,7 @@ import {
 } from "react-native";
 import { showAlert } from "@/components/ui/AlertDialog";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { ArchiveCard } from "@/components/ui/ArchiveCard";
 import { DynamicIcon } from "@/components/Icon";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { UserAvatar } from "@/components/UserAvatar";
@@ -351,6 +352,13 @@ export default function EditPersonScreen() {
         </View>
 
         {/* Delete */}
+        {person && (
+          <ArchiveCard
+            kind="person"
+            archived={person.isActive === false}
+            onChange={(archived) => updatePerson({ id: person.id, data: { isActive: !archived } })}
+          />
+        )}
         <TouchableOpacity
           onPress={handleDelete}
           disabled={isBusy}

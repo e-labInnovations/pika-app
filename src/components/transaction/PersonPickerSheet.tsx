@@ -12,6 +12,7 @@ import { UserAvatar } from "../UserAvatar";
 import { DynamicIcon } from "../Icon";
 import { PickerListSkeleton } from "../ui/PickerSkeletons";
 import { useGetPeople } from "../../services/gql/people/people.service";
+import { choosable } from "../../lib/archive";
 import { type PersonFieldsFragment } from "../../services/gql/types/graphql";
 import { useFormatMoney } from "../../lib/format-currency";
 import { useColors } from "../../theme/colors";
@@ -33,15 +34,16 @@ export function PersonPickerSheet({ visible, onClose, selectedId, onSelect }: Pr
   const { people, loading } = useGetPeople({ limit: 200, sort: "name" });
 
   const filtered = useMemo(() => {
+    const all = choosable(people ?? [], selectedId ? [selectedId] : []);
     const q = search.toLowerCase().trim();
-    if (!q) return people ?? [];
-    return (people ?? []).filter(
+    if (!q) return all;
+    return all.filter(
       (p) =>
         p.name.toLowerCase().includes(q) ||
         p.email?.toLowerCase().includes(q) ||
         p.phone?.toLowerCase().includes(q),
     );
-  }, [people, search]);
+  }, [people, search, selectedId]);
 
   return (
     <Modal visible={visible} animationType="slide" transparent onRequestClose={onClose}>

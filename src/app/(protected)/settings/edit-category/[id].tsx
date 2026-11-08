@@ -12,6 +12,9 @@ import {
 } from "react-native";
 import { showAlert } from "@/components/ui/AlertDialog";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { ArchiveCard } from "@/components/ui/ArchiveCard";
+import { useAuth } from "@/context/AuthContext";
+import { isOwnedBy } from "@/lib/ownership";
 import { DynamicIcon } from "@/components/Icon";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { ColorPicker } from "@/components/ui/ColorPicker";
@@ -76,6 +79,7 @@ export default function EditCategoryScreen() {
 
   const { id } = useLocalSearchParams<{ id: string }>();
   const { data: category, loading } = useGetCategory(id);
+  const { user } = useAuth();
   const { updateCategory, loading: saving } = useUpdateCategory();
   const { deleteCategory, loading: deleting } = useDeleteCategory();
 
@@ -333,6 +337,14 @@ export default function EditCategoryScreen() {
               </View>
             </View>
           </View>
+
+          {category && isOwnedBy(category, user?.id) && (
+            <ArchiveCard
+              kind="category"
+              archived={category.isActive === false}
+              onChange={(archived) => updateCategory({ id: category.id, data: { isActive: !archived } })}
+            />
+          )}
         </ScrollView>
       )}
 

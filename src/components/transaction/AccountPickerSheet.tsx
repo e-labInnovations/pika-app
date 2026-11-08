@@ -13,6 +13,7 @@ import { DynamicIcon } from "../Icon";
 import { PickerListSkeleton } from "../ui/PickerSkeletons";
 import { EmptyAccountsCard } from "../account/EmptyAccountsCard";
 import { useGetAccounts } from "../../services/gql/accounts/accounts.service";
+import { choosable } from "../../lib/archive";
 import { type AccountFieldsFragment } from "../../services/gql/types/graphql";
 import { useFormatMoney } from "../../lib/format-currency";
 import { useColors } from "../../theme/colors";
@@ -37,11 +38,11 @@ export function AccountPickerSheet({ visible, onClose, selectedId, onSelect, exc
   const { accounts, loading } = useGetAccounts({ limit: 200, sort: "name" });
 
   const filtered = useMemo(() => {
-    const all = (accounts ?? []).filter((a) => a.id !== excludeId);
+    const all = choosable(accounts ?? [], selectedId ? [selectedId] : []).filter((a) => a.id !== excludeId);
     const q = search.toLowerCase().trim();
     if (!q) return all;
     return all.filter((a) => a.name.toLowerCase().includes(q));
-  }, [accounts, search, excludeId]);
+  }, [accounts, search, excludeId, selectedId]);
 
   return (
     <Modal visible={visible} animationType="slide" transparent onRequestClose={onClose}>

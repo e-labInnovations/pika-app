@@ -67,7 +67,7 @@ export function PersonCard({ person, onPress }: Props) {
           {person.isActive === false && (
             <View className="px-1.5 py-0.5 rounded-full bg-surface-highest shrink-0">
               <Text className="text-[9px] font-bold tracking-[0.5px] uppercase text-on-surface-variant">
-                Inactive
+                Archived
               </Text>
             </View>
           )}

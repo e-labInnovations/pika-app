@@ -18,6 +18,7 @@ import { useGetPeople } from "../../services/gql/people/people.service";
 import { useGetAccounts } from "../../services/gql/accounts/accounts.service";
 import { useGetCategories } from "../../services/gql/categories/categories.service";
 import { useGetTags } from "../../services/gql/tags/tags.service";
+import { choosableCategories, isArchived } from "../../lib/archive";
 import { useColors } from "../../theme/colors";
 
 export type EntityType = "person" | "account" | "category" | "tag";
@@ -30,6 +31,8 @@ export type ComposerEntity = {
   icon?: string | null;
   color?: string | null;
   bgColor?: string | null;
+  /** Archived: drawn when already in the text, never suggested. */
+  archived?: boolean;
 };
 
 export type Segment = { kind: "text"; text: string } | { kind: "token"; entity: ComposerEntity };
@@ -114,26 +117,33 @@ function Chip({ e, onPress }: { e: ComposerEntity; onPress?: () => void }) {
   );
 }
 
-/** All entities the user can tag, from the same (cached) queries the pickers use. */
+/**
+ * All entities the user can tag, from the same (cached) queries the pickers use.
+ * Archived ones are included (flagged) so chips already in the text still draw.
+ */
 export function useEntities(): ComposerEntity[] {
   const { people } = useGetPeople({ limit: 200, sort: "name" });
   const { accounts } = useGetAccounts({ limit: 200, sort: "name" });
   const { categories } = useGetCategories({ limit: 500, sort: "name" });
   const { tags } = useGetTags({ limit: 500, sort: "name" });
-  return useMemo(
-    () => [
-      ...(people ?? []).map((p) => ({ type: "person" as const, id: p.id, name: p.name, avatarUrl: p.avatar?.url })),
+  return useMemo(() => {
+    const liveCats = new Set(choosableCategories(categories ?? []).map((c) => c.id));
+    return [
+      ...(people ?? []).map((p) => ({ type: "person" as const, id: p.id, name: p.name, avatarUrl: p.avatar?.url, archived: isArchived(p) })),
       ...(accounts ?? []).map((a) => ({
         type: "account" as const, id: a.id, name: a.name, avatarUrl: a.avatar?.url, icon: a.icon, color: a.color, bgColor: a.bgColor,
+        archived: isArchived(a),
       })),
       // Only child categories can be used on a transaction
       ...(categories ?? [])
         .filter((c) => c.parent)
-        .map((c) => ({ type: "category" as const, id: c.id, name: c.name, icon: c.icon, color: c.color, bgColor: c.bgColor })),
-      ...(tags ?? []).map((t) => ({ type: "tag" as const, id: t.id, name: t.name, icon: t.icon, color: t.color, bgColor: t.bgColor })),
-    ],
-    [people, accounts, categories, tags],
-  );
+        .map((c) => ({
+          type: "category" as const, id: c.id, name: c.name, icon: c.icon, color: c.color, bgColor: c.bgColor,
+          archived: !liveCats.has(c.id),
+        })),
+      ...(tags ?? []).map((t) => ({ type: "tag" as const, id: t.id, name: t.name, icon: t.icon, color: t.color, bgColor: t.bgColor, archived: isArchived(t) })),
+    ];
+  }, [people, accounts, categories, tags]);
 }
 
 interface Props {
@@ -254,7 +264,7 @@ export function MentionSuggestions({
   const C = useColors();
   const q = query?.toLowerCase() ?? null;
   const suggestions = useMemo(
-    () => (q === null ? [] : entities.filter((e) => !q || e.name.toLowerCase().includes(q)).slice(0, 30)),
+    () => (q === null ? [] : entities.filter((e) => !e.archived && (!q || e.name.toLowerCase().includes(q))).slice(0, 30)),
     [entities, q],
   );
 

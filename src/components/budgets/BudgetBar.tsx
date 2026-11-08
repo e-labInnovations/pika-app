@@ -23,6 +23,7 @@ export function BudgetBar({ b }: { b: BudgetProgress }) {
         <View className="flex-1">
           <Text className="text-[13px] font-semibold text-on-surface" numberOfLines={1}>
             {b.category.name}
+            {b.archived ? "  · Archived" : ""}
           </Text>
           <Text className="text-[11px] text-on-surface-variant">
             {rupees(b.spent)} of {rupees(b.amount)}

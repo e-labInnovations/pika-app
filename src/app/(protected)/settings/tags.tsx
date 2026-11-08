@@ -24,6 +24,8 @@ import Reanimated, {
   type SharedValue,
 } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { ArchivedSection } from "@/components/ui/ArchivedSection";
+import { splitArchived } from "@/lib/archive";
 import { DynamicIcon } from "@/components/Icon";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { useAuth } from "@/context/AuthContext";
@@ -337,6 +339,33 @@ export default function TagsScreen() {
     .slice()
     .sort((a, b) => a.name.localeCompare(b.name));
 
+  const { active: activeTags, archived: archivedTags } = splitArchived(sortedTags);
+  const renderTags = (list: TagFieldsFragment[]) => (
+          <View className="rounded-2xl overflow-hidden bg-surface-mid">
+            {list.map((tag, idx) => (
+              <React.Fragment key={tag.id}>
+                {idx > 0 && (
+                  <View
+                    className="mx-4"
+                    style={{
+                      height: 1,
+                      backgroundColor: C.outlineVariant + "33",
+                    }}
+                  />
+                )}
+                <TagRow
+                  tag={tag}
+                  isSystem={isSystem(tag)}
+                  deleting={deletingId === tag.id}
+                  openRef={openSwipeable}
+                  onEdit={() => router.push(`/settings/edit-tag/${tag.id}`)}
+                  onDelete={() => handleDelete(tag)}
+                />
+              </React.Fragment>
+            ))}
+          </View>
+  );
+
   return (
     <View className="flex-1 bg-surface">
       {/* Header */}
@@ -392,29 +421,10 @@ export default function TagsScreen() {
             </Text>
           </View>
         ) : (
-          <View className="rounded-2xl overflow-hidden bg-surface-mid">
-            {sortedTags.map((tag, idx) => (
-              <React.Fragment key={tag.id}>
-                {idx > 0 && (
-                  <View
-                    className="mx-4"
-                    style={{
-                      height: 1,
-                      backgroundColor: C.outlineVariant + "33",
-                    }}
-                  />
-                )}
-                <TagRow
-                  tag={tag}
-                  isSystem={isSystem(tag)}
-                  deleting={deletingId === tag.id}
-                  openRef={openSwipeable}
-                  onEdit={() => router.push(`/settings/edit-tag/${tag.id}`)}
-                  onDelete={() => handleDelete(tag)}
-                />
-              </React.Fragment>
-            ))}
-          </View>
+          <>
+            {activeTags.length > 0 && renderTags(activeTags)}
+            <ArchivedSection count={archivedTags.length}>{renderTags(archivedTags)}</ArchivedSection>
+          </>
         )}
 
         {/* Add tag button */}
