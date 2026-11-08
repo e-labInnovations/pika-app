@@ -46,6 +46,21 @@ export function useUpdatePending(): boolean {
 
 export const reloadApp = () => Updates?.reloadAsync() ?? Promise.resolve();
 
+/**
+ * Asks EAS for a newer OTA update and downloads it. True when one is ready to apply
+ * on restart (then `useUpdatePending` turns true and the banner shows).
+ *
+ * Optional OTA updates aren't in the release manifest; without this they'd arrive only
+ * through expo-updates' own check at a cold start, and apply one start later.
+ */
+export async function fetchOtaUpdate(): Promise<boolean> {
+  if (!Updates) return false;
+  const check = await Updates.checkForUpdateAsync();
+  if (!check.isAvailable) return false;
+  await Updates.fetchUpdateAsync();
+  return true;
+}
+
 export function installedInfo(): Installed {
   return {
     versionCode: Number(Application?.nativeBuildVersion ?? 0) || 0,

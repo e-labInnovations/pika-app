@@ -13,6 +13,7 @@ import { showAlert } from "../ui/AlertDialog";
 import {
   applyOtaNow,
   checkForUpdate,
+  fetchOtaUpdate,
   installApk,
   reloadApp,
   selfUpdateEnabled,
@@ -37,8 +38,19 @@ export async function checkForUpdatesNow(): Promise<void> {
   }
   try {
     const d = await checkForUpdate(true);
-    if (d.kind === "none") showAlert({ title: "Up to date", message: "You have the latest version of Pika." });
-    else showDecision?.(d);
+    if (d.kind !== "none") return showDecision?.(d);
+    if (await fetchOtaUpdate()) {
+      showAlert({
+        title: "Update ready",
+        message: "A new version of Pika has downloaded. Restart to use it.",
+        buttons: [
+          { text: "Later", style: "cancel" },
+          { text: "Restart", onPress: () => void reloadApp() },
+        ],
+      });
+    } else {
+      showAlert({ title: "Up to date", message: "You have the latest version of Pika." });
+    }
   } catch (e: any) {
     showAlert({ title: "Couldn't check for updates", message: e?.message ?? "Try again later." });
   }
@@ -61,9 +73,11 @@ export function UpdateGate() {
       if (busy || Date.now() - last < RECHECK_MS) return;
       busy = true;
       checkForUpdate()
-        .then((d) => {
+        .then(async (d) => {
           last = Date.now();
           if (d.kind !== "none") setDecision((cur) => cur ?? d);
+          // An optional OTA: download it now; the restart banner follows.
+          else if (await fetchOtaUpdate()) setBannerDismissed(false);
         })
         .catch(() => {}) // offline: the next foreground tries again
         .finally(() => {
