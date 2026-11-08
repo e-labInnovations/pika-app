@@ -1,15 +1,19 @@
 /**
- * Makes Pika a share target on Android: SEND / SEND_MULTIPLE intent filters for
- * text, images and PDFs on the launcher activity, which is singleTask so a share
- * while the app is open arrives through onNewIntent instead of a second activity.
+ * Keeps the launcher activity singleTask, so a share forwarded by
+ * ShareReceiverActivity (the share target, declared in this module's own
+ * AndroidManifest.xml) reaches a running app through onNewIntent instead of a
+ * second activity.
+ *
+ * Share intent filters used to sit on the launcher activity. They are removed
+ * here: apps that share with startActivityForResult (Google Pay) made Android
+ * open a second MainActivity inside their own task.
  *
  * The launcher activity is found from the manifest rather than by name, so this
  * works for both the prod and dev application ids.
  */
 const { withAndroidManifest } = require('expo/config-plugins');
 
-const MIME_TYPES = ['text/*', 'image/*', 'application/pdf'];
-const ACTIONS = ['android.intent.action.SEND', 'android.intent.action.SEND_MULTIPLE'];
+const SHARE_ACTIONS = ['android.intent.action.SEND', 'android.intent.action.SEND_MULTIPLE'];
 
 const hasAction = (filter, name) =>
   (filter.action ?? []).some((a) => a.$['android:name'] === name);
@@ -29,16 +33,9 @@ function withPikaShare(config) {
     if (!activity) throw new Error('pika-share: no launcher activity in AndroidManifest');
 
     activity.$['android:launchMode'] = 'singleTask';
-
-    const filters = (activity['intent-filter'] ??= []);
-    for (const action of ACTIONS) {
-      if (filters.some((f) => hasAction(f, action))) continue;
-      filters.push({
-        action: [{ $: { 'android:name': action } }],
-        category: [{ $: { 'android:name': 'android.intent.category.DEFAULT' } }],
-        data: MIME_TYPES.map((t) => ({ $: { 'android:mimeType': t } })),
-      });
-    }
+    activity['intent-filter'] = (activity['intent-filter'] ?? []).filter(
+      (f) => !SHARE_ACTIONS.some((a) => hasAction(f, a)),
+    );
     return cfg;
   });
 }
