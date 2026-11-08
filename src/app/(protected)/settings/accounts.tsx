@@ -15,22 +15,22 @@ import ReanimatedSwipeable, {
 } from "react-native-gesture-handler/ReanimatedSwipeable";
 import Reanimated, {
   cancelAnimation,
-  interpolate,
   interpolateColor,
   useAnimatedStyle,
   useSharedValue,
   withRepeat,
   withTiming,
-  type SharedValue,
 } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { AccountAvatar } from "@/components/AccountAvatar";
 import { ArchivedSection } from "@/components/ui/ArchivedSection";
 import { splitArchived } from "@/lib/archive";
+import { SwipeRowActions as RightActions } from "@/components/ui/SwipeRowActions";
 import { DynamicIcon } from "@/components/Icon";
 import { Skeleton } from "@/components/ui/Skeleton";
 import {
   useDeleteAccount,
+  useUpdateAccount,
   useGetAccounts,
 } from "@/services/gql/accounts/accounts.service";
 import type { AccountFieldsFragment } from "@/services/gql/types/graphql";
@@ -43,66 +43,6 @@ type SwipeableRef = { current: SwipeableMethods | null };
 
 // ── Swipe actions ──────────────────────────────────────────────────────────────
 
-function RightActions({
-  progress,
-  onEdit,
-  onDelete,
-}: {
-  progress: SharedValue<number>;
-  onEdit: () => void;
-  onDelete: () => void;
-}) {
-  const C = useColors();
-
-  const editStyle = useAnimatedStyle(() => ({
-    transform: [{ translateX: interpolate(progress.value, [0, 1], [128, 0]) }],
-  }));
-  const deleteStyle = useAnimatedStyle(() => ({
-    transform: [{ translateX: interpolate(progress.value, [0, 1], [64, 0]) }],
-  }));
-
-  return (
-    <View style={{ flexDirection: "row", width: 128 }}>
-      <Reanimated.View style={[editStyle, { flex: 1 }]}>
-        <TouchableOpacity
-          onPress={onEdit}
-          activeOpacity={0.8}
-          style={{
-            flex: 1,
-            backgroundColor: `${C.primary}22`,
-            alignItems: "center",
-            justifyContent: "center",
-            gap: 3,
-          }}
-        >
-          <DynamicIcon name="pencil" size={16} color={C.primary} />
-          <Text style={{ fontSize: 11, color: C.primary, fontWeight: "700" }}>
-            Edit
-          </Text>
-        </TouchableOpacity>
-      </Reanimated.View>
-
-      <Reanimated.View style={[deleteStyle, { flex: 1 }]}>
-        <TouchableOpacity
-          onPress={onDelete}
-          activeOpacity={0.8}
-          style={{
-            flex: 1,
-            backgroundColor: `${C.tertiary}22`,
-            alignItems: "center",
-            justifyContent: "center",
-            gap: 3,
-          }}
-        >
-          <DynamicIcon name="trash-2" size={16} color={C.tertiary} />
-          <Text style={{ fontSize: 11, color: C.tertiary, fontWeight: "700" }}>
-            Delete
-          </Text>
-        </TouchableOpacity>
-      </Reanimated.View>
-    </View>
-  );
-}
 
 // ── AccountRow ─────────────────────────────────────────────────────────────────
 
@@ -112,12 +52,14 @@ function AccountRow({
   openRef,
   onEdit,
   onDelete,
+  onArchive,
 }: {
   account: AccountFieldsFragment;
   deleting: boolean;
   openRef: SwipeableRef;
   onEdit: () => void;
   onDelete: () => void;
+  onArchive?: () => void;
 }) {
   const C = useColors();
   const fmt = useFormatMoney();
@@ -159,6 +101,11 @@ function AccountRow({
       renderRightActions={(progress) => (
         <RightActions
           progress={progress}
+          archived={account.isActive === false}
+          onArchive={onArchive ? () => {
+            swipeRef.current?.close();
+            onArchive();
+          } : undefined}
           onEdit={() => {
             swipeRef.current?.close();
             onEdit();
@@ -289,6 +236,15 @@ export default function AccountsScreen() {
     setRefreshing(false);
   }, [refetch]);
 
+  const { updateAccount } = useUpdateAccount();
+  const toggleArchive = async (x: AccountFieldsFragment) => {
+    try {
+      await updateAccount({ id: x.id, data: { isActive: x.isActive === false } });
+    } catch (err: any) {
+      showAlert({ title: x.isActive === false ? "Couldn't unarchive" : "Couldn't archive", message: err?.message ?? "Please try again." });
+    }
+  };
+
   const handleDelete = (account: AccountFieldsFragment) => {
     showAlert({
       title: "Delete Account",
@@ -349,6 +305,7 @@ export default function AccountsScreen() {
                     router.push(`/settings/edit-account/${account.id}`)
                   }
                   onDelete={() => handleDelete(account)}
+                  onArchive={() => toggleArchive(account)}
                 />
               </React.Fragment>
             ))}

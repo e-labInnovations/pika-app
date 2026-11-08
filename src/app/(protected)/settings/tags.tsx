@@ -15,21 +15,20 @@ import ReanimatedSwipeable, {
 } from "react-native-gesture-handler/ReanimatedSwipeable";
 import Reanimated, {
   cancelAnimation,
-  interpolate,
   interpolateColor,
   useAnimatedStyle,
   useSharedValue,
   withRepeat,
   withTiming,
-  type SharedValue,
 } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { ArchivedSection } from "@/components/ui/ArchivedSection";
 import { splitArchived } from "@/lib/archive";
+import { SwipeRowActions as RightActions } from "@/components/ui/SwipeRowActions";
 import { DynamicIcon } from "@/components/Icon";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { useAuth } from "@/context/AuthContext";
-import { useDeleteTag, useGetTags } from "@/services/gql/tags/tags.service";
+import { useDeleteTag, useGetTags, useUpdateTag } from "@/services/gql/tags/tags.service";
 import type { TagFieldsFragment } from "@/services/gql/types/graphql";
 import { useColors } from "@/theme/colors";
 
@@ -39,89 +38,6 @@ type SwipeableRef = { current: SwipeableMethods | null };
 
 // ── Swipe actions ──────────────────────────────────────────────────────────────
 
-function RightActions({
-  progress,
-  isSystem,
-  onEdit,
-  onDelete,
-}: {
-  progress: SharedValue<number>;
-  isSystem: boolean;
-  onEdit: () => void;
-  onDelete: () => void;
-}) {
-  const C = useColors();
-
-  const systemStyle = useAnimatedStyle(() => ({
-    transform: [{ translateX: interpolate(progress.value, [0, 1], [80, 0]) }],
-  }));
-  const editStyle = useAnimatedStyle(() => ({
-    transform: [{ translateX: interpolate(progress.value, [0, 1], [128, 0]) }],
-  }));
-  const deleteStyle = useAnimatedStyle(() => ({
-    transform: [{ translateX: interpolate(progress.value, [0, 1], [64, 0]) }],
-  }));
-
-  if (isSystem) {
-    return (
-      <Reanimated.View
-        style={[
-          systemStyle,
-          { width: 80, justifyContent: "center", alignItems: "center", gap: 4 },
-        ]}
-      >
-        <DynamicIcon name="lock" size={15} color={C.onSurfaceVariant} />
-        <Text
-          style={{ fontSize: 10, color: C.onSurfaceVariant, fontWeight: "600" }}
-        >
-          System
-        </Text>
-      </Reanimated.View>
-    );
-  }
-
-  return (
-    <View style={{ flexDirection: "row", width: 128 }}>
-      <Reanimated.View style={[editStyle, { flex: 1 }]}>
-        <TouchableOpacity
-          onPress={onEdit}
-          activeOpacity={0.8}
-          style={{
-            flex: 1,
-            backgroundColor: `${C.primary}22`,
-            alignItems: "center",
-            justifyContent: "center",
-            gap: 3,
-          }}
-        >
-          <DynamicIcon name="pencil" size={16} color={C.primary} />
-          <Text style={{ fontSize: 11, color: C.primary, fontWeight: "700" }}>
-            Edit
-          </Text>
-        </TouchableOpacity>
-      </Reanimated.View>
-
-      <Reanimated.View style={[deleteStyle, { flex: 1 }]}>
-        <TouchableOpacity
-          onPress={onDelete}
-          activeOpacity={0.8}
-          style={{
-            flex: 1,
-            backgroundColor: `${C.tertiary}22`,
-            alignItems: "center",
-            justifyContent: "center",
-            gap: 3,
-          }}
-        >
-          <DynamicIcon name="trash-2" size={16} color={C.tertiary} />
-          <Text style={{ fontSize: 11, color: C.tertiary, fontWeight: "700" }}>
-            Delete
-          </Text>
-        </TouchableOpacity>
-      </Reanimated.View>
-    </View>
-  );
-}
 
 // ── SystemBadge ────────────────────────────────────────────────────────────────
 
@@ -155,6 +71,7 @@ function TagRow({
   openRef,
   onEdit,
   onDelete,
+  onArchive,
 }: {
   tag: TagFieldsFragment;
   isSystem: boolean;
@@ -162,6 +79,7 @@ function TagRow({
   openRef: SwipeableRef;
   onEdit: () => void;
   onDelete: () => void;
+  onArchive?: () => void;
 }) {
   const C = useColors();
   const swipeRef = useRef<SwipeableMethods>(null);
@@ -202,6 +120,11 @@ function TagRow({
       renderRightActions={(progress) => (
         <RightActions
           progress={progress}
+          archived={tag.isActive === false}
+          onArchive={onArchive ? () => {
+            swipeRef.current?.close();
+            onArchive();
+          } : undefined}
           isSystem={isSystem}
           onEdit={() => {
             swipeRef.current?.close();
@@ -307,6 +230,15 @@ export default function TagsScreen() {
     setRefreshing(false);
   }, [refetch]);
 
+  const { updateTag } = useUpdateTag();
+  const toggleArchive = async (x: TagFieldsFragment) => {
+    try {
+      await updateTag({ id: x.id, data: { isActive: x.isActive === false } });
+    } catch (err: any) {
+      showAlert({ title: x.isActive === false ? "Couldn't unarchive" : "Couldn't archive", message: err?.message ?? "Please try again." });
+    }
+  };
+
   const handleDelete = (tag: TagFieldsFragment) => {
     showAlert({
       title: "Delete Tag",
@@ -360,6 +292,7 @@ export default function TagsScreen() {
                   openRef={openSwipeable}
                   onEdit={() => router.push(`/settings/edit-tag/${tag.id}`)}
                   onDelete={() => handleDelete(tag)}
+                  onArchive={() => toggleArchive(tag)}
                 />
               </React.Fragment>
             ))}

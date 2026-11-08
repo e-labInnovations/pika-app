@@ -23,17 +23,16 @@ import ReanimatedSwipeable, {
 } from "react-native-gesture-handler/ReanimatedSwipeable";
 import Reanimated, {
   cancelAnimation,
-  interpolate,
   interpolateColor,
   useAnimatedStyle,
   useSharedValue,
   withRepeat,
   withTiming,
-  type SharedValue,
 } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { ArchivedSection } from "@/components/ui/ArchivedSection";
 import { splitArchived } from "@/lib/archive";
+import { SwipeRowActions as RightActions } from "@/components/ui/SwipeRowActions";
 import { DynamicIcon } from "@/components/Icon";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { UserAvatar } from "@/components/UserAvatar";
@@ -41,6 +40,7 @@ import { useFormatMoney } from "@/lib/format-currency";
 import {
   useGetPeople,
   useDeletePerson,
+  useUpdatePerson,
 } from "@/services/gql/people/people.service";
 import type { PersonFieldsFragment } from "@/services/gql/types/graphql";
 import { useColors } from "@/theme/colors";
@@ -51,66 +51,6 @@ type SwipeableRef = { current: SwipeableMethods | null };
 
 // ── Swipe actions ──────────────────────────────────────────────────────────────
 
-function RightActions({
-  progress,
-  onEdit,
-  onDelete,
-}: {
-  progress: SharedValue<number>;
-  onEdit: () => void;
-  onDelete: () => void;
-}) {
-  const C = useColors();
-
-  const editStyle = useAnimatedStyle(() => ({
-    transform: [{ translateX: interpolate(progress.value, [0, 1], [128, 0]) }],
-  }));
-  const deleteStyle = useAnimatedStyle(() => ({
-    transform: [{ translateX: interpolate(progress.value, [0, 1], [64, 0]) }],
-  }));
-
-  return (
-    <View style={{ flexDirection: "row", width: 128 }}>
-      <Reanimated.View style={[editStyle, { flex: 1 }]}>
-        <TouchableOpacity
-          onPress={onEdit}
-          activeOpacity={0.8}
-          style={{
-            flex: 1,
-            backgroundColor: `${C.primary}22`,
-            alignItems: "center",
-            justifyContent: "center",
-            gap: 3,
-          }}
-        >
-          <DynamicIcon name="pencil" size={16} color={C.primary} />
-          <Text style={{ fontSize: 11, color: C.primary, fontWeight: "700" }}>
-            Edit
-          </Text>
-        </TouchableOpacity>
-      </Reanimated.View>
-
-      <Reanimated.View style={[deleteStyle, { flex: 1 }]}>
-        <TouchableOpacity
-          onPress={onDelete}
-          activeOpacity={0.8}
-          style={{
-            flex: 1,
-            backgroundColor: `${C.tertiary}22`,
-            alignItems: "center",
-            justifyContent: "center",
-            gap: 3,
-          }}
-        >
-          <DynamicIcon name="trash-2" size={16} color={C.tertiary} />
-          <Text style={{ fontSize: 11, color: C.tertiary, fontWeight: "700" }}>
-            Delete
-          </Text>
-        </TouchableOpacity>
-      </Reanimated.View>
-    </View>
-  );
-}
 
 // ── PersonRow ──────────────────────────────────────────────────────────────────
 
@@ -121,6 +61,7 @@ function PersonRow({
   onPress,
   onEdit,
   onDelete,
+  onArchive,
 }: {
   person: PersonFieldsFragment;
   deleting: boolean;
@@ -128,6 +69,7 @@ function PersonRow({
   onPress: () => void;
   onEdit: () => void;
   onDelete: () => void;
+  onArchive?: () => void;
 }) {
   const C = useColors();
   const fmt = useFormatMoney();
@@ -172,6 +114,11 @@ function PersonRow({
       renderRightActions={(progress) => (
         <RightActions
           progress={progress}
+          archived={person.isActive === false}
+          onArchive={onArchive ? () => {
+            swipeRef.current?.close();
+            onArchive();
+          } : undefined}
           onEdit={() => {
             swipeRef.current?.close();
             onEdit();
@@ -325,6 +272,7 @@ export default function PeopleScreen() {
                   onPress={() => router.push(`/people/${person.id}`)}
                   onEdit={() => router.push(`/people/${person.id}/edit`)}
                   onDelete={() => handleDelete(person)}
+                  onArchive={() => toggleArchive(person)}
                 />
               </React.Fragment>
             ))}
@@ -336,6 +284,15 @@ export default function PeopleScreen() {
     await refetch();
     setRefreshing(false);
   }, [refetch]);
+
+  const { updatePerson } = useUpdatePerson();
+  const toggleArchive = async (x: PersonFieldsFragment) => {
+    try {
+      await updatePerson({ id: x.id, data: { isActive: x.isActive === false } });
+    } catch (err: any) {
+      showAlert({ title: x.isActive === false ? "Couldn't unarchive" : "Couldn't archive", message: err?.message ?? "Please try again." });
+    }
+  };
 
   const handleDelete = (person: PersonFieldsFragment) => {
     showAlert({
