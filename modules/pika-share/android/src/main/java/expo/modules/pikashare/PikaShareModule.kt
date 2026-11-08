@@ -11,7 +11,8 @@ import java.util.concurrent.Executors
  *
  * Share intents arrive on the launch intent (cold start, picked up in OnCreate or the
  * first OnActivityEntersForeground, whichever has an activity) or via OnNewIntent
- * (app already running; MainActivity is singleTask). Each one is read on a background
+ * (app already running; MainActivity is singleTask). ShareReceiverActivity is the
+ * actual share target and forwards them here. Each one is read on a background
  * thread, held as the single pending share, and announced with `onShare`. JS reads
  * `getPendingShare()` on mount for shares that landed before it subscribed.
  */
