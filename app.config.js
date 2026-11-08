@@ -6,7 +6,7 @@ export default {
     name: IS_DEV ? 'Pika (Dev)' : 'Pika',
     slug: 'pika',
     scheme: 'pika',
-    version: '1.1.0',
+    version: '1.1.1',
     // OTA updates (EAS Update) only reach builds with the same native code.
     runtimeVersion: { policy: 'fingerprint' },
     updates: {
